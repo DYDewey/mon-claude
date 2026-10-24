@@ -5,6 +5,7 @@ import type { HistoryProject } from '../../shared/history';
 import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
 import { HandoffButton } from './components/handoff-button';
+import { HandoffDialog } from './components/handoff-dialog';
 import { HistoryList } from './components/history-list';
 import { HistoryView } from './components/history-view';
 import { Sidebar } from './components/sidebar';
@@ -51,6 +52,7 @@ export function App() {
   const [viewing, setViewing] = useState<Viewing | null>(null);
   const [history, setHistory] = useState<{ projects: HistoryProject[]; at: number }>({ projects: [], at: 0 });
   const [handoff, setHandoff] = useState<PendingHandoff | null>(null);
+  const [saving, setSaving] = useState<{ busy: boolean; error?: string }>({ busy: false });
   const phase: HandoffPhase = active ? handoffPhase(handoff, active) : { phase: 'none' };
 
   function refreshHistory() {
@@ -128,6 +130,28 @@ export function App() {
     setHandoff({ sessionId: active.id, fromIndex });
   }
 
+  async function confirmHandoff(text: string) {
+    const from = state.sessions.find((s) => s.id === handoff?.sessionId);
+    if (!from) return;
+    setSaving({ busy: true });
+    try {
+      await window.claude.saveHandoff(text, from.id);
+      const sessionId = await window.claude.startSession(from.cwd); // session neuve : pas de --resume
+      setHandoff(null);
+      setSaving({ busy: false });
+      dispatch({ type: 'session-opened', sessionId, cwd: from.cwd });
+      dispatch({ type: 'user-sent', sessionId, text });
+      window.claude.sendMessage(sessionId, text);
+    } catch (err) {
+      setSaving({ busy: false, error: `Passation non enregistrée : ${err instanceof Error ? err.message : String(err)}` });
+    }
+  }
+
+  function cancelHandoff() {
+    setHandoff(null);
+    setSaving({ busy: false });
+  }
+
   function stop() {
     if (!active) return;
     dispatch({ type: 'user-interrupted', sessionId: active.id });
@@ -172,6 +196,15 @@ export function App() {
           </header>
           <ChatView items={active.items} running={active.status === 'running'} />
           <Composer running={active.status === 'running'} onSend={send} onStop={stop} commands={state.commands} suggestion={active.suggestion} />
+          {phase.phase === 'review' && (
+            <HandoffDialog
+              initialText={phase.text}
+              busy={saving.busy}
+              error={saving.error}
+              onCancel={cancelHandoff}
+              onConfirm={(text) => void confirmHandoff(text)}
+            />
+          )}
         </main>
       ) : (
         <main className="empty">Clique sur « + Nouvelle session » et choisis un dossier de travail.</main>
