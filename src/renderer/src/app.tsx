@@ -101,7 +101,7 @@ export function App() {
             )}
           </header>
           <ChatView session={active} />
-          <Composer running={active.status === 'running'} onSend={send} onStop={stop} commands={state.commands} />
+          <Composer running={active.status === 'running'} onSend={send} onStop={stop} commands={state.commands} suggestion={active.suggestion} />
         </main>
       ) : (
         <main className="empty">Clique sur « + Nouvelle session » et choisis un dossier de travail.</main>

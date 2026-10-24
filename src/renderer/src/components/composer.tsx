@@ -7,9 +7,11 @@ interface Props {
   onStop: () => void;
   /** Noms des commandes et skills proposés après « / ». */
   commands: string[];
+  /** Prochain message proposé par claude : affiché en gris, Tab le recopie. */
+  suggestion?: string;
 }
 
-export function Composer({ running, onSend, onStop, commands }: Props) {
+export function Composer({ running, onSend, onStop, commands, suggestion }: Props) {
   const [text, setText] = useState('');
   const [selected, setSelected] = useState(0);
   const [menuClosed, setMenuClosed] = useState(false);
@@ -33,6 +35,11 @@ export function Composer({ running, onSend, onStop, commands }: Props) {
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Tab' && !text && suggestion) {
+      e.preventDefault();
+      change(suggestion);
+      return;
+    }
     if (matches.length > 0) {
       const move = { ArrowDown: 1, ArrowUp: -1 }[e.key];
       if (move) {
@@ -66,7 +73,9 @@ export function Composer({ running, onSend, onStop, commands }: Props) {
         onChange={(e) => change(e.target.value)}
         onKeyDown={onKeyDown}
         disabled={running}
-        placeholder={running ? 'Claude répond…' : 'Écris ton message (Entrée pour envoyer)'}
+        placeholder={
+          running ? 'Claude répond…' : suggestion ? `${suggestion}   (Tab pour reprendre)` : 'Écris ton message (Entrée pour envoyer)'
+        }
         rows={3}
         autoFocus
       />
