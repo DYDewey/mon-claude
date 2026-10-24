@@ -27,7 +27,9 @@ export class SessionManager {
     const command = this.options.command ?? 'claude';
     const args = [...(this.options.prefixArgs ?? []), ...buildClaudeArgs({ sessionId, resume: !!resumeId })];
 
-    const child = spawn(command, args, { cwd, windowsHide: true });
+    // Sans cette variable, claude -p ignore --prompt-suggestions (vérifié avec la v2.1.310).
+    const env = { ...process.env, CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION: '1' };
+    const child = spawn(command, args, { cwd, env, windowsHide: true });
     this.sessions.set(sessionId, child);
 
     const parser = createStreamParser(sessionId);

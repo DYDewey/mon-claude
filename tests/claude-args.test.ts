@@ -8,6 +8,7 @@ const base = [
   '--verbose',
   '--include-partial-messages',
   '--permission-mode', 'acceptEdits',
+  '--prompt-suggestions', 'true',
 ];
 
 describe('buildClaudeArgs', () => {

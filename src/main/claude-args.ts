@@ -12,6 +12,8 @@ export function buildClaudeArgs({ sessionId, resume }: ClaudeArgsOptions): strin
     '--verbose',
     '--include-partial-messages',
     '--permission-mode', 'acceptEdits',
+    // Suggestion du prochain message après chaque tour (il faut aussi la variable d'env, cf. session-manager).
+    '--prompt-suggestions', 'true',
     // On choisit nous-mêmes l'identifiant : on le connaît avant la première réponse.
     ...(resume ? ['--resume', sessionId] : ['--session-id', sessionId]),
   ];
