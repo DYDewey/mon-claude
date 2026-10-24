@@ -48,7 +48,7 @@ Vérif standard de chaque tâche : `npm test`, `npm run typecheck`, `npm run lin
   - Fichiers : `components/message.tsx`, `package.json`, styles
   - Vérif manuelle : bloc de code coloré, liste en liste ; `npm run build` OK.
 
-- [ ] **T8 : lignes d'outils** (S)
+- [x] **T8 : lignes d'outils** (S)
   - Icône + nom + cible principale (`file_path`, `command`, `pattern`…), dépliable pour voir `input`.
   - Fichiers : `components/tool-line.tsx`, `components/chat-view.tsx`
 

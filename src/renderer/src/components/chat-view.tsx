@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { SessionState } from '../state/sessions';
 import { Markdown } from './message';
+import { ToolLine } from './tool-line';
 
 export function ChatView({ session }: { session: SessionState }) {
   const bottom = useRef<HTMLDivElement>(null);
@@ -26,7 +27,7 @@ export function ChatView({ session }: { session: SessionState }) {
               </div>
             );
           case 'tool':
-            return <div key={i} className="msg msg-tool">🔧 {item.name}</div>;
+            return <ToolLine key={i} name={item.name} input={item.input} />;
           case 'error':
             return <div key={i} className="msg msg-error">⚠️ {item.message}</div>;
         }

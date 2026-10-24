@@ -69,3 +69,6 @@ button:disabled { opacity: 0.4; cursor: default; }
 .msg-claude table { border-collapse: collapse; }
 .msg-claude th, .msg-claude td { border: 1px solid #44464d; padding: 4px 8px; }
 .msg-claude a { color: var(--accent); }
+.msg-tool summary { cursor: pointer; }
+.msg-tool .tool-target { font-family: Consolas, monospace; }
+.msg-tool pre { margin: 6px 0 0; padding: 8px; background: var(--panel); border-radius: 6px; overflow-x: auto; white-space: pre-wrap; }
