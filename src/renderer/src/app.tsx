@@ -1,8 +1,10 @@
 import { useEffect, useReducer, useState } from 'react';
+import type { ChatItem } from '../../shared/chat-item';
 import type { HistoryProject } from '../../shared/history';
 import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
 import { HistoryList } from './components/history-list';
+import { HistoryView } from './components/history-view';
 import { Sidebar } from './components/sidebar';
 import { ContextBadge } from './components/usage-gauges';
 import { initialState, sessionsReducer, type ChatState, type Limits } from './state/sessions';
@@ -25,6 +27,16 @@ function withSaved(state: ChatState): ChatState {
   }
 }
 
+/** Ancienne session affichée en lecture seule (à la place de la session en cours). */
+interface Viewing {
+  /** `folder/id` */
+  key: string;
+  title: string;
+  path?: string;
+  items?: ChatItem[];
+  error?: string;
+}
+
 function isSavedLimits(value: unknown): value is Limits {
   return typeof value === 'object' && value !== null && typeof (value as Limits).savedAt === 'number';
 }
@@ -33,6 +45,7 @@ export function App() {
   const [state, dispatch] = useReducer(sessionsReducer, initialState, withSaved);
   const active = state.sessions.find((s) => s.id === state.activeId) ?? null;
   // `at` : heure de la lecture, sert de « maintenant » pour les dates relatives (pas de Date.now() au rendu).
+  const [viewing, setViewing] = useState<Viewing | null>(null);
   const [history, setHistory] = useState<{ projects: HistoryProject[]; at: number }>({ projects: [], at: 0 });
 
   function refreshHistory() {
@@ -73,7 +86,22 @@ export function App() {
     const cwd = await window.claude.pickFolder();
     if (!cwd) return;
     const sessionId = await window.claude.startSession(cwd);
+    setViewing(null);
     dispatch({ type: 'session-opened', sessionId, cwd });
+  }
+
+  function openHistory(folder: string, id: string) {
+    const project = history.projects.find((p) => p.folder === folder);
+    const title = project?.sessions.find((s) => s.id === id)?.title ?? id;
+    const key = `${folder}/${id}`;
+    setViewing({ key, title, path: project?.path });
+    // Si on a cliqué sur une autre session entre-temps, on ignore la réponse arrivée en retard.
+    const done = (patch: Pick<Viewing, 'items' | 'error'>) =>
+      setViewing((v) => (v?.key === key ? { ...v, ...patch } : v));
+    window.claude.readHistory(folder, id).then(
+      (items) => done({ items }),
+      (err: unknown) => done({ error: `Lecture impossible : ${err instanceof Error ? err.message : String(err)}` }),
+    );
   }
 
   function close(sessionId: string) {
@@ -97,15 +125,26 @@ export function App() {
     <div className="app">
       <Sidebar
         sessions={state.sessions}
-        activeId={state.activeId}
+        activeId={viewing ? null : state.activeId}
         limits={state.limits}
         onNew={newSession}
-        onSelect={(sessionId) => dispatch({ type: 'select', sessionId })}
+        onSelect={(sessionId) => {
+          setViewing(null);
+          dispatch({ type: 'select', sessionId });
+        }}
         onClose={close}
       >
-        <HistoryList projects={history.projects} now={history.at} onOpen={() => {}} onRefresh={refreshHistory} />
+        <HistoryList
+          projects={history.projects}
+          now={history.at}
+          openKey={viewing?.key}
+          onOpen={openHistory}
+          onRefresh={refreshHistory}
+        />
       </Sidebar>
-      {active ? (
+      {viewing ? (
+        <HistoryView title={viewing.title} path={viewing.path} items={viewing.items} error={viewing.error} />
+      ) : active ? (
         <main className="session">
           <header className="topbar">
             <span className="topbar-title">
@@ -117,7 +156,7 @@ export function App() {
               </span>
             )}
           </header>
-          <ChatView session={active} />
+          <ChatView items={active.items} running={active.status === 'running'} />
           <Composer running={active.status === 'running'} onSend={send} onStop={stop} commands={state.commands} suggestion={active.suggestion} />
         </main>
       ) : (

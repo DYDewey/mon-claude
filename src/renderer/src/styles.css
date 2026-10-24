@@ -117,3 +117,4 @@ button:disabled { opacity: 0.4; cursor: default; }
 .topbar-title { flex: 1; }
 .topbar-ctx { font-size: 13px; color: var(--muted); white-space: nowrap; }
 .topbar-ctx .ctx { font-size: 13px; }
+.readonly { font-size: 13px; color: var(--muted); white-space: nowrap; }
