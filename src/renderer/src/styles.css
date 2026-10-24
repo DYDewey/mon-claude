@@ -118,3 +118,7 @@ button:disabled { opacity: 0.4; cursor: default; }
 .topbar-ctx { font-size: 13px; color: var(--muted); white-space: nowrap; }
 .topbar-ctx .ctx { font-size: 13px; }
 .readonly { font-size: 13px; color: var(--muted); white-space: nowrap; }
+
+/* Passation */
+.handoff { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.handoff-failed { font-size: 13px; color: #e5534b; }

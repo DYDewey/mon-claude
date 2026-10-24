@@ -1,12 +1,15 @@
 import { useEffect, useReducer, useState } from 'react';
 import type { ChatItem } from '../../shared/chat-item';
+import { buildHandoffPrompt } from '../../shared/handoff';
 import type { HistoryProject } from '../../shared/history';
 import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
+import { HandoffButton } from './components/handoff-button';
 import { HistoryList } from './components/history-list';
 import { HistoryView } from './components/history-view';
 import { Sidebar } from './components/sidebar';
 import { ContextBadge } from './components/usage-gauges';
+import { handoffPhase, type HandoffPhase, type PendingHandoff } from './handoff-flow';
 import { initialState, sessionsReducer, type ChatState, type Limits } from './state/sessions';
 
 const COMMANDS_KEY = 'commands';
@@ -47,6 +50,8 @@ export function App() {
   // `at` : heure de la lecture, sert de « maintenant » pour les dates relatives (pas de Date.now() au rendu).
   const [viewing, setViewing] = useState<Viewing | null>(null);
   const [history, setHistory] = useState<{ projects: HistoryProject[]; at: number }>({ projects: [], at: 0 });
+  const [handoff, setHandoff] = useState<PendingHandoff | null>(null);
+  const phase: HandoffPhase = active ? handoffPhase(handoff, active) : { phase: 'none' };
 
   function refreshHistory() {
     window.claude.listHistory().then(
@@ -111,8 +116,16 @@ export function App() {
 
   function send(text: string) {
     if (!active) return;
+    setHandoff(null); // un message normal abandonne la passation en attente
     dispatch({ type: 'user-sent', sessionId: active.id, text });
     window.claude.sendMessage(active.id, text);
+  }
+
+  function startHandoff() {
+    if (!active) return;
+    const fromIndex = active.items.length; // la réponse de claude commencera après la consigne
+    send(buildHandoffPrompt());
+    setHandoff({ sessionId: active.id, fromIndex });
   }
 
   function stop() {
@@ -155,6 +168,7 @@ export function App() {
                 Contexte : <ContextBadge context={active.context} />
               </span>
             )}
+            <HandoffButton session={active} phase={phase.phase} onClick={startHandoff} />
           </header>
           <ChatView items={active.items} running={active.status === 'running'} />
           <Composer running={active.status === 'running'} onSend={send} onStop={stop} commands={state.commands} suggestion={active.suggestion} />
