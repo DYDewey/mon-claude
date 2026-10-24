@@ -16,9 +16,9 @@ Rouvrir et relire n'importe quelle ancienne conversation `claude`, de n'importe 
 
 ## Fonctionnement
 - **main** : `history-reader.ts`
-  - `listSessions()` : parcourt les dossiers, lit chaque fichier en flux (ligne par ligne) pour sortir titre, date, projet et nombre de messages. Résultat gardé en mémoire et invalidé si la date de modification du fichier change.
+  - `listSessions()` : parcourt les dossiers, lit chaque fichier (`readFile`, quelques Mo au plus) pour sortir titre, date, projet et nombre de messages. Résultat gardé en mémoire et invalidé si la date de modification du fichier change.
   - `readSession(projet, id)` : lit le fichier complet et renvoie une liste de messages au format déjà utilisé par le chat. Le renderer ne voit jamais le JSON brut.
-  - Ouverture des fichiers en lecture uniquement (`fs.createReadStream` / `readFile`), et le chemin demandé doit rester dans `~/.claude/projects/` (protection contre `..`).
+  - Ouverture des fichiers en lecture uniquement (`readdir`, `stat`, `readFile`), et le chemin demandé doit rester dans `~/.claude/projects/` (protection contre `..`).
 - **preload / IPC** : `history:list`, `history:read`.
 - **renderer** :
   - Barre latérale : une section « Historique » sous les sessions en cours. Projets repliables, triés par activité récente, et sessions triées de la plus récente à la plus ancienne (titre + « il y a 2 j »).
