@@ -1,6 +1,9 @@
 import { existsSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import { BrowserWindow, dialog, ipcMain } from 'electron';
 import { IPC } from '../shared/api';
+import { createHistoryReader } from './history-reader';
 import { SessionManager } from './session-manager';
 
 export function registerClaudeIpc(): SessionManager {
@@ -35,4 +38,15 @@ export function registerClaudeIpc(): SessionManager {
   });
 
   return manager;
+}
+
+export function registerHistoryIpc(): void {
+  const reader = createHistoryReader(join(homedir(), '.claude', 'projects'));
+
+  ipcMain.handle(IPC.historyList, () => reader.listProjects());
+
+  ipcMain.handle(IPC.historyRead, (_e, folder: unknown, id: unknown) => {
+    if (typeof folder !== 'string' || typeof id !== 'string') throw new Error('Session invalide');
+    return reader.readSession(folder, id); // vérifie aussi que le chemin reste dans le dossier
+  });
 }

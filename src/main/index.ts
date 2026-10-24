@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from 'electron';
 import { join } from 'node:path';
-import { registerClaudeIpc } from './ipc';
+import { registerClaudeIpc, registerHistoryIpc } from './ipc';
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -25,6 +25,7 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   const sessions = registerClaudeIpc();
+  registerHistoryIpc();
   // Aucun processus claude ne doit survivre à l'app.
   app.on('before-quit', () => sessions.stopAll());
   createWindow();

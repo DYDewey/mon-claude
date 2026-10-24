@@ -13,6 +13,8 @@ const api: ClaudeApi = {
     ipcRenderer.on(IPC.event, listener);
     return () => ipcRenderer.removeListener(IPC.event, listener);
   },
+  listHistory: () => ipcRenderer.invoke(IPC.historyList),
+  readHistory: (folder, id) => ipcRenderer.invoke(IPC.historyRead, folder, id),
 };
 
 contextBridge.exposeInMainWorld('claude', api);

@@ -1,4 +1,6 @@
+import type { ChatItem } from './chat-item';
 import type { BridgeEvent } from './events';
+import type { HistoryProject } from './history';
 
 // API exposée au renderer sous `window.claude` par le preload.
 export interface ClaudeApi {
@@ -11,6 +13,9 @@ export interface ClaudeApi {
   stopSession(sessionId: string): void;
   /** Renvoie la fonction de désabonnement. */
   onEvent(cb: (event: BridgeEvent) => void): () => void;
+  /** Anciennes sessions de ~/.claude/projects/, en lecture seule. */
+  listHistory(): Promise<HistoryProject[]>;
+  readHistory(folder: string, id: string): Promise<ChatItem[]>;
 }
 
 export const IPC = {
@@ -20,4 +25,6 @@ export const IPC = {
   pickFolder: 'claude:pick-folder',
   stop: 'claude:stop',
   event: 'claude:event',
+  historyList: 'history:list',
+  historyRead: 'history:read',
 } as const;
