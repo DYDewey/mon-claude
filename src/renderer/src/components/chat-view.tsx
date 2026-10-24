@@ -6,7 +6,11 @@ export function ChatView({ session }: { session: SessionState }) {
   // Claude n'a encore rien écrit depuis le dernier message : on le dit, le démarrage prend ~35 s.
   const waiting = session.status === 'running' && session.items.at(-1)?.kind === 'user';
 
-  useEffect(() => bottom.current?.scrollIntoView({ block: 'end' }), [session.items]);
+  // Accolades obligatoires : scrollIntoView renvoie une Promise dans Electron 45, et React
+  // prendrait toute valeur renvoyée pour une fonction de nettoyage (plantage « destroy_ is not a function »).
+  useEffect(() => {
+    bottom.current?.scrollIntoView({ block: 'end' });
+  }, [session.items]);
 
   return (
     <div className="chat">
