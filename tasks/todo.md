@@ -1,0 +1,59 @@
+# Tâches : module cli-bridge
+
+## T1 : capturer un vrai flux stream-json
+**Description :** lancer une fois `claude` en mode stream-json (entrée et sortie), envoyer « bonjour », enregistrer la sortie comme fixture de test.
+**Critères :**
+- [x] `tests/fixtures/stream-bonjour.jsonl` existe et contient un vrai flux
+- [x] Le format du message d'entrée sur stdin est confirmé
+- [x] On sait où se trouve le `session_id` (sur toutes les lignes)
+**Vérif :** lecture de la fixture ; noter les types de lignes rencontrés dans `plan.md`.
+**Dépend de :** rien
+**Fichiers :** `tests/fixtures/stream-bonjour.jsonl`
+
+## T2 : squelette electron-vite + React + Vitest
+**Description :** créer le projet (Electron + TS strict + React + Vitest + ESLint), structure `src/main`, `src/preload`, `src/renderer`, `src/shared`.
+**Critères :**
+- [x] `npm run dev` ouvre une fenêtre avec un titre « Mon-Claude »
+- [x] `npm test` passe (un test trivial)
+- [x] `npm run typecheck` et `npm run build` passent
+**Vérif :** les 4 commandes ci-dessus + fenêtre vue à l'écran.
+**Dépend de :** rien
+**Fichiers :** `package.json`, configs, `src/*/index.ts(x)`
+
+## Checkpoint A
+- [ ] Fixture réelle disponible, projet qui démarre, tests verts
+- [ ] Validation avant de continuer
+
+## T3 : parser de flux → BridgeEvent
+**Description :** fonction pure qui reçoit des morceaux de texte de stdout, recolle les lignes, parse le JSON et renvoie des `BridgeEvent`.
+**Critères :**
+- [ ] La fixture donne une suite de `text-delta` puis un `turn-end`
+- [ ] Une ligne coupée en deux morceaux est bien recollée
+- [ ] Ligne invalide ou type inconnu : ignorée, pas de plantage
+**Vérif :** `npm test`
+**Dépend de :** T1, T2
+**Fichiers :** `src/shared/events.ts`, `src/main/stream-parser.ts`, `tests/stream-parser.test.ts`
+
+## T4 : démarrer / envoyer / arrêter une session
+**Description :** gestionnaire de sessions côté main : construit les arguments, lance `claude.exe`, écrit sur stdin, branche le parser, émet `error` si le lancement échoue, tue les processus à la fermeture.
+**Critères :**
+- [ ] Arguments construits correctement, avec et sans `--resume` (test)
+- [ ] `claude` introuvable → événement `error` lisible (test avec un faux exécutable)
+- [ ] Fermer l'app ne laisse aucun processus `claude`
+**Vérif :** `npm test` + Gestionnaire des tâches après fermeture.
+**Dépend de :** T3
+**Fichiers :** `src/main/claude-args.ts`, `src/main/session-manager.ts`, `src/main/index.ts`, `tests/claude-args.test.ts`
+
+## T5 : exposer l'API au renderer
+**Description :** IPC main ↔ preload, `window.claude.startSession / sendMessage / stopSession / onEvent`.
+**Critères :**
+- [ ] Depuis la console DevTools, un « bonjour » affiche les morceaux de réponse au fil de l'eau
+- [ ] Le renderer n'a aucun accès direct à Node (`contextIsolation` actif)
+**Vérif :** test manuel en console + `npm run typecheck`
+**Dépend de :** T4
+**Fichiers :** `src/preload/index.ts`, `src/main/ipc.ts`, `src/renderer/env.d.ts`
+
+## Checkpoint B : module cli-bridge terminé
+- [ ] Tous les critères de `SPEC-cli-bridge.md` cochés
+- [ ] Tests, typecheck, build verts
+- [ ] Validation avant le module `chat`

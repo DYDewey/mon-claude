@@ -1,0 +1,82 @@
+# Spec : Mon-Claude
+
+App de bureau Windows gratuite qui pilote le CLI `claude` (abonnement, pas de clé API).
+Elle garde tout l'historique consultable ; après une passation, la nouvelle session ne reçoit que le résumé.
+
+## Carte des modules (validée le 2026-10-24)
+
+| Module | Rôle | Dépend de |
+|---|---|---|
+| `cli-bridge` | (main) lance `claude`, lit le flux JSON, envoie les événements au renderer | — |
+| `chat` | (renderer) fenêtre de chat, affichage en direct | cli-bridge |
+| `history` | liste et relit les `.jsonl` de `~/.claude/projects/`, lecture seule | — |
+| `handoff` | Passation : résumé → relecture/édition → nouvelle session avec ce résumé seul | cli-bridge, chat |
+
+Ordre : `cli-bridge` → `chat` → `history` → `handoff`.
+Chaque module a sa spec : `SPEC-<module>.md`. Ce fichier est l'index.
+
+## Objectif
+- Utilisateur : moi seul, étudiant, Windows 11, CLI `claude` déjà installé et connecté.
+- J'envoie un message et je vois la réponse s'afficher en direct.
+- Mes skills perso fonctionnent dans l'app.
+- Je peux rouvrir et relire n'importe quelle ancienne conversation.
+- Après une passation, la nouvelle session ne contient que le résumé.
+- Aucun appel payant.
+
+## Tech stack
+- Electron + TypeScript, outillage `electron-vite`
+- Renderer : React
+- Tests : Vitest
+- Node 24, npm 11, Claude Code 2.1.x
+
+## Commandes
+```
+Installer :  npm install
+Dev :        npm run dev          (electron-vite dev)
+Build :      npm run build        (electron-vite build)
+Tests :      npm test             (vitest run)
+Typecheck :  npm run typecheck    (tsc --noEmit)
+Lint :       npm run lint         (eslint .)
+```
+
+## Structure
+```
+src/main/        → processus Electron (Node) : cli-bridge, lecture history, stockage passations
+src/preload/     → pont sécurisé main ↔ renderer (contextBridge)
+src/renderer/    → interface React
+src/shared/      → types partagés (événements, messages)
+tests/           → tests Vitest (+ tests/fixtures/ : extraits de flux et de .jsonl)
+```
+
+## Style de code
+- TypeScript `strict`, pas de `any`.
+- Fichiers en kebab-case, composants React en PascalCase, fonctions en camelCase.
+- Commentaires en français, courts, seulement quand le « pourquoi » n'est pas évident.
+- Le renderer n'a jamais accès direct à Node : tout passe par le preload.
+
+```ts
+// src/shared/events.ts
+export type BridgeEvent =
+  | { type: 'text-delta'; sessionId: string; text: string }
+  | { type: 'turn-end'; sessionId: string; costUsd?: number }
+  | { type: 'error'; sessionId: string; message: string };
+```
+
+## Stratégie de test
+- Vitest pour la logique pure : parsing du flux stream-json, lecture des `.jsonl`, construction des arguments CLI.
+- Fixtures réelles (copies anonymisées) dans `tests/fixtures/`.
+- L'interface est vérifiée à la main, avec une checklist par module.
+- Aucun test n'appelle le vrai `claude` (pas de consommation d'abonnement en test).
+
+## Limites
+- Toujours : lancer `npm test` et `npm run typecheck` avant de dire qu'une étape est finie ; un incrément livrable à la fois, validé avant le suivant.
+- Demander d'abord : ajouter une dépendance ; changer le mode de permission ; toucher à `~/.claude/settings.json`.
+- Jamais : modifier ou supprimer un fichier de `~/.claude/projects/` ; utiliser une clé API ou un service payant ; synchro cloud.
+
+## Décisions
+- Permissions dans le chat : `--permission-mode acceptEdits`.
+- Dossier de travail : choisi à chaque nouvelle conversation.
+- Passations stockées dans `%APPDATA%/mon-claude/handoffs/`, jamais dans `~/.claude`.
+
+## Questions ouvertes
+- Le format des `.jsonl` reste-t-il stable ? (à vérifier dans `history`)
