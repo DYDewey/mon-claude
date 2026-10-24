@@ -14,7 +14,7 @@ Vérif standard de chaque tâche : `npm test`, `npm run typecheck`, `npm run lin
   - Critères : un message `assistant` avec bloc `tool_use` donne `{ type:'tool-use', sessionId, name, input }` ; les autres messages ne changent pas.
   - Fichiers : `src/shared/events.ts`, `src/main/stream-parser.ts`, `tests/stream-parser.test.ts`
 
-- [ ] **T3 : `pickFolder()`** (S)
+- [x] **T3 : `pickFolder()`** (S)
   - Critères : `dialog.showOpenDialog` (openDirectory) côté main ; renvoie le chemin ou `null` si annulé ; exposé via preload.
   - Fichiers : `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`
   - Vérif manuelle : appel depuis la console DevTools.

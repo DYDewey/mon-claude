@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import { BrowserWindow, ipcMain } from 'electron';
+import { BrowserWindow, dialog, ipcMain } from 'electron';
 import { IPC } from '../shared/api';
 import { SessionManager } from './session-manager';
 
@@ -19,7 +19,14 @@ export function registerClaudeIpc(): SessionManager {
     if (typeof sessionId === 'string' && typeof text === 'string') manager.send(sessionId, text);
   });
 
-  ipcMain.on(IPC.interrupt, (_e, sessionId: unknown) => {
+  ipcMain.handle(IPC.pickFolder, async (e) => {
+    const win = BrowserWindow.fromWebContents(e.sender);
+    const options = { title: 'Dossier de travail de la session', properties: ['openDirectory' as const] };
+    const res = win ? await dialog.showOpenDialog(win, options) : await dialog.showOpenDialog(options);
+    return res.canceled ? null : (res.filePaths[0] ?? null);
+  });
+
+  ipcMain.on(IPC.interrupt,(_e, sessionId: unknown) => {
     if (typeof sessionId === 'string') manager.interrupt(sessionId);
   });
 
