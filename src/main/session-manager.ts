@@ -1,6 +1,7 @@
 import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import type { BridgeEvent } from '../shared/events';
+import type { ModelChoice } from '../shared/model';
 import { buildClaudeArgs } from './claude-args';
 import { createStreamParser } from './stream-parser';
 
@@ -22,10 +23,10 @@ export class SessionManager {
   ) {}
 
   /** Lance une session dans `cwd` et renvoie son identifiant. */
-  start(cwd: string, resumeId?: string): string {
+  start(cwd: string, resumeId?: string, model?: ModelChoice): string {
     const sessionId = resumeId ?? randomUUID();
     const command = this.options.command ?? 'claude';
-    const args = [...(this.options.prefixArgs ?? []), ...buildClaudeArgs({ sessionId, resume: !!resumeId })];
+    const args = [...(this.options.prefixArgs ?? []), ...buildClaudeArgs({ sessionId, resume: !!resumeId, model })];
 
     // Sans cette variable, claude -p ignore --prompt-suggestions (vérifié avec la v2.1.310).
     const env = { ...process.env, CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION: '1' };

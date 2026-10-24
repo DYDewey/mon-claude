@@ -20,6 +20,15 @@ describe('buildClaudeArgs', () => {
     expect(buildClaudeArgs({ sessionId: 'abc', resume: true })).toEqual([...base, '--resume', 'abc']);
   });
 
+  it('ajoute --model quand un modèle est choisi', () => {
+    expect(buildClaudeArgs({ sessionId: 'abc', model: 'sonnet' })).toEqual([...base, '--model', 'sonnet', '--session-id', 'abc']);
+    expect(buildClaudeArgs({ sessionId: 'abc', resume: true, model: 'haiku' })).toEqual([...base, '--model', 'haiku', '--resume', 'abc']);
+  });
+
+  it("« Par défaut » : pas d'option --model", () => {
+    expect(buildClaudeArgs({ sessionId: 'abc' })).not.toContain('--model');
+  });
+
   it("n'utilise jamais --bare (les skills perso doivent se charger)", () => {
     expect(buildClaudeArgs({ sessionId: 'abc' })).not.toContain('--bare');
   });

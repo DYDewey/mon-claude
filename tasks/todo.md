@@ -1,9 +1,9 @@
 # Todo : module model
 
 ## T1 : choisir le modèle au lancement
-- [ ] `src/shared/model.ts` : type `ModelChoice = 'opus' | 'sonnet' | 'haiku'` et `MODEL_CHOICES` (avec libellés)
-- [ ] `buildClaudeArgs({ sessionId, resume, model })` ajoute `--model X` seulement si `model` est défini
-- [ ] `SessionManager.start(cwd, resumeId?, model?)` ; IPC `start` et preload transmettent `opts.model`
+- [x] `src/shared/model.ts` : type `ModelChoice = 'opus' | 'sonnet' | 'haiku'` et `MODEL_CHOICES` (avec libellés)
+- [x] `buildClaudeArgs({ sessionId, resume, model })` ajoute `--model X` seulement si `model` est défini
+- [x] `SessionManager.start(cwd, resumeId?, model?)` ; IPC `start` et preload transmettent `opts.model`
 - Vérif : `npm test` (claude-args : avec/sans modèle × resume/session-id ; session-manager : les args du faux CLI contiennent `--model`), typecheck
 - Fichiers : `src/shared/model.ts`, `src/main/claude-args.ts`, `src/main/session-manager.ts`, `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`
 

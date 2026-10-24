@@ -1,10 +1,11 @@
 import type { ChatItem } from './chat-item';
 import type { BridgeEvent } from './events';
 import type { HistoryProject } from './history';
+import type { ModelChoice } from './model';
 
 // API exposée au renderer sous `window.claude` par le preload.
 export interface ClaudeApi {
-  startSession(cwd: string, opts?: { resumeId?: string }): Promise<string>;
+  startSession(cwd: string, opts?: { resumeId?: string; model?: ModelChoice }): Promise<string>;
   sendMessage(sessionId: string, text: string): void;
   /** Ouvre la boîte de dialogue Windows ; renvoie le dossier choisi, ou null si annulé. */
   pickFolder(): Promise<string | null>;

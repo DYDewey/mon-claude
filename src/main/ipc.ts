@@ -3,6 +3,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import { IPC } from '../shared/api';
+import { isModelChoice } from '../shared/model';
 import { saveHandoff } from './handoff-store';
 import { createHistoryReader } from './history-reader';
 import { SessionManager } from './session-manager';
@@ -12,11 +13,12 @@ export function registerClaudeIpc(): SessionManager {
     for (const win of BrowserWindow.getAllWindows()) win.webContents.send(IPC.event, event);
   });
 
-  ipcMain.handle(IPC.start, (_e, cwd: unknown, resumeId: unknown) => {
+  ipcMain.handle(IPC.start, (_e, cwd: unknown, resumeId: unknown, model: unknown) => {
     // Le renderer n'est pas digne de confiance : on vérifie ce qu'il envoie.
     if (typeof cwd !== 'string' || !existsSync(cwd)) throw new Error(`Dossier invalide : ${String(cwd)}`);
     if (resumeId !== undefined && typeof resumeId !== 'string') throw new Error('resumeId invalide');
-    return manager.start(cwd, resumeId);
+    if (model !== undefined && !isModelChoice(model)) throw new Error('Modèle invalide');
+    return manager.start(cwd, resumeId, model);
   });
 
   ipcMain.on(IPC.send, (_e, sessionId: unknown, text: unknown) => {
