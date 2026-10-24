@@ -1,13 +1,9 @@
+import type { ChatItem } from '../../../shared/chat-item';
 import type { BridgeEvent, LimitWindow } from '../../../shared/events';
 
-// État de toutes les sessions ouvertes. Reducer pur : (état, action) → nouvel état, sans effet de bord.
+export type { ChatItem };
 
-export type ChatItem =
-  | { kind: 'user'; text: string }
-  | { kind: 'assistant'; text: string }
-  | { kind: 'tool'; name: string; input: Record<string, unknown> }
-  | { kind: 'error'; message: string }
-  | { kind: 'stopped' };
+// État de toutes les sessions ouvertes. Reducer pur : (état, action) → nouvel état, sans effet de bord.
 
 export interface SessionState {
   id: string;
