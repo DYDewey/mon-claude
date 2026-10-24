@@ -37,6 +37,15 @@ function parseLine(line: string, sessionId: string): BridgeEvent[] {
     return [];
   }
 
+  if (msg.type === 'assistant') {
+    // Avec --include-partial-messages, chaque bloc terminé arrive dans son propre message assistant.
+    const content = (msg.message as { content?: unknown } | undefined)?.content;
+    if (!Array.isArray(content)) return [];
+    return content
+      .filter((block) => block?.type === 'tool_use' && typeof block.name === 'string')
+      .map((block) => ({ type: 'tool-use', sessionId, name: block.name, input: block.input ?? {} }));
+  }
+
   if (msg.type === 'result') {
     const result = typeof msg.result === 'string' ? msg.result : undefined;
     const costUsd = typeof msg.total_cost_usd === 'number' ? msg.total_cost_usd : undefined;
@@ -47,6 +56,6 @@ function parseLine(line: string, sessionId: string): BridgeEvent[] {
     return [end];
   }
 
-  // system/*, assistant, rate_limit_event… : pas utiles au renderer pour l'instant.
+  // system/*, rate_limit_event… : pas utiles au renderer pour l'instant.
   return [];
 }

@@ -26,6 +26,21 @@ describe('createStreamParser', () => {
     ]);
   });
 
+  it('transforme un bloc tool_use d\'un message assistant en tool-use', () => {
+    const parser = createStreamParser('s1');
+    const line = JSON.stringify({
+      type: 'assistant',
+      message: {
+        role: 'assistant',
+        content: [{ type: 'tool_use', id: 'toolu_1', name: 'Read', input: { file_path: 'src/app.tsx' } }],
+      },
+    });
+
+    expect(parser.push(line + '\n')).toEqual([
+      { type: 'tool-use', sessionId: 's1', name: 'Read', input: { file_path: 'src/app.tsx' } },
+    ]);
+  });
+
   it('ignore les lignes invalides et les types inconnus', () => {
     const parser = createStreamParser('s1');
     const events = parser.push('pas du json\n{"type":"truc_inconnu"}\n\r\n');

@@ -10,7 +10,7 @@ Vérif standard de chaque tâche : `npm test`, `npm run typecheck`, `npm run lin
   - Critères : test Vitest (faux CLI) → après interrupt, la session accepte un nouveau message ; API `interrupt` exposée (shared/api, ipc, preload).
   - Fichiers : `src/main/session-manager.ts`, `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`, `tests/session-manager.test.ts`, `tests/fixtures/fake-claude.cjs`
 
-- [ ] **T2 : événement `tool-use`** (XS)
+- [x] **T2 : événement `tool-use`** (XS)
   - Critères : un message `assistant` avec bloc `tool_use` donne `{ type:'tool-use', sessionId, name, input }` ; les autres messages ne changent pas.
   - Fichiers : `src/shared/events.ts`, `src/main/stream-parser.ts`, `tests/stream-parser.test.ts`
 
