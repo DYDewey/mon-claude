@@ -38,7 +38,7 @@ Vérif standard de chaque tâche : `npm test`, `npm run typecheck`, `npm run lin
 
 ## Phase 3 : complet
 
-- [ ] **T6 : barre latérale multi-sessions** (M)
+- [x] **T6 : barre latérale multi-sessions** (M)
   - Titre = début du 1er message ; indicateurs ● en cours / ◌ non lu ; changer de session ; fermer = `stopSession`.
   - Fichiers : `components/sidebar.tsx`, `app.tsx`, `state/sessions.ts` (+ tests)
   - Vérif manuelle : 2 sessions dans 2 dossiers, réponses en parallèle.

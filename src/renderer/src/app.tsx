@@ -1,6 +1,7 @@
 import { useEffect, useReducer } from 'react';
 import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
+import { Sidebar } from './components/sidebar';
 import { initialState, sessionsReducer } from './state/sessions';
 
 export function App() {
@@ -17,6 +18,11 @@ export function App() {
     dispatch({ type: 'session-opened', sessionId, cwd });
   }
 
+  function close(sessionId: string) {
+    window.claude.stopSession(sessionId);
+    dispatch({ type: 'session-closed', sessionId });
+  }
+
   function send(text: string) {
     if (!active) return;
     dispatch({ type: 'user-sent', sessionId: active.id, text });
@@ -25,16 +31,20 @@ export function App() {
 
   return (
     <div className="app">
-      <header className="topbar">
-        <button onClick={newSession}>+ Nouvelle session</button>
-        {active && (
-          <span className="topbar-title">
-            {active.title} · <span className="muted">{active.cwd}</span>
-          </span>
-        )}
-      </header>
+      <Sidebar
+        sessions={state.sessions}
+        activeId={state.activeId}
+        onNew={newSession}
+        onSelect={(sessionId) => dispatch({ type: 'select', sessionId })}
+        onClose={close}
+      />
       {active ? (
         <main className="session">
+          <header className="topbar">
+            <span className="topbar-title">
+              {active.title} · <span className="muted">{active.cwd}</span>
+            </span>
+          </header>
           <ChatView session={active} />
           <Composer running={active.status === 'running'} onSend={send} />
         </main>

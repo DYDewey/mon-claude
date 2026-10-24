@@ -93,6 +93,17 @@ describe('sessionsReducer', () => {
     expect(state.activeId).toBe('a');
   });
 
+  it('fermer une session en arrière-plan garde la session affichée', () => {
+    const state = sessionsReducer(twoSessions, { type: 'session-closed', sessionId: 'a' });
+    expect(state.sessions.map((s) => s.id)).toEqual(['b']);
+    expect(state.activeId).toBe('b');
+  });
+
+  it('un titre trop long est coupé à 40 caractères', () => {
+    const state = run([{ type: 'user-sent', sessionId: 'a', text: 'x'.repeat(100) }], twoSessions);
+    expect(state.sessions[0].title).toHaveLength(40);
+  });
+
   it('ignore les événements d\'une session inconnue', () => {
     expect(sessionsReducer(twoSessions, { type: 'text-delta', sessionId: 'zzz', text: 'x' })).toBe(twoSessions);
   });
