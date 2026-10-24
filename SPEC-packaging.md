@@ -10,13 +10,13 @@ Transformer l'app en vraie appli Windows : un installeur `Setup.exe`, une icône
 2. **Installeur NSIS « en un clic »** : installation pour l'utilisateur courant seulement, sans droits administrateur, dans `%LOCALAPPDATA%\Programs\mon-claude`.
    - Il crée un raccourci « Mon-Claude » sur le Bureau et dans le menu Démarrer, et lance l'app à la fin.
    - L'app apparaît dans Paramètres > Applications, d'où on peut la désinstaller. La désinstallation ne touche jamais à `~/.claude/` (historique de Claude Code).
-3. **Icône** : générée par un petit script Node (lettre « C » blanche sur un fond coloré, 256×256) et enregistrée dans `build/icon.png` (versionnée), qui sert pour l'installeur, le .exe, les raccourcis et la barre des tâches. On pourra la remplacer en changeant juste ce fichier.
+3. **Icône** : générée par un petit script Node (lettre « C » blanche sur un fond coloré, 256×256) et enregistrée dans `resources/icon.png` (versionnée ; `build/` est ignoré par git), qui sert pour l'installeur, le .exe, les raccourcis et la barre des tâches. On pourra la remplacer en changeant juste ce fichier.
 4. **Trouver `claude`** : l'app lancée depuis le raccourci reçoit le PATH de l'utilisateur, où se trouve `C:\Users\moi\.local\bin\claude.exe`. Rien à changer : `spawn('claude')` marche déjà, et s'il échoue, le message « Commande « claude » introuvable » s'affiche déjà. À vérifier dans l'app installée.
 5. **Données de l'app** (dernier modèle choisi, etc.) : elles restent dans `%APPDATA%\mon-claude`, comme en développement.
 
 ## Découpage
-- `package.json` : script `dist`, champs `build` (appId `fr.moi.mon-claude`, productName `Mon-Claude`, cible `nsis`, `directories.output: release`, fichiers inclus = `out/**` et `package.json`).
-- `scripts/make-icon.mjs` : produit `build/icon.png` sans dépendance (pixels écrits à la main et compressés avec `zlib`).
+- `package.json` : script `dist`, champs `build` (appId `fr.moi.mon-claude`, productName `Mon-Claude`, cible `nsis`, `directories.output: release`, fichiers inclus = `out/**` et `package.json`, `directories.buildResources: resources`).
+- `scripts/make-icon.mjs` : produit `resources/icon.png` sans dépendance (pixels écrits à la main et compressés avec `zlib`).
 - `.gitignore` : ajout de `release/`.
 - Rien à changer dans `src/`, sauf si la vérification du point 4 révèle un problème.
 
