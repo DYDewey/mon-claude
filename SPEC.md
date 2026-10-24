@@ -14,7 +14,7 @@ Elle garde tout l'historique consultable ; après une passation, la nouvelle ses
 | `handoff` | Passation : résumé → relecture/édition → nouvelle session avec ce résumé seul | cli-bridge, chat |
 | `packaging` | vraie appli Windows : installeur, icône sur le bureau / menu Démarrer, lancement en un clic sans ligne de commande | tous |
 
-Ordre : `cli-bridge` ✅ → `chat` ✅ → `usage` ✅ → `history` → `handoff` → `packaging`. (`usage` et `packaging` ajoutés le 2026-10-24.)
+Ordre : `cli-bridge` ✅ → `chat` ✅ → `usage` ✅ → `history` ✅ → `handoff` → `packaging`. (`usage` et `packaging` ajoutés le 2026-10-24.)
 Chaque module a sa spec : `SPEC-<module>.md`. Ce fichier est l'index.
 
 ## Objectif

@@ -5,4 +5,4 @@
 - [x] H3 — IPC `listHistory` / `readHistory`
 - [x] H4 — Liste « Historique » dans la barre latérale
 - [x] H5 — Vue lecture seule (`ChatView` réutilisé, sans saisie)
-- [ ] H6 — Checkpoint dans la vraie app (perf 4,9 Mo < 2 s, mtime inchangés)
+- [x] H6 — Checkpoint dans la vraie app (perf 4,9 Mo < 2 s, mtime inchangés)
