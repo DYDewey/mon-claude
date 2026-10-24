@@ -6,6 +6,7 @@ const api: ClaudeApi = {
   startSession: (cwd, opts) => ipcRenderer.invoke(IPC.start, cwd, opts?.resumeId, opts?.model),
   sendMessage: (sessionId, text) => ipcRenderer.send(IPC.send, sessionId, text),
   pickFolder: () => ipcRenderer.invoke(IPC.pickFolder),
+  pickFiles: () => ipcRenderer.invoke(IPC.pickFiles),
   interrupt: (sessionId) => ipcRenderer.send(IPC.interrupt, sessionId),
   stopSession: (sessionId) => ipcRenderer.send(IPC.stop, sessionId),
   setModel: (sessionId, model) => ipcRenderer.invoke(IPC.setModel, sessionId, model),

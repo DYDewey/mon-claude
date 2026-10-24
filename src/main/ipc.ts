@@ -32,6 +32,13 @@ export function registerClaudeIpc(): SessionManager {
     return res.canceled ? null : (res.filePaths[0] ?? null);
   });
 
+  ipcMain.handle(IPC.pickFiles, async (e) => {
+    const win = BrowserWindow.fromWebContents(e.sender);
+    const options = { title: 'Joindre des fichiers', properties: ['openFile' as const, 'multiSelections' as const] };
+    const res = win ? await dialog.showOpenDialog(win, options) : await dialog.showOpenDialog(options);
+    return res.canceled ? [] : res.filePaths;
+  });
+
   ipcMain.on(IPC.interrupt,(_e, sessionId: unknown) => {
     if (typeof sessionId === 'string') manager.interrupt(sessionId);
   });

@@ -130,3 +130,10 @@ button:disabled { opacity: 0.4; cursor: default; }
 .dialog-text { flex: 1; min-height: 360px; resize: vertical; font-family: Consolas, monospace; font-size: 13px; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
 .dialog-actions .primary { background: var(--accent); color: #fff; }
+
+/* Fichiers joints, au-dessus de la saisie */
+.composer { flex-wrap: wrap; }
+.attachments { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 6px; }
+.attachment { display: inline-flex; align-items: center; gap: 4px; background: var(--user); padding: 2px 4px 2px 8px; border-radius: 4px; font-size: 13px; }
+.attachment button { background: none; border: none; color: var(--muted); cursor: pointer; padding: 0 4px; }
+.composer.dragging textarea { border-color: var(--accent); }

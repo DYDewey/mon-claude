@@ -1,18 +1,38 @@
 import { useState, type KeyboardEvent } from 'react';
+import { addAttachments, canSend, fileName, withAttachments } from '../../../shared/attachments';
 import { matchCommands, SlashMenu } from './slash-menu';
 
 interface Props {
   running: boolean;
   onSend: (text: string) => void;
   onStop: () => void;
+  /** Ouvre la boîte de dialogue Windows ; renvoie les chemins choisis (vide si annulé). */
+  onPickFiles: () => Promise<string[]>;
   /** Noms des commandes et skills proposés après « / ». */
   commands: string[];
   /** Prochain message proposé par claude : affiché en gris, Tab le recopie. */
   suggestion?: string;
 }
 
-export function Composer({ running, onSend, onStop, commands, suggestion }: Props) {
+export function AttachmentChips({ files, onRemove }: { files: string[]; onRemove: (path: string) => void }) {
+  if (files.length === 0) return null;
+  return (
+    <div className="attachments">
+      {files.map((path) => (
+        <span key={path} className="attachment" title={path}>
+          {fileName(path)}
+          <button onClick={() => onRemove(path)} aria-label={`Retirer ${fileName(path)}`}>
+            ✕
+          </button>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+export function Composer({ running, onSend, onStop, onPickFiles, commands, suggestion }: Props) {
   const [text, setText] = useState('');
+  const [files, setFiles] = useState<string[]>([]);
   const [selected, setSelected] = useState(0);
   const [menuClosed, setMenuClosed] = useState(false);
   const matches = menuClosed ? [] : matchCommands(text, commands);
@@ -28,10 +48,15 @@ export function Composer({ running, onSend, onStop, commands, suggestion }: Prop
   }
 
   function submit() {
-    const trimmed = text.trim();
-    if (!trimmed || running) return;
-    onSend(trimmed);
+    if (!canSend(text, files) || running) return;
+    onSend(withAttachments(text, files));
     setText('');
+    setFiles([]);
+  }
+
+  async function pickFiles() {
+    const picked = await onPickFiles();
+    setFiles((current) => addAttachments(current, picked));
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -68,6 +93,7 @@ export function Composer({ running, onSend, onStop, commands, suggestion }: Prop
   return (
     <div className="composer">
       {matches.length > 0 && <SlashMenu items={matches} selected={selected} onPick={pick} />}
+      <AttachmentChips files={files} onRemove={(path) => setFiles((current) => current.filter((p) => p !== path))} />
       <textarea
         value={text}
         onChange={(e) => change(e.target.value)}
@@ -79,10 +105,13 @@ export function Composer({ running, onSend, onStop, commands, suggestion }: Prop
         rows={3}
         autoFocus
       />
+      <button onClick={pickFiles} disabled={running} title="Joindre des fichiers">
+        📎
+      </button>
       {running ? (
         <button onClick={onStop}>Stop</button>
       ) : (
-        <button onClick={submit} disabled={!text.trim()}>
+        <button onClick={submit} disabled={!canSend(text, files)}>
           Envoyer
         </button>
       )}
