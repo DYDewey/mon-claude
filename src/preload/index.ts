@@ -8,6 +8,7 @@ const api: ClaudeApi = {
   pickFolder: () => ipcRenderer.invoke(IPC.pickFolder),
   interrupt: (sessionId) => ipcRenderer.send(IPC.interrupt, sessionId),
   stopSession: (sessionId) => ipcRenderer.send(IPC.stop, sessionId),
+  setModel: (sessionId, model) => ipcRenderer.invoke(IPC.setModel, sessionId, model),
   onEvent: (cb) => {
     const listener = (_e: IpcRendererEvent, event: BridgeEvent) => cb(event);
     ipcRenderer.on(IPC.event, listener);

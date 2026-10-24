@@ -40,6 +40,12 @@ export function registerClaudeIpc(): SessionManager {
     if (typeof sessionId === 'string') manager.stop(sessionId);
   });
 
+  ipcMain.handle(IPC.setModel, (_e, sessionId: unknown, model: unknown) => {
+    if (typeof sessionId !== 'string') throw new Error('sessionId invalide');
+    if (model !== undefined && !isModelChoice(model)) throw new Error('Modèle invalide');
+    manager.restart(sessionId, model);
+  });
+
   return manager;
 }
 

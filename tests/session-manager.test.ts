@@ -67,4 +67,38 @@ describe('SessionManager', () => {
     manager.stop(id);
     expect(manager.has(id)).toBe(false);
   });
+
+  it('restart relance la même session avec le nouveau modèle, sans erreur', async () => {
+    const events: BridgeEvent[] = [];
+    const manager = new SessionManager((e) => events.push(e), fakeClaude);
+
+    const id = manager.start(tmpdir(), undefined, 'opus');
+    manager.restart(id, 'sonnet');
+    manager.send(id, 'args?');
+    await waitFor(events, 'turn-end');
+    // Laisse à l'ancien processus le temps de signaler sa fin.
+    await new Promise((r) => setTimeout(r, 300));
+
+    const text = events.filter((e) => e.type === 'text-delta').map((e) => (e as { text: string }).text).join('');
+    expect(text).toContain(`--model sonnet --resume ${id}`);
+    expect(text).not.toContain('opus');
+    expect(events.some((e) => e.type === 'error')).toBe(false);
+    expect(manager.has(id)).toBe(true);
+    manager.stopAll();
+  });
+
+  it('restart sans modèle revient à « Par défaut » (pas de --model)', async () => {
+    const events: BridgeEvent[] = [];
+    const manager = new SessionManager((e) => events.push(e), fakeClaude);
+
+    const id = manager.start(tmpdir(), undefined, 'opus');
+    manager.restart(id, undefined);
+    manager.send(id, 'args?');
+    await waitFor(events, 'turn-end');
+
+    const text = events.filter((e) => e.type === 'text-delta').map((e) => (e as { text: string }).text).join('');
+    expect(text).not.toContain('--model');
+    expect(text).toContain(`--resume ${id}`);
+    manager.stopAll();
+  });
 });

@@ -17,9 +17,9 @@
 - [x] test, typecheck, lint, build OK
 
 ## T3 : relancer une session avec un autre modèle (main)
-- [ ] Le main retient le `cwd` de chaque session ; `restart(sessionId, model)` = stop + start(cwd, sessionId, model)
-- [ ] Les écouteurs `exit`/`error`/`stdout` ignorent un processus qui n'est plus celui de la session
-- [ ] IPC `session:set-model` + preload `setModel(sessionId, model): Promise<void>`
+- [x] Le main retient le `cwd` de chaque session ; `restart(sessionId, model)` = stop + start(cwd, sessionId, model)
+- [x] Les écouteurs `exit`/`error`/`stdout` ignorent un processus qui n'est plus celui de la session
+- [x] IPC `session:set-model` + preload `setModel(sessionId, model): Promise<void>`
 - Vérif : `npm test` (faux CLI : restart relance avec `--resume id --model sonnet`, aucun événement `error` émis, `has(id)` reste vrai après la fin de l'ancien processus)
 - Fichiers : `src/main/session-manager.ts`, `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`, `tests/session-manager.test.ts`
 

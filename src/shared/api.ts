@@ -12,6 +12,8 @@ export interface ClaudeApi {
   /** Arrête la réponse en cours sans fermer la session. */
   interrupt(sessionId: string): void;
   stopSession(sessionId: string): void;
+  /** Relance la session avec un autre modèle (undefined : « Par défaut ») ; la conversation continue. */
+  setModel(sessionId: string, model: ModelChoice | undefined): Promise<void>;
   /** Renvoie la fonction de désabonnement. */
   onEvent(cb: (event: BridgeEvent) => void): () => void;
   /** Anciennes sessions de ~/.claude/projects/, en lecture seule. */
@@ -27,6 +29,7 @@ export const IPC = {
   interrupt: 'claude:interrupt',
   pickFolder: 'claude:pick-folder',
   stop: 'claude:stop',
+  setModel: 'session:set-model',
   event: 'claude:event',
   historyList: 'history:list',
   historyRead: 'history:read',

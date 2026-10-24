@@ -14,6 +14,8 @@ export interface SessionManagerOptions {
 
 export class SessionManager {
   private sessions = new Map<string, ChildProcessWithoutNullStreams>();
+  /** Dossier de travail de chaque session, pour pouvoir la relancer (changement de modèle). */
+  private cwds = new Map<string, string>();
   /** Sessions dont on a demandé l'interruption : leur prochain `result` est en erreur, c'est normal. */
   private interrupting = new Set<string>();
 
@@ -32,10 +34,14 @@ export class SessionManager {
     const env = { ...process.env, CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION: '1' };
     const child = spawn(command, args, { cwd, env, windowsHide: true });
     this.sessions.set(sessionId, child);
+    this.cwds.set(sessionId, cwd);
+    // Après un restart, l'ancien processus porte le même id : ses événements tardifs sont ignorés.
+    const isCurrent = () => this.sessions.get(sessionId) === child;
 
     const parser = createStreamParser(sessionId);
     child.stdout.setEncoding('utf8');
     child.stdout.on('data', (chunk: string) => {
+      if (!isCurrent()) return;
       for (const event of parser.push(chunk)) {
         if (this.interrupting.has(sessionId)) {
           if (event.type === 'error') continue;
@@ -53,6 +59,7 @@ export class SessionManager {
     });
 
     child.on('error', (err: NodeJS.ErrnoException) => {
+      if (!isCurrent()) return;
       this.sessions.delete(sessionId);
       const message =
         err.code === 'ENOENT'
@@ -62,8 +69,9 @@ export class SessionManager {
     });
 
     child.on('exit', (code) => {
-      // Une session arrêtée volontairement a déjà été retirée de la Map.
-      if (!this.sessions.delete(sessionId)) return;
+      // Une session arrêtée volontairement (ou relancée) n'est plus associée à ce processus.
+      if (!isCurrent()) return;
+      this.sessions.delete(sessionId);
       if (code !== 0) {
         this.emit({ type: 'error', sessionId, message: `claude s'est arrêté (code ${code}). ${stderrTail.trim()}` });
       }
@@ -95,8 +103,20 @@ export class SessionManager {
     const child = this.sessions.get(sessionId);
     if (!child) return;
     this.sessions.delete(sessionId);
+    this.cwds.delete(sessionId);
     this.interrupting.delete(sessionId);
     killTree(child);
+  }
+
+  /** Relance la session avec un autre modèle ; claude reprend la conversation grâce à --resume. */
+  restart(sessionId: string, model: ModelChoice | undefined): void {
+    const cwd = this.cwds.get(sessionId);
+    if (cwd === undefined) {
+      this.emit({ type: 'error', sessionId, message: 'Session inconnue ou arrêtée.' });
+      return;
+    }
+    this.stop(sessionId);
+    this.start(cwd, sessionId, model);
   }
 
   stopAll(): void {
