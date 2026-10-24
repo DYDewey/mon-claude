@@ -10,9 +10,9 @@ describe('createStreamParser', () => {
     const parser = createStreamParser('s1');
     const events = parser.push(fixture);
 
-    expect(events.map((e) => e.type)).toEqual(['commands', 'text-delta', 'rate-limits', 'context', 'turn-end']);
-    expect(events[1]).toEqual({ type: 'text-delta', sessionId: 's1', text: 'bonjour' });
-    expect(events[4]).toMatchObject({ type: 'turn-end', sessionId: 's1', result: 'bonjour' });
+    expect(events.map((e) => e.type)).toEqual(['commands', 'model', 'text-delta', 'rate-limits', 'context', 'turn-end']);
+    expect(events[2]).toEqual({ type: 'text-delta', sessionId: 's1', text: 'bonjour' });
+    expect(events[5]).toMatchObject({ type: 'turn-end', sessionId: 's1', result: 'bonjour' });
   });
 
   it('rate_limit_event donne les jauges 5 h et 7 jours', () => {
@@ -36,6 +36,11 @@ describe('createStreamParser', () => {
     expect(createStreamParser('s1').push(line + '\n')).toEqual([
       { type: 'suggestion', sessionId: 's1', text: 'écris le script maintenant' },
     ]);
+  });
+
+  it('le message init donne le modèle réellement utilisé', () => {
+    const events = createStreamParser('s1').push(fixture);
+    expect(events.find((e) => e.type === 'model')).toEqual({ type: 'model', sessionId: 's1', model: 'claude-opus-5-5' });
   });
 
   it('le message init donne la liste des commandes et skills', () => {
@@ -81,7 +86,7 @@ describe('createStreamParser', () => {
   it('gère les fins de ligne Windows', () => {
     const parser = createStreamParser('s1');
     const crlf = fixture.split('\n').join('\r\n');
-    expect(parser.push(crlf).map((e) => e.type)).toEqual(['commands', 'text-delta', 'rate-limits', 'context', 'turn-end']);
+    expect(parser.push(crlf).map((e) => e.type)).toEqual(['commands', 'model', 'text-delta', 'rate-limits', 'context', 'turn-end']);
   });
 
   it('émet une erreur puis turn-end quand le résultat est en échec', () => {

@@ -15,6 +15,8 @@ export interface SessionState {
   unread: boolean;
   /** Taille du contexte après le dernier tour (inconnue avant la 1re réponse). */
   context?: { used: number; max: number };
+  /** Modèle réellement utilisé, lu au démarrage de claude (ex. claude-opus-5-5). */
+  activeModel?: string;
   /** Prochain message proposé par claude, effacé dès qu'on envoie. */
   suggestion?: string;
 }
@@ -78,6 +80,8 @@ export function sessionsReducer(state: ChatState, action: ChatAction): ChatState
     // Pas fromBridge : ces infos ne sont pas une « réponse » à lire.
     case 'context':
       return update(state, action.sessionId, () => ({ context: { used: action.used, max: action.max } }));
+    case 'model':
+      return update(state, action.sessionId, () => ({ activeModel: action.model }));
     case 'suggestion':
       return update(state, action.sessionId, () => ({ suggestion: action.text }));
     case 'text-delta':

@@ -81,9 +81,14 @@ function parseLine(line: string, sessionId: string, last: LastMessage): BridgeEv
     return [{ type: 'suggestion', sessionId, text: msg.suggestion.trim() }];
   }
 
-  if (msg.type === 'system' && msg.subtype === 'init' && Array.isArray(msg.slash_commands)) {
-    const names = msg.slash_commands.filter((n): n is string => typeof n === 'string');
-    return [{ type: 'commands', sessionId, names }];
+  if (msg.type === 'system' && msg.subtype === 'init') {
+    const events: BridgeEvent[] = [];
+    if (Array.isArray(msg.slash_commands)) {
+      const names = msg.slash_commands.filter((n): n is string => typeof n === 'string');
+      events.push({ type: 'commands', sessionId, names });
+    }
+    if (typeof msg.model === 'string') events.push({ type: 'model', sessionId, model: msg.model });
+    return events;
   }
 
   // Autres system/*… : pas utiles au renderer pour l'instant.

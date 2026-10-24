@@ -8,13 +8,13 @@
 - Fichiers : `src/shared/model.ts`, `src/main/claude-args.ts`, `src/main/session-manager.ts`, `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`
 
 ## T2 : afficher le modèle réellement utilisé
-- [ ] `BridgeEvent` gagne `{ type: 'model'; sessionId; model }` ; le parseur l'émet à la réception de `system/init`
-- [ ] reducer : `activeModel` dans `SessionState` ; l'en-tête du chat l'affiche (ex. « claude-opus-5-5 »)
+- [x] `BridgeEvent` gagne `{ type: 'model'; sessionId; model }` ; le parseur l'émet à la réception de `system/init`
+- [x] reducer : `activeModel` dans `SessionState` ; l'en-tête du chat l'affiche (ex. « claude-opus-5-5 »)
 - Vérif : `npm test` (stream-parser sur `stream-bonjour.jsonl` → `claude-opus-5-5` ; sessions : l'action stocke activeModel ; rendu de l'en-tête), typecheck, lint
 - Fichiers : `src/shared/events.ts`, `src/main/stream-parser.ts`, `src/renderer/src/state/sessions.ts`, `src/renderer/src/components/chat-view.tsx`
 
 ## Checkpoint A (après T1-T2)
-- [ ] test, typecheck, lint, build OK
+- [x] test, typecheck, lint, build OK
 
 ## T3 : relancer une session avec un autre modèle (main)
 - [ ] Le main retient le `cwd` de chaque session ; `restart(sessionId, model)` = stop + start(cwd, sessionId, model)

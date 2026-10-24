@@ -187,6 +187,7 @@ export function App() {
             <span className="topbar-title">
               {active.title} · <span className="muted">{active.cwd}</span>
             </span>
+            {active.activeModel && <span className="topbar-ctx">{active.activeModel}</span>}
             {active.context && (
               <span className="topbar-ctx">
                 Contexte : <ContextBadge context={active.context} />

@@ -154,6 +154,13 @@ describe('sessionsReducer', () => {
     expect(a.unread).toBe(false);
   });
 
+  it('le modèle lu dans init va dans la session, sans la marquer non lue', () => {
+    const state = run([{ type: 'model', sessionId: 'a', model: 'claude-sonnet-5-5' }], twoSessions);
+    const a = state.sessions.find((s) => s.id === 'a')!;
+    expect(a.activeModel).toBe('claude-sonnet-5-5');
+    expect(a.unread).toBe(false);
+  });
+
   it('envoyer un message efface la suggestion', () => {
     const state = run(
       [
