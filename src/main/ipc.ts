@@ -1,8 +1,9 @@
 import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { BrowserWindow, dialog, ipcMain } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import { IPC } from '../shared/api';
+import { saveHandoff } from './handoff-store';
 import { createHistoryReader } from './history-reader';
 import { SessionManager } from './session-manager';
 
@@ -48,5 +49,12 @@ export function registerHistoryIpc(): void {
   ipcMain.handle(IPC.historyRead, (_e, folder: unknown, id: unknown) => {
     if (typeof folder !== 'string' || typeof id !== 'string') throw new Error('Session invalide');
     return reader.readSession(folder, id); // vérifie aussi que le chemin reste dans le dossier
+  });
+}
+
+export function registerHandoffIpc(): void {
+  ipcMain.handle(IPC.handoffSave, (_e, text: unknown, sessionId: unknown) => {
+    if (typeof text !== 'string' || typeof sessionId !== 'string') throw new Error('Passation invalide');
+    return saveHandoff(join(app.getPath('userData'), 'handoffs'), text, sessionId, new Date());
   });
 }

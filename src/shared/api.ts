@@ -16,6 +16,8 @@ export interface ClaudeApi {
   /** Anciennes sessions de ~/.claude/projects/, en lecture seule. */
   listHistory(): Promise<HistoryProject[]>;
   readHistory(folder: string, id: string): Promise<ChatItem[]>;
+  /** Enregistre la passation relue dans %APPDATA%/mon-claude/handoffs/ ; renvoie le chemin du fichier. */
+  saveHandoff(text: string, sessionId: string): Promise<string>;
 }
 
 export const IPC = {
@@ -27,4 +29,5 @@ export const IPC = {
   event: 'claude:event',
   historyList: 'history:list',
   historyRead: 'history:read',
+  handoffSave: 'handoff:save',
 } as const;

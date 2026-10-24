@@ -15,6 +15,7 @@ const api: ClaudeApi = {
   },
   listHistory: () => ipcRenderer.invoke(IPC.historyList),
   readHistory: (folder, id) => ipcRenderer.invoke(IPC.historyRead, folder, id),
+  saveHandoff: (text, sessionId) => ipcRenderer.invoke(IPC.handoffSave, text, sessionId),
 };
 
 contextBridge.exposeInMainWorld('claude', api);
