@@ -153,10 +153,11 @@ export function App() {
     setSaving({ busy: true });
     try {
       await window.claude.saveHandoff(text, from.id);
-      const sessionId = await window.claude.startSession(from.cwd); // session neuve : pas de --resume
+      // Session neuve (pas de --resume), avec le même modèle que la session résumée.
+      const sessionId = await window.claude.startSession(from.cwd, { model: from.model });
       setHandoff(null);
       setSaving({ busy: false });
-      dispatch({ type: 'session-opened', sessionId, cwd: from.cwd });
+      dispatch({ type: 'session-opened', sessionId, cwd: from.cwd, model: from.model });
       dispatch({ type: 'user-sent', sessionId, text });
       window.claude.sendMessage(sessionId, text);
     } catch (err) {

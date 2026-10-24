@@ -31,7 +31,7 @@
 - Fichiers : `src/renderer/src/model-choice.ts`, `src/renderer/src/components/model-picker.tsx`, `chat-view.tsx`, `state/sessions.ts`, `app.tsx`
 
 ## T5 : la passation garde le modèle
-- [ ] La session neuve de la passation est lancée avec le `model` de la session résumée
+- [x] La session neuve de la passation est lancée avec le `model` de la session résumée
 - Vérif : `npm test` si la logique est extraite, sinon vérification en T6
 - Fichiers : `src/renderer/src/app.tsx`
 
