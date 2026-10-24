@@ -219,7 +219,7 @@ export function App() {
             <HandoffButton session={active} phase={phase.phase} onClick={startHandoff} />
           </header>
           <ChatView items={active.items} running={active.status === 'running'} />
-          <Composer running={active.status === 'running'} onSend={send} onStop={stop} onPickFiles={() => window.claude.pickFiles()} commands={state.commands} suggestion={active.suggestion} />
+          <Composer running={active.status === 'running'} onSend={send} onStop={stop} onPickFiles={() => window.claude.pickFiles()} pathForFile={(f) => window.claude.pathForFile(f)} commands={state.commands} suggestion={active.suggestion} />
           {phase.phase === 'review' && (
             <HandoffDialog
               initialText={phase.text}

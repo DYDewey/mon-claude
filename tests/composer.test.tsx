@@ -6,7 +6,7 @@ const noop = () => {};
 const pickFiles = async () => [];
 const render = (running: boolean, suggestion?: string) =>
   renderToStaticMarkup(
-    <Composer running={running} onSend={noop} onStop={noop} onPickFiles={pickFiles} commands={[]} suggestion={suggestion} />,
+    <Composer running={running} onSend={noop} onStop={noop} onPickFiles={pickFiles} pathForFile={() => ''} commands={[]} suggestion={suggestion} />,
   );
 
 describe('AttachmentChips', () => {

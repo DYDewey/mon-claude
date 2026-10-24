@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron';
+import { contextBridge, ipcRenderer, webUtils, type IpcRendererEvent } from 'electron';
 import { IPC, type ClaudeApi } from '../shared/api';
 import type { BridgeEvent } from '../shared/events';
 
@@ -7,6 +7,8 @@ const api: ClaudeApi = {
   sendMessage: (sessionId, text) => ipcRenderer.send(IPC.send, sessionId, text),
   pickFolder: () => ipcRenderer.invoke(IPC.pickFolder),
   pickFiles: () => ipcRenderer.invoke(IPC.pickFiles),
+  // File.path n'existe plus dans Electron récent : webUtils le remplace.
+  pathForFile: (file) => webUtils.getPathForFile(file),
   interrupt: (sessionId) => ipcRenderer.send(IPC.interrupt, sessionId),
   stopSession: (sessionId) => ipcRenderer.send(IPC.stop, sessionId),
   setModel: (sessionId, model) => ipcRenderer.invoke(IPC.setModel, sessionId, model),

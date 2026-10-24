@@ -15,6 +15,9 @@ function createWindow(): void {
     },
   });
 
+  // Un fichier lâché hors de la zone de saisie ne doit pas remplacer l'app par son contenu.
+  win.webContents.on('will-navigate', (e) => e.preventDefault());
+
   // En dev, electron-vite fournit l'URL du serveur Vite ; en build, on charge le fichier.
   if (process.env.ELECTRON_RENDERER_URL) {
     win.loadURL(process.env.ELECTRON_RENDERER_URL);

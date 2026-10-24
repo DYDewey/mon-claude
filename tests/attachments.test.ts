@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addAttachments, canSend, fileName, withAttachments } from '../src/shared/attachments';
+import { addAttachments, canSend, droppedPaths, fileName, withAttachments } from '../src/shared/attachments';
 
 describe('withAttachments', () => {
   it('sans fichier : le texte tel quel', () => {
@@ -33,5 +33,12 @@ describe('fileName', () => {
   it('garde le nom après le dernier séparateur', () => {
     expect(fileName('C:\\Users\\moi\\photo.jpg')).toBe('photo.jpg');
     expect(fileName('C:/x/y.pdf')).toBe('y.pdf');
+  });
+});
+
+describe('droppedPaths', () => {
+  it('garde le chemin de chaque fichier déposé, ignore ce qui n\'en a pas', () => {
+    const paths: Record<string, string> = { a: 'C:\\a.png', b: '', c: 'C:\\c.pdf' };
+    expect(droppedPaths(['a', 'b', 'c'], (f) => paths[f])).toEqual(['C:\\a.png', 'C:\\c.pdf']);
   });
 });

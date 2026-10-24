@@ -11,6 +11,8 @@ export interface ClaudeApi {
   pickFolder(): Promise<string | null>;
   /** Boîte de dialogue Windows pour joindre des fichiers ; renvoie leurs chemins (vide si annulé). */
   pickFiles(): Promise<string[]>;
+  /** Chemin d'un fichier glissé-déposé ('' s'il ne vient pas du disque). */
+  pathForFile(file: File): string;
   /** Arrête la réponse en cours sans fermer la session. */
   interrupt(sessionId: string): void;
   stopSession(sessionId: string): void;

@@ -12,6 +12,11 @@ export function addAttachments(current: string[], added: string[]): string[] {
   return [...new Set([...current, ...added])];
 }
 
+/** Chemins des fichiers glissés-déposés ; pathFor renvoie '' pour ce qui n'est pas un fichier du disque. */
+export function droppedPaths<T>(items: T[], pathFor: (item: T) => string): string[] {
+  return items.map(pathFor).filter((p) => p !== '');
+}
+
 export function canSend(text: string, paths: string[]): boolean {
   return text.trim() !== '' || paths.length > 0;
 }

@@ -1,5 +1,5 @@
-import { useState, type KeyboardEvent } from 'react';
-import { addAttachments, canSend, fileName, withAttachments } from '../../../shared/attachments';
+import { useState, type DragEvent, type KeyboardEvent } from 'react';
+import { addAttachments, canSend, droppedPaths, fileName, withAttachments } from '../../../shared/attachments';
 import { matchCommands, SlashMenu } from './slash-menu';
 
 interface Props {
@@ -8,6 +8,8 @@ interface Props {
   onStop: () => void;
   /** Ouvre la boîte de dialogue Windows ; renvoie les chemins choisis (vide si annulé). */
   onPickFiles: () => Promise<string[]>;
+  /** Chemin sur le disque d'un fichier glissé-déposé ('' si ce n'en est pas un). */
+  pathForFile: (file: File) => string;
   /** Noms des commandes et skills proposés après « / ». */
   commands: string[];
   /** Prochain message proposé par claude : affiché en gris, Tab le recopie. */
@@ -30,9 +32,10 @@ export function AttachmentChips({ files, onRemove }: { files: string[]; onRemove
   );
 }
 
-export function Composer({ running, onSend, onStop, onPickFiles, commands, suggestion }: Props) {
+export function Composer({ running, onSend, onStop, onPickFiles, pathForFile, commands, suggestion }: Props) {
   const [text, setText] = useState('');
   const [files, setFiles] = useState<string[]>([]);
+  const [dragging, setDragging] = useState(false);
   const [selected, setSelected] = useState(0);
   const [menuClosed, setMenuClosed] = useState(false);
   const matches = menuClosed ? [] : matchCommands(text, commands);
@@ -57,6 +60,20 @@ export function Composer({ running, onSend, onStop, onPickFiles, commands, sugge
   async function pickFiles() {
     const picked = await onPickFiles();
     setFiles((current) => addAttachments(current, picked));
+  }
+
+  function onDragOver(e: DragEvent) {
+    if (running || !e.dataTransfer.types.includes('Files')) return;
+    e.preventDefault(); // sinon le navigateur refuse le dépôt
+    setDragging(true);
+  }
+
+  function onDrop(e: DragEvent) {
+    e.preventDefault();
+    setDragging(false);
+    if (running) return;
+    const dropped = droppedPaths([...e.dataTransfer.files], pathForFile);
+    setFiles((current) => addAttachments(current, dropped));
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -91,7 +108,12 @@ export function Composer({ running, onSend, onStop, onPickFiles, commands, sugge
   }
 
   return (
-    <div className="composer">
+    <div
+      className={dragging ? 'composer dragging' : 'composer'}
+      onDragOver={onDragOver}
+      onDragLeave={() => setDragging(false)}
+      onDrop={onDrop}
+    >
       {matches.length > 0 && <SlashMenu items={matches} selected={selected} onPick={pick} />}
       <AttachmentChips files={files} onRemove={(path) => setFiles((current) => current.filter((p) => p !== path))} />
       <textarea
