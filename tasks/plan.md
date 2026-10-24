@@ -19,9 +19,9 @@ T2 squelette projet ───┼── T3 parser de flux ── T4 gestion du pr
 - [x] T2 : squelette electron-vite + React + Vitest — M
 - [x] Checkpoint A
 - [x] T3 : parser de flux → BridgeEvent — S
-- [ ] T4 : démarrer / envoyer / arrêter une session — M
-- [ ] T5 : exposer l'API au renderer (preload + IPC) — S
-- [ ] Checkpoint B (module terminé)
+- [x] T4 : démarrer / envoyer / arrêter une session — M
+- [x] T5 : exposer l'API au renderer (preload + IPC) — S
+- [x] Checkpoint B (module terminé)
 
 Détail des tâches : `tasks/todo.md`.
 
@@ -42,3 +42,10 @@ Détail des tâches : `tasks/todo.md`.
 
 ## Questions ouvertes
 - Aucune bloquante.
+
+## Bilan (module terminé le 2026-10-24)
+- 11 tests Vitest verts (parser, arguments, gestionnaire de sessions avec faux claude).
+- Test réel dans l'app : « compte de 1 à 5 » arrive en 2 morceaux, puis `turn-end`.
+- Renderer isolé : `require` et `process` indéfinis.
+- Aucun processus claude de l'app ne survit à la fermeture.
+- À savoir pour `chat` : ~35 s avant le premier morceau (démarrage de claude + hooks perso). Afficher un état « Claude démarre… ».

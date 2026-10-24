@@ -37,9 +37,9 @@
 ## T4 : démarrer / envoyer / arrêter une session
 **Description :** gestionnaire de sessions côté main : construit les arguments, lance `claude.exe`, écrit sur stdin, branche le parser, émet `error` si le lancement échoue, tue les processus à la fermeture.
 **Critères :**
-- [ ] Arguments construits correctement, avec et sans `--resume` (test)
-- [ ] `claude` introuvable → événement `error` lisible (test avec un faux exécutable)
-- [ ] Fermer l'app ne laisse aucun processus `claude`
+- [x] Arguments construits correctement, avec et sans `--resume` (test)
+- [x] `claude` introuvable → événement `error` lisible (test avec un faux exécutable)
+- [x] Fermer l'app ne laisse aucun processus `claude`
 **Vérif :** `npm test` + Gestionnaire des tâches après fermeture.
 **Dépend de :** T3
 **Fichiers :** `src/main/claude-args.ts`, `src/main/session-manager.ts`, `src/main/index.ts`, `tests/claude-args.test.ts`
@@ -47,13 +47,13 @@
 ## T5 : exposer l'API au renderer
 **Description :** IPC main ↔ preload, `window.claude.startSession / sendMessage / stopSession / onEvent`.
 **Critères :**
-- [ ] Depuis la console DevTools, un « bonjour » affiche les morceaux de réponse au fil de l'eau
-- [ ] Le renderer n'a aucun accès direct à Node (`contextIsolation` actif)
+- [x] Depuis la console DevTools, un « bonjour » affiche les morceaux de réponse au fil de l'eau
+- [x] Le renderer n'a aucun accès direct à Node (`contextIsolation` actif)
 **Vérif :** test manuel en console + `npm run typecheck`
 **Dépend de :** T4
 **Fichiers :** `src/preload/index.ts`, `src/main/ipc.ts`, `src/renderer/env.d.ts`
 
 ## Checkpoint B : module cli-bridge terminé
-- [ ] Tous les critères de `SPEC-cli-bridge.md` cochés
-- [ ] Tests, typecheck, build verts
-- [ ] Validation avant le module `chat`
+- [x] Tous les critères de `SPEC-cli-bridge.md` cochés
+- [x] Tests, typecheck, build verts
+- [x] Validation avant le module `chat`

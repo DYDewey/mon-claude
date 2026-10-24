@@ -39,4 +39,4 @@ onEvent(cb: (e: BridgeEvent) => void): () => void // renvoie la fonction de dés
 - Pas de popup de permission (mode `acceptEdits` fixe en V1).
 
 ## Questions ouvertes
-- Le `sessionId` est lu dans le premier message `system/init` du flux : à confirmer sur une vraie capture.
+- Résolu : on impose notre propre identifiant avec `--session-id` (ou `--resume`), connu avant la première réponse.

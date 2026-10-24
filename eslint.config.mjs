@@ -17,4 +17,9 @@ export default tseslint.config(
     files: ['src/main/**/*.ts', 'src/preload/**/*.ts', 'tests/**/*.ts', '*.config.*'],
     languageOptions: { globals: globals.node },
   },
+  {
+    files: ['**/*.cjs'],
+    languageOptions: { globals: globals.node, sourceType: 'commonjs' },
+    rules: { '@typescript-eslint/no-require-imports': 'off' },
+  },
 );
