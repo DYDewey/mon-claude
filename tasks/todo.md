@@ -43,7 +43,7 @@ Vérif standard de chaque tâche : `npm test`, `npm run typecheck`, `npm run lin
   - Fichiers : `components/sidebar.tsx`, `app.tsx`, `state/sessions.ts` (+ tests)
   - Vérif manuelle : 2 sessions dans 2 dossiers, réponses en parallèle.
 
-- [ ] **T7 : Markdown + coloration** (S)
+- [x] **T7 : Markdown + coloration** (S)
   - Ajouter `react-markdown`, `remark-gfm`, `rehype-highlight` ; pas de HTML brut.
   - Fichiers : `components/message.tsx`, `package.json`, styles
   - Vérif manuelle : bloc de code coloré, liste en liste ; `npm run build` OK.

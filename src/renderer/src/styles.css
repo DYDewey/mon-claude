@@ -58,3 +58,14 @@ button:disabled { opacity: 0.4; cursor: default; }
   padding: 8px;
   font: inherit;
 }
+
+/* Markdown des réponses de Claude */
+.msg-claude { white-space: normal; }
+.msg-claude > :first-child { margin-top: 0; }
+.msg-claude > :last-child { margin-bottom: 0; }
+.msg-claude pre { background: #0d1117; padding: 10px 12px; border-radius: 6px; overflow-x: auto; }
+.msg-claude pre code.hljs { padding: 0; background: none; }
+.msg-claude :not(pre) > code { background: var(--user); padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+.msg-claude table { border-collapse: collapse; }
+.msg-claude th, .msg-claude td { border: 1px solid #44464d; padding: 4px 8px; }
+.msg-claude a { color: var(--accent); }

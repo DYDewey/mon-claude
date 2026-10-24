@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { SessionState } from '../state/sessions';
+import { Markdown } from './message';
 
 export function ChatView({ session }: { session: SessionState }) {
   const bottom = useRef<HTMLDivElement>(null);
@@ -19,7 +20,11 @@ export function ChatView({ session }: { session: SessionState }) {
           case 'user':
             return <div key={i} className="msg msg-user">{item.text}</div>;
           case 'assistant':
-            return <div key={i} className="msg msg-claude">{item.text}</div>;
+            return (
+              <div key={i} className="msg msg-claude">
+                <Markdown text={item.text} />
+              </div>
+            );
           case 'tool':
             return <div key={i} className="msg msg-tool">🔧 {item.name}</div>;
           case 'error':
