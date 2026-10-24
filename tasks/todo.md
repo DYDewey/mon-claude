@@ -36,9 +36,9 @@
 - Fichiers : `src/renderer/src/app.tsx`
 
 ## Checkpoint final T6 (vraie app, CDP)
-- [ ] Sonnet sur une session → l'en-tête affiche `claude-sonnet-…`, le fil est conservé et le CLI se souvient du message d'avant
-- [ ] Liste grisée pendant une réponse
-- [ ] Redémarrage de l'app → la nouvelle session part sur Sonnet
-- [ ] Passation depuis Haiku → session neuve en Haiku
-- [ ] « Par défaut » → pas de `--model` dans la commande lancée
-- [ ] test, typecheck, lint, build OK ; mettre `model` ✅ dans `SPEC.md`
+- [x] Sonnet sur une session → l'en-tête affiche `claude-sonnet-…`, le fil est conservé et le CLI se souvient du message d'avant
+- [x] Liste grisée pendant une réponse
+- [x] Redémarrage de l'app → la nouvelle session part sur Sonnet
+- [x] Passation depuis Haiku → session neuve en Haiku
+- [x] « Par défaut » → pas de `--model` dans la commande lancée
+- [x] test, typecheck, lint, build OK ; mettre `model` ✅ dans `SPEC.md`

@@ -1,6 +1,6 @@
 # Spec : module model
 
-Brouillon du 24/10/2026, à valider. Index : `SPEC.md`.
+Validée le 24/10/2026, terminée le 25/10/2026. Index : `SPEC.md`.
 
 ## Objectif
 Choisir le modèle (Opus, Sonnet, Haiku…) de la session ouverte et le changer à tout moment, sans perdre la conversation.
@@ -11,6 +11,7 @@ Choisir le modèle (Opus, Sonnet, Haiku…) de la session ouverte et le changer 
 2. **Nouvelle session** : elle démarre avec le dernier modèle choisi. Ce choix est retenu dans `localStorage` (clé `mon-claude:model`), donc il survit à un redémarrage de l'app. Au tout premier lancement, c'est « Par défaut ».
    - Une session reprise depuis l'historique applique la même règle.
 3. **Changement en cours de session** : l'app arrête le processus `claude` de la session, puis le relance avec `--resume <id> --model X` dans le même dossier. Le fil de la conversation reste affiché et continue.
+   - Si aucun message n'a encore été envoyé, il n'y a pas de conversation sur disque : on relance avec `--session-id <id>` (même id) au lieu de `--resume`, qui échouerait.
    - Possible seulement quand aucune réponse n'est en cours : la liste est grisée pendant un tour.
    - Pendant ce redémarrage, la session ne doit pas apparaître comme « terminée » ou « en erreur » dans l'interface.
    - Le choix devient aussi le nouveau « dernier choisi ».
