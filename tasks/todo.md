@@ -21,15 +21,15 @@
 **Fichiers :** `package.json`, configs, `src/*/index.ts(x)`
 
 ## Checkpoint A
-- [ ] Fixture réelle disponible, projet qui démarre, tests verts
-- [ ] Validation avant de continuer
+- [x] Fixture réelle disponible, projet qui démarre, tests verts
+- [x] Validation avant de continuer
 
 ## T3 : parser de flux → BridgeEvent
 **Description :** fonction pure qui reçoit des morceaux de texte de stdout, recolle les lignes, parse le JSON et renvoie des `BridgeEvent`.
 **Critères :**
-- [ ] La fixture donne une suite de `text-delta` puis un `turn-end`
-- [ ] Une ligne coupée en deux morceaux est bien recollée
-- [ ] Ligne invalide ou type inconnu : ignorée, pas de plantage
+- [x] La fixture donne une suite de `text-delta` puis un `turn-end`
+- [x] Une ligne coupée en deux morceaux est bien recollée
+- [x] Ligne invalide ou type inconnu : ignorée, pas de plantage
 **Vérif :** `npm test`
 **Dépend de :** T1, T2
 **Fichiers :** `src/shared/events.ts`, `src/main/stream-parser.ts`, `tests/stream-parser.test.ts`

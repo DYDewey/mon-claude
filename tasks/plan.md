@@ -17,8 +17,8 @@ T2 squelette projet ───┼── T3 parser de flux ── T4 gestion du pr
 ## Tâches
 - [x] T1 : capturer un vrai flux stream-json (fixture) — S
 - [x] T2 : squelette electron-vite + React + Vitest — M
-- [ ] Checkpoint A
-- [ ] T3 : parser de flux → BridgeEvent — S
+- [x] Checkpoint A
+- [x] T3 : parser de flux → BridgeEvent — S
 - [ ] T4 : démarrer / envoyer / arrêter une session — M
 - [ ] T5 : exposer l'API au renderer (preload + IPC) — S
 - [ ] Checkpoint B (module terminé)
