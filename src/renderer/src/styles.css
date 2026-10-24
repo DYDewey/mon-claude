@@ -92,3 +92,22 @@ button:disabled { opacity: 0.4; cursor: default; }
 }
 .slash-menu li { padding: 4px 8px; border-radius: 4px; cursor: pointer; }
 .slash-menu li.selected { background: var(--user); color: var(--accent); }
+
+/* Jauges d'usage (bas de la barre latérale) et % de contexte */
+:root { --ok: #81c995; --warn: #fdd663; --danger: #f28b82; }
+.gauges { margin-top: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+.gauges.stale { opacity: 0.55; }
+.gauge-bar { height: 5px; margin-top: 3px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.gauge-fill { height: 100%; }
+.gauge-fill.ok { background: var(--ok); }
+.gauge-fill.warn { background: var(--warn); }
+.gauge-fill.danger { background: var(--danger); }
+.gauge-note { color: var(--muted); font-style: italic; }
+.ctx { font-size: 11px; }
+.ctx.ok { color: var(--ok); }
+.ctx.warn { color: var(--warn); }
+.ctx.danger { color: var(--danger); }
+.topbar { display: flex; align-items: center; gap: 12px; }
+.topbar-title { flex: 1; }
+.topbar-ctx { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.topbar-ctx .ctx { font-size: 13px; }

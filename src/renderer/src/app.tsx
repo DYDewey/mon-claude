@@ -2,21 +2,33 @@ import { useEffect, useReducer } from 'react';
 import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
 import { Sidebar } from './components/sidebar';
-import { initialState, sessionsReducer, type ChatState } from './state/sessions';
+import { ContextBadge } from './components/usage-gauges';
+import { initialState, sessionsReducer, type ChatState, type Limits } from './state/sessions';
 
 const COMMANDS_KEY = 'commands';
+const LIMITS_KEY = 'limits';
 
-function withSavedCommands(state: ChatState): ChatState {
+/** Au démarrage : dernières commandes et jauges connues (claude ne les envoie qu'à sa 1re réponse). */
+function withSaved(state: ChatState): ChatState {
   try {
-    const saved: unknown = JSON.parse(localStorage.getItem(COMMANDS_KEY) ?? '[]');
-    return Array.isArray(saved) ? { ...state, commands: saved.filter((c) => typeof c === 'string') } : state;
+    const commands: unknown = JSON.parse(localStorage.getItem(COMMANDS_KEY) ?? '[]');
+    const limits: unknown = JSON.parse(localStorage.getItem(LIMITS_KEY) ?? 'null');
+    return {
+      ...state,
+      ...(Array.isArray(commands) && { commands: commands.filter((c) => typeof c === 'string') }),
+      ...(isSavedLimits(limits) && { limits }),
+    };
   } catch {
     return state;
   }
 }
 
+function isSavedLimits(value: unknown): value is Limits {
+  return typeof value === 'object' && value !== null && typeof (value as Limits).savedAt === 'number';
+}
+
 export function App() {
-  const [state, dispatch] = useReducer(sessionsReducer, initialState, withSavedCommands);
+  const [state, dispatch] = useReducer(sessionsReducer, initialState, withSaved);
   const active = state.sessions.find((s) => s.id === state.activeId) ?? null;
 
   // Un seul abonnement pour toute l'app : chaque événement de claude devient une action du reducer.
@@ -30,6 +42,17 @@ export function App() {
       // stockage indisponible : la liste reviendra à la prochaine réponse de claude
     }
   }, [state.commands]);
+
+  // Jauges fraîches (sans savedAt) : on les sauvegarde avec l'heure, pour les montrer grisées au prochain lancement.
+  useEffect(() => {
+    try {
+      if (state.limits && !state.limits.savedAt) {
+        localStorage.setItem(LIMITS_KEY, JSON.stringify({ ...state.limits, savedAt: Date.now() }));
+      }
+    } catch {
+      // stockage indisponible : les jauges reviendront à la prochaine réponse
+    }
+  }, [state.limits]);
 
   async function newSession() {
     const cwd = await window.claude.pickFolder();
@@ -60,6 +83,7 @@ export function App() {
       <Sidebar
         sessions={state.sessions}
         activeId={state.activeId}
+        limits={state.limits}
         onNew={newSession}
         onSelect={(sessionId) => dispatch({ type: 'select', sessionId })}
         onClose={close}
@@ -70,6 +94,11 @@ export function App() {
             <span className="topbar-title">
               {active.title} · <span className="muted">{active.cwd}</span>
             </span>
+            {active.context && (
+              <span className="topbar-ctx">
+                Contexte : <ContextBadge context={active.context} />
+              </span>
+            )}
           </header>
           <ChatView session={active} />
           <Composer running={active.status === 'running'} onSend={send} onStop={stop} commands={state.commands} />

@@ -1,14 +1,16 @@
-import type { SessionState } from '../state/sessions';
+import type { Limits, SessionState } from '../state/sessions';
+import { ContextBadge, UsageGauges } from './usage-gauges';
 
 interface Props {
   sessions: SessionState[];
   activeId: string | null;
+  limits?: Limits;
   onNew: () => void;
   onSelect: (id: string) => void;
   onClose: (id: string) => void;
 }
 
-export function Sidebar({ sessions, activeId, onNew, onSelect, onClose }: Props) {
+export function Sidebar({ sessions, activeId, limits, onNew, onSelect, onClose }: Props) {
   return (
     <nav className="sidebar">
       <button onClick={onNew}>+ Nouvelle session</button>
@@ -23,6 +25,7 @@ export function Sidebar({ sessions, activeId, onNew, onSelect, onClose }: Props)
             {/* ● = Claude répond ; ◌ = réponse arrivée pendant que la session était cachée. */}
             <span className="indicator">{s.status === 'running' ? '●' : s.unread ? '◌' : ''}</span>
             <span className="sidebar-title">{s.title}</span>
+            <ContextBadge context={s.context} />
             <button
               className="close"
               aria-label="Fermer la session"
@@ -36,6 +39,7 @@ export function Sidebar({ sessions, activeId, onNew, onSelect, onClose }: Props)
           </li>
         ))}
       </ul>
+      <UsageGauges limits={limits} />
     </nav>
   );
 }
