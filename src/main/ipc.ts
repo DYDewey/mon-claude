@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import { IPC } from '../shared/api';
 import { isModelChoice } from '../shared/model';
+import { savePastedImage } from './attachment-store';
 import { saveHandoff } from './handoff-store';
 import { createHistoryReader } from './history-reader';
 import { SessionManager } from './session-manager';
@@ -37,6 +38,11 @@ export function registerClaudeIpc(): SessionManager {
     const options = { title: 'Joindre des fichiers', properties: ['openFile' as const, 'multiSelections' as const] };
     const res = win ? await dialog.showOpenDialog(win, options) : await dialog.showOpenDialog(options);
     return res.canceled ? [] : res.filePaths;
+  });
+
+  ipcMain.handle(IPC.savePasted, (_e, bytes: unknown, ext: unknown) => {
+    if (!(bytes instanceof Uint8Array) || typeof ext !== 'string') throw new Error('Image invalide');
+    return savePastedImage(join(app.getPath('userData'), 'attachments'), bytes, ext, new Date());
   });
 
   ipcMain.on(IPC.interrupt,(_e, sessionId: unknown) => {

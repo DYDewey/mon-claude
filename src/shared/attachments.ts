@@ -17,6 +17,13 @@ export function droppedPaths<T>(items: T[], pathFor: (item: T) => string): strin
   return items.map(pathFor).filter((p) => p !== '');
 }
 
+const IMAGE_MIME: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif', 'image/webp': 'webp' };
+
+/** Extension sous laquelle enregistrer une image collée, ou null si ce n'est pas une image gérée. */
+export function imageExt(mime: string): string | null {
+  return IMAGE_MIME[mime] ?? null;
+}
+
 export function canSend(text: string, paths: string[]): boolean {
   return text.trim() !== '' || paths.length > 0;
 }

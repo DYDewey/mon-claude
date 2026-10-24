@@ -1,5 +1,5 @@
-import { useState, type DragEvent, type KeyboardEvent } from 'react';
-import { addAttachments, canSend, droppedPaths, fileName, withAttachments } from '../../../shared/attachments';
+import { useState, type ClipboardEvent, type DragEvent, type KeyboardEvent } from 'react';
+import { addAttachments, canSend, droppedPaths, fileName, imageExt, withAttachments } from '../../../shared/attachments';
 import { matchCommands, SlashMenu } from './slash-menu';
 
 interface Props {
@@ -10,6 +10,8 @@ interface Props {
   onPickFiles: () => Promise<string[]>;
   /** Chemin sur le disque d'un fichier glissé-déposé ('' si ce n'en est pas un). */
   pathForFile: (file: File) => string;
+  /** Enregistre une image collée et renvoie son chemin. */
+  onSavePasted: (bytes: Uint8Array, ext: string) => Promise<string>;
   /** Noms des commandes et skills proposés après « / ». */
   commands: string[];
   /** Prochain message proposé par claude : affiché en gris, Tab le recopie. */
@@ -32,7 +34,7 @@ export function AttachmentChips({ files, onRemove }: { files: string[]; onRemove
   );
 }
 
-export function Composer({ running, onSend, onStop, onPickFiles, pathForFile, commands, suggestion }: Props) {
+export function Composer({ running, onSend, onStop, onPickFiles, pathForFile, onSavePasted, commands, suggestion }: Props) {
   const [text, setText] = useState('');
   const [files, setFiles] = useState<string[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -74,6 +76,22 @@ export function Composer({ running, onSend, onStop, onPickFiles, pathForFile, co
     if (running) return;
     const dropped = droppedPaths([...e.dataTransfer.files], pathForFile);
     setFiles((current) => addAttachments(current, dropped));
+  }
+
+  // Fichier copié dans l'Explorateur : on prend son chemin. Capture d'écran : on l'enregistre d'abord.
+  // Sans fichier dans le presse-papiers, le collage de texte se fait normalement.
+  async function onPaste(e: ClipboardEvent<HTMLTextAreaElement>) {
+    const pasted = [...e.clipboardData.files];
+    if (pasted.length === 0) return;
+    e.preventDefault();
+    const paths: string[] = [];
+    for (const file of pasted) {
+      const path = pathForFile(file);
+      const ext = imageExt(file.type);
+      if (path) paths.push(path);
+      else if (ext) paths.push(await onSavePasted(new Uint8Array(await file.arrayBuffer()), ext));
+    }
+    setFiles((current) => addAttachments(current, paths));
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -120,6 +138,7 @@ export function Composer({ running, onSend, onStop, onPickFiles, pathForFile, co
         value={text}
         onChange={(e) => change(e.target.value)}
         onKeyDown={onKeyDown}
+        onPaste={onPaste}
         disabled={running}
         placeholder={
           running ? 'Claude répond…' : suggestion ? `${suggestion}   (Tab pour reprendre)` : 'Écris ton message (Entrée pour envoyer)'

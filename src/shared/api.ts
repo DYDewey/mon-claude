@@ -13,6 +13,8 @@ export interface ClaudeApi {
   pickFiles(): Promise<string[]>;
   /** Chemin d'un fichier glissé-déposé ('' s'il ne vient pas du disque). */
   pathForFile(file: File): string;
+  /** Enregistre une image collée dans %APPDATA%/mon-claude/attachments/ ; renvoie son chemin. */
+  savePastedImage(bytes: Uint8Array, ext: string): Promise<string>;
   /** Arrête la réponse en cours sans fermer la session. */
   interrupt(sessionId: string): void;
   stopSession(sessionId: string): void;
@@ -33,6 +35,7 @@ export const IPC = {
   interrupt: 'claude:interrupt',
   pickFolder: 'claude:pick-folder',
   pickFiles: 'files:pick',
+  savePasted: 'files:save-pasted',
   stop: 'claude:stop',
   setModel: 'session:set-model',
   event: 'claude:event',

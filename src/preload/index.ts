@@ -9,6 +9,7 @@ const api: ClaudeApi = {
   pickFiles: () => ipcRenderer.invoke(IPC.pickFiles),
   // File.path n'existe plus dans Electron récent : webUtils le remplace.
   pathForFile: (file) => webUtils.getPathForFile(file),
+  savePastedImage: (bytes, ext) => ipcRenderer.invoke(IPC.savePasted, bytes, ext),
   interrupt: (sessionId) => ipcRenderer.send(IPC.interrupt, sessionId),
   stopSession: (sessionId) => ipcRenderer.send(IPC.stop, sessionId),
   setModel: (sessionId, model) => ipcRenderer.invoke(IPC.setModel, sessionId, model),

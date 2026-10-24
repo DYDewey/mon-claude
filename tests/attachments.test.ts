@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addAttachments, canSend, droppedPaths, fileName, withAttachments } from '../src/shared/attachments';
+import { addAttachments, canSend, droppedPaths, fileName, imageExt, withAttachments } from '../src/shared/attachments';
 
 describe('withAttachments', () => {
   it('sans fichier : le texte tel quel', () => {
@@ -40,5 +40,15 @@ describe('droppedPaths', () => {
   it('garde le chemin de chaque fichier déposé, ignore ce qui n\'en a pas', () => {
     const paths: Record<string, string> = { a: 'C:\\a.png', b: '', c: 'C:\\c.pdf' };
     expect(droppedPaths(['a', 'b', 'c'], (f) => paths[f])).toEqual(['C:\\a.png', 'C:\\c.pdf']);
+  });
+});
+
+describe('imageExt', () => {
+  it('extension des images collées, null pour le reste', () => {
+    expect(imageExt('image/png')).toBe('png');
+    expect(imageExt('image/jpeg')).toBe('jpg');
+    expect(imageExt('image/webp')).toBe('webp');
+    expect(imageExt('text/plain')).toBeNull();
+    expect(imageExt('image/svg+xml')).toBeNull();
   });
 });
