@@ -2,14 +2,34 @@ import { useEffect, useReducer } from 'react';
 import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
 import { Sidebar } from './components/sidebar';
-import { initialState, sessionsReducer } from './state/sessions';
+import { initialState, sessionsReducer, type ChatState } from './state/sessions';
+
+const COMMANDS_KEY = 'commands';
+
+function withSavedCommands(state: ChatState): ChatState {
+  try {
+    const saved: unknown = JSON.parse(localStorage.getItem(COMMANDS_KEY) ?? '[]');
+    return Array.isArray(saved) ? { ...state, commands: saved.filter((c) => typeof c === 'string') } : state;
+  } catch {
+    return state;
+  }
+}
 
 export function App() {
-  const [state, dispatch] = useReducer(sessionsReducer, initialState);
+  const [state, dispatch] = useReducer(sessionsReducer, initialState, withSavedCommands);
   const active = state.sessions.find((s) => s.id === state.activeId) ?? null;
 
   // Un seul abonnement pour toute l'app : chaque événement de claude devient une action du reducer.
   useEffect(() => window.claude.onEvent(dispatch), []);
+
+  // claude n'envoie la liste des commandes qu'à sa 1re réponse : on garde la dernière pour les sessions neuves.
+  useEffect(() => {
+    try {
+      if (state.commands.length) localStorage.setItem(COMMANDS_KEY, JSON.stringify(state.commands));
+    } catch {
+      // stockage indisponible : la liste reviendra à la prochaine réponse de claude
+    }
+  }, [state.commands]);
 
   async function newSession() {
     const cwd = await window.claude.pickFolder();
@@ -52,7 +72,7 @@ export function App() {
             </span>
           </header>
           <ChatView session={active} />
-          <Composer running={active.status === 'running'} onSend={send} onStop={stop} />
+          <Composer running={active.status === 'running'} onSend={send} onStop={stop} commands={state.commands} />
         </main>
       ) : (
         <main className="empty">Clique sur « + Nouvelle session » et choisis un dossier de travail.</main>

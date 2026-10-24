@@ -10,9 +10,17 @@ describe('createStreamParser', () => {
     const parser = createStreamParser('s1');
     const events = parser.push(fixture);
 
-    expect(events.map((e) => e.type)).toEqual(['text-delta', 'turn-end']);
-    expect(events[0]).toEqual({ type: 'text-delta', sessionId: 's1', text: 'bonjour' });
-    expect(events[1]).toMatchObject({ type: 'turn-end', sessionId: 's1', result: 'bonjour' });
+    expect(events.map((e) => e.type)).toEqual(['commands', 'text-delta', 'turn-end']);
+    expect(events[1]).toEqual({ type: 'text-delta', sessionId: 's1', text: 'bonjour' });
+    expect(events[2]).toMatchObject({ type: 'turn-end', sessionId: 's1', result: 'bonjour' });
+  });
+
+  it('le message init donne la liste des commandes et skills', () => {
+    const [commands] = createStreamParser('s1').push(fixture);
+    expect(commands.type).toBe('commands');
+    const names = (commands as { names: string[] }).names;
+    expect(names).toContain('aide-decision');
+    expect(names).toContain('anthropic-skills:passation');
   });
 
   it('recolle une ligne coupée en plusieurs morceaux', () => {
@@ -50,7 +58,7 @@ describe('createStreamParser', () => {
   it('gère les fins de ligne Windows', () => {
     const parser = createStreamParser('s1');
     const crlf = fixture.split('\n').join('\r\n');
-    expect(parser.push(crlf).map((e) => e.type)).toEqual(['text-delta', 'turn-end']);
+    expect(parser.push(crlf).map((e) => e.type)).toEqual(['commands', 'text-delta', 'turn-end']);
   });
 
   it('émet une erreur puis turn-end quand le résultat est en échec', () => {

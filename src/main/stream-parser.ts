@@ -56,6 +56,11 @@ function parseLine(line: string, sessionId: string): BridgeEvent[] {
     return [end];
   }
 
-  // system/*, rate_limit_event… : pas utiles au renderer pour l'instant.
+  if (msg.type === 'system' && msg.subtype === 'init' && Array.isArray(msg.slash_commands)) {
+    const names = msg.slash_commands.filter((n): n is string => typeof n === 'string');
+    return [{ type: 'commands', sessionId, names }];
+  }
+
+  // Autres system/*, rate_limit_event… : pas utiles au renderer pour l'instant.
   return [];
 }

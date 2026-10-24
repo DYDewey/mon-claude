@@ -57,5 +57,10 @@ Vérif standard de chaque tâche : `npm test`, `npm run typecheck`, `npm run lin
   - Fichiers : `components/composer.tsx`, `components/chat-view.tsx`, `state/sessions.ts`
   - Vérif manuelle : Stop, puis nouveau message → Claude se souvient du début.
 
+- [x] **T10 : suggestions « / »** (S) — ajout demandé le 24/10
+  - Liste lue dans le message `init` du CLI (`slash_commands`), gardée en localStorage pour les sessions neuves.
+  - Flèches pour choisir, Tab/Entrée pour compléter, Échap pour fermer.
+  - Fichiers : `components/slash-menu.tsx`, `components/composer.tsx`, `stream-parser.ts`, `state/sessions.ts`
+
 ### Checkpoint final
-- [ ] Tous les critères de `SPEC-chat.md` remplis, dont une skill perso (`/aide-decision`) qui marche dans l'app.
+- [x] Tous les critères de `SPEC-chat.md` remplis, dont une skill perso (`/aide-decision`) qui marche dans l'app.

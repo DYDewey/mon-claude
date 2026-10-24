@@ -119,6 +119,12 @@ describe('sessionsReducer', () => {
     expect(b.status).toBe('idle');
   });
 
+  it('la liste des commandes est commune à l\'app et ne marque pas la session non lue', () => {
+    const state = sessionsReducer(twoSessions, { type: 'commands', sessionId: 'a', names: ['aide-decision'] });
+    expect(state.commands).toEqual(['aide-decision']);
+    expect(state.sessions[0].unread).toBe(false);
+  });
+
   it('ignore les événements d\'une session inconnue', () => {
     expect(sessionsReducer(twoSessions, { type: 'text-delta', sessionId: 'zzz', text: 'x' })).toBe(twoSessions);
   });

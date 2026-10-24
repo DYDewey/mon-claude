@@ -22,6 +22,8 @@ export interface SessionState {
 export interface ChatState {
   sessions: SessionState[];
   activeId: string | null;
+  /** Commandes et skills proposés quand on tape « / » (les mêmes pour toutes les sessions). */
+  commands: string[];
 }
 
 export type ChatAction =
@@ -32,7 +34,7 @@ export type ChatAction =
   | { type: 'user-sent'; sessionId: string; text: string }
   | { type: 'user-interrupted'; sessionId: string };
 
-export const initialState: ChatState = { sessions: [], activeId: null };
+export const initialState: ChatState = { sessions: [], activeId: null, commands: [] };
 
 const TITLE_MAX = 40;
 
@@ -41,15 +43,15 @@ export function sessionsReducer(state: ChatState, action: ChatAction): ChatState
     case 'session-opened': {
       const title = action.cwd.split(/[\\/]/).filter(Boolean).pop() ?? action.cwd;
       const session: SessionState = { id: action.sessionId, cwd: action.cwd, title, items: [], status: 'idle', unread: false };
-      return { sessions: [...state.sessions, session], activeId: action.sessionId };
+      return { ...state, sessions: [...state.sessions, session], activeId: action.sessionId };
     }
     case 'session-closed': {
       const sessions = state.sessions.filter((s) => s.id !== action.sessionId);
       const activeId = state.activeId === action.sessionId ? (sessions.at(-1)?.id ?? null) : state.activeId;
-      return { sessions, activeId };
+      return { ...state, sessions, activeId };
     }
     case 'select':
-      return { activeId: action.sessionId, sessions: patch(state, action.sessionId, () => ({ unread: false })) };
+      return { ...state, activeId: action.sessionId, sessions: patch(state, action.sessionId, () => ({ unread: false })) };
     case 'user-sent':
       return update(state, action.sessionId, (s) => ({
         title: s.items.some((i) => i.kind === 'user') ? s.title : action.text.slice(0, TITLE_MAX),
@@ -59,6 +61,8 @@ export function sessionsReducer(state: ChatState, action: ChatAction): ChatState
     case 'user-interrupted':
       // Le statut reste « running » : c'est le turn-end envoyé par claude qui rend la main.
       return update(state, action.sessionId, (s) => ({ items: [...s.items, { kind: 'stopped' }] }));
+    case 'commands':
+      return { ...state, commands: action.names };
     case 'text-delta':
       return fromBridge(state, action.sessionId, (s) => {
         const last = s.items.at(-1);
