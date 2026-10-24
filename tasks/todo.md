@@ -28,7 +28,7 @@ Vérif standard de chaque tâche : `npm test`, `npm run typecheck`, `npm run lin
   - Critères (tests) : `text-delta` s'ajoute au bon message de la bonne session ; `turn-end` termine le tour ; un événement sur une session non active la marque « non lue » ; `tool-use` ajoute une ligne d'outil.
   - Fichiers : `src/renderer/src/state/sessions.ts`, `tests/sessions.test.ts`
 
-- [ ] **T5 : une session de bout en bout** (M)
+- [x] **T5 : une session de bout en bout** (M)
   - Bouton « + » → `pickFolder` → `startSession` ; zone de saisie (Entrée envoie, Maj+Entrée saut de ligne, bloquée pendant une réponse) ; texte brut en direct ; « Claude démarre… ».
   - Fichiers : `app.tsx`, `components/chat-view.tsx`, `components/composer.tsx`
   - Vérif manuelle : j'envoie un message et la réponse s'affiche en direct.
