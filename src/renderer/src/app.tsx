@@ -1,6 +1,8 @@
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
+import type { HistoryProject } from '../../shared/history';
 import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
+import { HistoryList } from './components/history-list';
 import { Sidebar } from './components/sidebar';
 import { ContextBadge } from './components/usage-gauges';
 import { initialState, sessionsReducer, type ChatState, type Limits } from './state/sessions';
@@ -30,6 +32,19 @@ function isSavedLimits(value: unknown): value is Limits {
 export function App() {
   const [state, dispatch] = useReducer(sessionsReducer, initialState, withSaved);
   const active = state.sessions.find((s) => s.id === state.activeId) ?? null;
+  // `at` : heure de la lecture, sert de « maintenant » pour les dates relatives (pas de Date.now() au rendu).
+  const [history, setHistory] = useState<{ projects: HistoryProject[]; at: number }>({ projects: [], at: 0 });
+
+  function refreshHistory() {
+    window.claude.listHistory().then(
+      (projects) => setHistory({ projects, at: Date.now() }),
+      () => setHistory({ projects: [], at: Date.now() }),
+    );
+  }
+
+  useEffect(() => {
+    refreshHistory();
+  }, []);
 
   // Un seul abonnement pour toute l'app : chaque événement de claude devient une action du reducer.
   useEffect(() => window.claude.onEvent(dispatch), []);
@@ -87,7 +102,9 @@ export function App() {
         onNew={newSession}
         onSelect={(sessionId) => dispatch({ type: 'select', sessionId })}
         onClose={close}
-      />
+      >
+        <HistoryList projects={history.projects} now={history.at} onOpen={() => {}} onRefresh={refreshHistory} />
+      </Sidebar>
       {active ? (
         <main className="session">
           <header className="topbar">

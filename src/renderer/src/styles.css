@@ -36,6 +36,12 @@ button:disabled { opacity: 0.4; cursor: default; }
 .sidebar-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sidebar .close { background: none; color: var(--muted); padding: 0 4px; }
 .sidebar .close:hover { color: var(--text); }
+.history { flex: 1; min-height: 0; overflow-y: auto; border-top: 1px solid var(--user); padding-top: 8px; }
+.history-head { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 0.85em; text-transform: uppercase; }
+.history .refresh { background: none; color: var(--muted); padding: 0 4px; }
+.history summary { cursor: pointer; padding: 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.history ul { overflow: visible; }
+.history-date { font-size: 0.8em; white-space: nowrap; }
 .topbar { padding: 10px 16px; border-bottom: 1px solid var(--panel); }
 .topbar-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .empty { margin: auto; color: var(--muted); }

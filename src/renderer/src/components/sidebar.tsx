@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Limits, SessionState } from '../state/sessions';
 import { ContextBadge, UsageGauges } from './usage-gauges';
 
@@ -8,9 +9,11 @@ interface Props {
   onNew: () => void;
   onSelect: (id: string) => void;
   onClose: (id: string) => void;
+  /** Placé entre les sessions en cours et les jauges (l'historique). */
+  children?: ReactNode;
 }
 
-export function Sidebar({ sessions, activeId, limits, onNew, onSelect, onClose }: Props) {
+export function Sidebar({ sessions, activeId, limits, onNew, onSelect, onClose, children }: Props) {
   return (
     <nav className="sidebar">
       <button onClick={onNew}>+ Nouvelle session</button>
@@ -39,6 +42,7 @@ export function Sidebar({ sessions, activeId, limits, onNew, onSelect, onClose }
           </li>
         ))}
       </ul>
+      {children}
       <UsageGauges limits={limits} />
     </nav>
   );
