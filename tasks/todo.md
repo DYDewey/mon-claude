@@ -1,59 +1,61 @@
-# Tâches : module cli-bridge
+# Todo : module chat
 
-## T1 : capturer un vrai flux stream-json
-**Description :** lancer une fois `claude` en mode stream-json (entrée et sortie), envoyer « bonjour », enregistrer la sortie comme fixture de test.
-**Critères :**
-- [x] `tests/fixtures/stream-bonjour.jsonl` existe et contient un vrai flux
-- [x] Le format du message d'entrée sur stdin est confirmé
-- [x] On sait où se trouve le `session_id` (sur toutes les lignes)
-**Vérif :** lecture de la fixture ; noter les types de lignes rencontrés dans `plan.md`.
-**Dépend de :** rien
-**Fichiers :** `tests/fixtures/stream-bonjour.jsonl`
+Vérif standard de chaque tâche : `npm test`, `npm run typecheck`, `npm run lint` verts. Un commit par tâche (sans Co-Authored-By).
 
-## T2 : squelette electron-vite + React + Vitest
-**Description :** créer le projet (Electron + TS strict + React + Vitest + ESLint), structure `src/main`, `src/preload`, `src/renderer`, `src/shared`.
-**Critères :**
-- [x] `npm run dev` ouvre une fenêtre avec un titre « Mon-Claude »
-- [x] `npm test` passe (un test trivial)
-- [x] `npm run typecheck` et `npm run build` passent
-**Vérif :** les 4 commandes ci-dessus + fenêtre vue à l'écran.
-**Dépend de :** rien
-**Fichiers :** `package.json`, configs, `src/*/index.ts(x)`
+## Phase 1 : pont étendu
 
-## Checkpoint A
-- [x] Fixture réelle disponible, projet qui démarre, tests verts
-- [x] Validation avant de continuer
+- [ ] **T1 : `interrupt(sessionId)`** (M)
+  - Vérifier sur le vrai CLI : écrire `{"type":"control_request","request_id":"…","request":{"subtype":"interrupt"}}` sur stdin pendant une réponse. On regarde si un `result` arrive et si le message suivant marche.
+  - Si OK : `SessionManager.interrupt` écrit cette requête. Sinon : kill + relance `--resume` avec le même `sessionId`.
+  - Critères : test Vitest (faux CLI) → après interrupt, la session accepte un nouveau message ; API `interrupt` exposée (shared/api, ipc, preload).
+  - Fichiers : `src/main/session-manager.ts`, `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`, `tests/session-manager.test.ts`, `tests/fixtures/fake-claude.cjs`
 
-## T3 : parser de flux → BridgeEvent
-**Description :** fonction pure qui reçoit des morceaux de texte de stdout, recolle les lignes, parse le JSON et renvoie des `BridgeEvent`.
-**Critères :**
-- [x] La fixture donne une suite de `text-delta` puis un `turn-end`
-- [x] Une ligne coupée en deux morceaux est bien recollée
-- [x] Ligne invalide ou type inconnu : ignorée, pas de plantage
-**Vérif :** `npm test`
-**Dépend de :** T1, T2
-**Fichiers :** `src/shared/events.ts`, `src/main/stream-parser.ts`, `tests/stream-parser.test.ts`
+- [ ] **T2 : événement `tool-use`** (XS)
+  - Critères : un message `assistant` avec bloc `tool_use` donne `{ type:'tool-use', sessionId, name, input }` ; les autres messages ne changent pas.
+  - Fichiers : `src/shared/events.ts`, `src/main/stream-parser.ts`, `tests/stream-parser.test.ts`
 
-## T4 : démarrer / envoyer / arrêter une session
-**Description :** gestionnaire de sessions côté main : construit les arguments, lance `claude.exe`, écrit sur stdin, branche le parser, émet `error` si le lancement échoue, tue les processus à la fermeture.
-**Critères :**
-- [x] Arguments construits correctement, avec et sans `--resume` (test)
-- [x] `claude` introuvable → événement `error` lisible (test avec un faux exécutable)
-- [x] Fermer l'app ne laisse aucun processus `claude`
-**Vérif :** `npm test` + Gestionnaire des tâches après fermeture.
-**Dépend de :** T3
-**Fichiers :** `src/main/claude-args.ts`, `src/main/session-manager.ts`, `src/main/index.ts`, `tests/claude-args.test.ts`
+- [ ] **T3 : `pickFolder()`** (S)
+  - Critères : `dialog.showOpenDialog` (openDirectory) côté main ; renvoie le chemin ou `null` si annulé ; exposé via preload.
+  - Fichiers : `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`
+  - Vérif manuelle : appel depuis la console DevTools.
 
-## T5 : exposer l'API au renderer
-**Description :** IPC main ↔ preload, `window.claude.startSession / sendMessage / stopSession / onEvent`.
-**Critères :**
-- [x] Depuis la console DevTools, un « bonjour » affiche les morceaux de réponse au fil de l'eau
-- [x] Le renderer n'a aucun accès direct à Node (`contextIsolation` actif)
-**Vérif :** test manuel en console + `npm run typecheck`
-**Dépend de :** T4
-**Fichiers :** `src/preload/index.ts`, `src/main/ipc.ts`, `src/renderer/env.d.ts`
+### Checkpoint 1
+- [ ] Tous les tests verts, `npm run build` OK, revue avec toi.
 
-## Checkpoint B : module cli-bridge terminé
-- [x] Tous les critères de `SPEC-cli-bridge.md` cochés
-- [x] Tests, typecheck, build verts
-- [x] Validation avant le module `chat`
+## Phase 2 : première tranche
+
+- [ ] **T4 : reducer `state/sessions.ts`** (S)
+  - Critères (tests) : `text-delta` s'ajoute au bon message de la bonne session ; `turn-end` termine le tour ; un événement sur une session non active la marque « non lue » ; `tool-use` ajoute une ligne d'outil.
+  - Fichiers : `src/renderer/src/state/sessions.ts`, `tests/sessions.test.ts`
+
+- [ ] **T5 : une session de bout en bout** (M)
+  - Bouton « + » → `pickFolder` → `startSession` ; zone de saisie (Entrée envoie, Maj+Entrée saut de ligne, bloquée pendant une réponse) ; texte brut en direct ; « Claude démarre… ».
+  - Fichiers : `app.tsx`, `components/chat-view.tsx`, `components/composer.tsx`
+  - Vérif manuelle : j'envoie un message et la réponse s'affiche en direct.
+
+### Checkpoint 2
+- [ ] Démo en vrai, revue avec toi.
+
+## Phase 3 : complet
+
+- [ ] **T6 : barre latérale multi-sessions** (M)
+  - Titre = début du 1er message ; indicateurs ● en cours / ◌ non lu ; changer de session ; fermer = `stopSession`.
+  - Fichiers : `components/sidebar.tsx`, `app.tsx`, `state/sessions.ts` (+ tests)
+  - Vérif manuelle : 2 sessions dans 2 dossiers, réponses en parallèle.
+
+- [ ] **T7 : Markdown + coloration** (S)
+  - Ajouter `react-markdown`, `remark-gfm`, `rehype-highlight` ; pas de HTML brut.
+  - Fichiers : `components/message.tsx`, `package.json`, styles
+  - Vérif manuelle : bloc de code coloré, liste en liste ; `npm run build` OK.
+
+- [ ] **T8 : lignes d'outils** (S)
+  - Icône + nom + cible principale (`file_path`, `command`, `pattern`…), dépliable pour voir `input`.
+  - Fichiers : `components/tool-line.tsx`, `components/chat-view.tsx`
+
+- [ ] **T9 : Stop + erreurs** (S)
+  - Le bouton Envoyer devient Stop pendant une réponse → `interrupt` ; un événement `error` s'affiche dans la conversation.
+  - Fichiers : `components/composer.tsx`, `components/chat-view.tsx`, `state/sessions.ts`
+  - Vérif manuelle : Stop, puis nouveau message → Claude se souvient du début.
+
+### Checkpoint final
+- [ ] Tous les critères de `SPEC-chat.md` remplis, dont une skill perso (`/aide-decision`) qui marche dans l'app.

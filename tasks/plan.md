@@ -1,51 +1,40 @@
-# Plan : module cli-bridge
+# Plan : module chat
+
+Spec : `SPEC-chat.md` (validée le 24/10/2026). Plan précédent : `tasks/archive/cli-bridge-plan.md`.
 
 ## Vue d'ensemble
-Construire le pont main ↔ `claude` décrit dans `SPEC-cli-bridge.md` : lancer une session, envoyer des messages, recevoir la réponse en flux sous forme de `BridgeEvent`, le tout exposé au renderer via le preload. Pas d'interface de chat ici (module `chat`).
+Fenêtre principale : barre latérale multi-sessions, réponses en direct en Markdown, lignes d'outils, bouton Stop.
+On s'appuie sur `window.claude` (cli-bridge), qu'on étend avec `tool-use`, `pickFolder` et `interrupt`.
 
 ## Décisions d'architecture
-- `claude.exe` est lancé directement avec `child_process.spawn` (pas de shell) : plus sûr, pas de problème de guillemets.
-- Le parsing du flux est une fonction pure (texte → événements), séparée du processus : testable sans lancer `claude`.
-- On capture d'abord un vrai flux (tâche 1) : c'est le point le plus risqué, on le vérifie avant de coder.
+- **État = reducer pur** (`state/sessions.ts`) : `(état, action) → état`. Les `BridgeEvent` sont des actions comme les autres → tout se teste avec Vitest, sans interface.
+- **Un seul abonnement** `window.claude.onEvent` dans `app.tsx`, qui dispatch au reducer (pas d'abonnement par composant).
+- **Interrupt en 1er** (risque le plus fort) : si la requête de contrôle stdin ne marche pas, repli kill + `--resume` (même `sessionId`).
+- **Markdown sans HTML brut** : `react-markdown` n'interprète pas le HTML par défaut, on n'ajoute pas `rehype-raw`.
 
-## Graphe des dépendances
+## Graphe de dépendances
 ```
-T1 capture flux réel ──┐
-T2 squelette projet ───┼── T3 parser de flux ── T4 gestion du processus ── T5 preload + IPC
+T1 interrupt ─┐
+T2 tool-use ──┼─→ T4 reducer ─→ T5 tranche 1 session ─→ T6 sidebar
+T3 pickFolder ┘                                      ├─→ T7 Markdown
+                                                     ├─→ T8 lignes d'outils (T2)
+                                                     └─→ T9 Stop + erreurs (T1)
 ```
 
-## Tâches
-- [x] T1 : capturer un vrai flux stream-json (fixture) — S
-- [x] T2 : squelette electron-vite + React + Vitest — M
-- [x] Checkpoint A
-- [x] T3 : parser de flux → BridgeEvent — S
-- [x] T4 : démarrer / envoyer / arrêter une session — M
-- [x] T5 : exposer l'API au renderer (preload + IPC) — S
-- [x] Checkpoint B (module terminé)
+## Phases
+1. **Pont étendu** (T1–T3) : main/preload, testé par Vitest + faux CLI.
+2. **Première tranche** (T4–T5) : une session qui marche de bout en bout.
+3. **Complet** (T6–T9) : multi-sessions, Markdown, outils, Stop.
 
-Détail des tâches : `tasks/todo.md`.
+Détail des tâches et critères : `tasks/todo.md`.
 
 ## Risques
 | Risque | Impact | Parade |
 |---|---|---|
-| Le format d'entrée stream-json n'est pas celui supposé | Haut | T1 le vérifie sur le vrai CLI avant tout code |
-| Processus `claude` orphelins à la fermeture | Moyen | `stopSession` + arrêt de tous les processus sur `before-quit` |
-| Lignes de `stdout` coupées en plusieurs morceaux | Moyen | tampon de ligne testé en T3 |
-
-## Constats T1 (vrai flux, Claude Code 2.1.310)
-- Entrée stdin, une ligne : `{"type":"user","message":{"role":"user","content":"..."}}`
-- `session_id` présent sur **toutes** les lignes (même avant `system/init`) → on le lit dès la 1re ligne.
-- Ordre : `system/hook_*` (hooks perso) → `system/init` → `system/status` → `stream_event` (`message_start`, `content_block_delta` + `text_delta`, …, `message_stop`) → `assistant` (message complet) → `rate_limit_event` → `result/success`.
-- Le texte en direct = `stream_event` → `event.delta.type === "text_delta"` → `event.delta.text`.
-- Fin de tour = ligne `type: "result"` (`result` = texte final, `is_error` en cas d'échec).
-- `apiKeySource: "none"` : abonnement, pas de clé API. `total_cost_usd` est une estimation, pas une facture.
+| `interrupt` non supporté en `-p` stream-json | Moyen | Repli kill + `--resume` (T1) |
+| Rendu Markdown lent sur gros flux (re-rendu à chaque delta) | Faible | Mesurer en T7 ; si lent, regrouper les deltas par frame |
+| ~35 s avant le 1er morceau | Faible | Afficher « Claude démarre… » (T5) |
+| Deps Markdown ESM-only vs build | Faible | Vérifier `npm run build` en T7 |
 
 ## Questions ouvertes
-- Aucune bloquante.
-
-## Bilan (module terminé le 2026-10-24)
-- 11 tests Vitest verts (parser, arguments, gestionnaire de sessions avec faux claude).
-- Test réel dans l'app : « compte de 1 à 5 » arrive en 2 morceaux, puis `turn-end`.
-- Renderer isolé : `require` et `process` indéfinis.
-- Aucun processus claude de l'app ne survit à la fermeture.
-- À savoir pour `chat` : ~35 s avant le premier morceau (démarrage de claude + hooks perso). Afficher un état « Claude démarre… ».
+- Aucune bloquante (la question `interrupt` est traitée par T1).
