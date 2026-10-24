@@ -16,6 +16,8 @@ export class SessionManager {
   private sessions = new Map<string, ChildProcessWithoutNullStreams>();
   /** Dossier de travail de chaque session, pour pouvoir la relancer (changement de modèle). */
   private cwds = new Map<string, string>();
+  /** Sessions qui ont une conversation sur disque (reprise, ou au moins un message envoyé) : restart peut utiliser --resume. */
+  private withConversation = new Set<string>();
   /** Sessions dont on a demandé l'interruption : leur prochain `result` est en erreur, c'est normal. */
   private interrupting = new Set<string>();
 
@@ -27,8 +29,15 @@ export class SessionManager {
   /** Lance une session dans `cwd` et renvoie son identifiant. */
   start(cwd: string, resumeId?: string, model?: ModelChoice): string {
     const sessionId = resumeId ?? randomUUID();
+    if (resumeId) this.withConversation.add(sessionId);
+    this.launch(cwd, sessionId, model);
+    return sessionId;
+  }
+
+  private launch(cwd: string, sessionId: string, model: ModelChoice | undefined): void {
     const command = this.options.command ?? 'claude';
-    const args = [...(this.options.prefixArgs ?? []), ...buildClaudeArgs({ sessionId, resume: !!resumeId, model })];
+    const resume = this.withConversation.has(sessionId);
+    const args = [...(this.options.prefixArgs ?? []), ...buildClaudeArgs({ sessionId, resume, model })];
 
     // Sans cette variable, claude -p ignore --prompt-suggestions (vérifié avec la v2.1.310).
     const env = { ...process.env, CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION: '1' };
@@ -76,8 +85,6 @@ export class SessionManager {
         this.emit({ type: 'error', sessionId, message: `claude s'est arrêté (code ${code}). ${stderrTail.trim()}` });
       }
     });
-
-    return sessionId;
   }
 
   send(sessionId: string, text: string): void {
@@ -88,6 +95,7 @@ export class SessionManager {
     }
     const line = JSON.stringify({ type: 'user', message: { role: 'user', content: text } });
     child.stdin.write(line + '\n');
+    this.withConversation.add(sessionId);
   }
 
   /** Arrête la réponse en cours ; la session reste ouverte et se souvient du début. */
@@ -108,7 +116,10 @@ export class SessionManager {
     killTree(child);
   }
 
-  /** Relance la session avec un autre modèle ; claude reprend la conversation grâce à --resume. */
+  /**
+   * Relance la session avec un autre modèle. Avec une conversation sur disque, --resume la reprend ;
+   * sinon (aucun message encore), on garde le même id avec --session-id : --resume échouerait.
+   */
   restart(sessionId: string, model: ModelChoice | undefined): void {
     const cwd = this.cwds.get(sessionId);
     if (cwd === undefined) {
@@ -116,7 +127,7 @@ export class SessionManager {
       return;
     }
     this.stop(sessionId);
-    this.start(cwd, sessionId, model);
+    this.launch(cwd, sessionId, model);
   }
 
   stopAll(): void {

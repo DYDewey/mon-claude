@@ -73,6 +73,9 @@ describe('SessionManager', () => {
     const manager = new SessionManager((e) => events.push(e), fakeClaude);
 
     const id = manager.start(tmpdir(), undefined, 'opus');
+    manager.send(id, 'bonjour');
+    await waitFor(events, 'turn-end');
+    events.length = 0;
     manager.restart(id, 'sonnet');
     manager.send(id, 'args?');
     await waitFor(events, 'turn-end');
@@ -92,6 +95,9 @@ describe('SessionManager', () => {
     const manager = new SessionManager((e) => events.push(e), fakeClaude);
 
     const id = manager.start(tmpdir(), undefined, 'opus');
+    manager.send(id, 'bonjour');
+    await waitFor(events, 'turn-end');
+    events.length = 0;
     manager.restart(id, undefined);
     manager.send(id, 'args?');
     await waitFor(events, 'turn-end');
@@ -99,6 +105,21 @@ describe('SessionManager', () => {
     const text = events.filter((e) => e.type === 'text-delta').map((e) => (e as { text: string }).text).join('');
     expect(text).not.toContain('--model');
     expect(text).toContain(`--resume ${id}`);
+    manager.stopAll();
+  });
+
+  it('restart avant le 1er message garde le même id sans --resume (aucune conversation à reprendre)', async () => {
+    const events: BridgeEvent[] = [];
+    const manager = new SessionManager((e) => events.push(e), fakeClaude);
+
+    const id = manager.start(tmpdir());
+    manager.restart(id, 'sonnet');
+    manager.send(id, 'args?');
+    await waitFor(events, 'turn-end');
+
+    const text = events.filter((e) => e.type === 'text-delta').map((e) => (e as { text: string }).text).join('');
+    expect(text).toContain(`--model sonnet --session-id ${id}`);
+    expect(text).not.toContain('--resume');
     manager.stopAll();
   });
 });
