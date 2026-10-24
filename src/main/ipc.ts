@@ -19,7 +19,11 @@ export function registerClaudeIpc(): SessionManager {
     if (typeof sessionId === 'string' && typeof text === 'string') manager.send(sessionId, text);
   });
 
-  ipcMain.on(IPC.stop, (_e, sessionId: unknown) => {
+  ipcMain.on(IPC.interrupt, (_e, sessionId: unknown) => {
+    if (typeof sessionId === 'string') manager.interrupt(sessionId);
+  });
+
+  ipcMain.on(IPC.stop,(_e, sessionId: unknown) => {
     if (typeof sessionId === 'string') manager.stop(sessionId);
   });
 

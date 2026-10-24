@@ -42,6 +42,22 @@ describe('SessionManager', () => {
     expect(events[0]).toMatchObject({ type: 'error', message: expect.stringContaining('introuvable') });
   });
 
+  it('interrupt termine le tour sans erreur et la session reste utilisable', async () => {
+    const events: BridgeEvent[] = [];
+    const manager = new SessionManager((e) => events.push(e), fakeClaude);
+
+    const id = manager.start(tmpdir());
+    manager.interrupt(id);
+    await waitFor(events, 'turn-end');
+    expect(events.some((e) => e.type === 'error')).toBe(false);
+
+    events.length = 0;
+    manager.send(id, 'encore');
+    await waitFor(events, 'text-delta');
+    expect(manager.has(id)).toBe(true);
+    manager.stopAll();
+  });
+
   it('stop arrête le processus', async () => {
     const events: BridgeEvent[] = [];
     const manager = new SessionManager((e) => events.push(e), fakeClaude);

@@ -4,9 +4,9 @@ Vérif standard de chaque tâche : `npm test`, `npm run typecheck`, `npm run lin
 
 ## Phase 1 : pont étendu
 
-- [ ] **T1 : `interrupt(sessionId)`** (M)
+- [x] **T1 : `interrupt(sessionId)`** (M)
   - Vérifier sur le vrai CLI : écrire `{"type":"control_request","request_id":"…","request":{"subtype":"interrupt"}}` sur stdin pendant une réponse. On regarde si un `result` arrive et si le message suivant marche.
-  - Si OK : `SessionManager.interrupt` écrit cette requête. Sinon : kill + relance `--resume` avec le même `sessionId`.
+  - ✅ Vérifié : `control_response` success puis `result` `error_during_execution` (erreur masquée), le message suivant marche et Claude se souvient.
   - Critères : test Vitest (faux CLI) → après interrupt, la session accepte un nouveau message ; API `interrupt` exposée (shared/api, ipc, preload).
   - Fichiers : `src/main/session-manager.ts`, `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`, `tests/session-manager.test.ts`, `tests/fixtures/fake-claude.cjs`
 

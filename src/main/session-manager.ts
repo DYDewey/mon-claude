@@ -13,6 +13,8 @@ export interface SessionManagerOptions {
 
 export class SessionManager {
   private sessions = new Map<string, ChildProcessWithoutNullStreams>();
+  /** Sessions dont on a demandé l'interruption : leur prochain `result` est en erreur, c'est normal. */
+  private interrupting = new Set<string>();
 
   constructor(
     private emit: (event: BridgeEvent) => void,
@@ -30,7 +32,15 @@ export class SessionManager {
 
     const parser = createStreamParser(sessionId);
     child.stdout.setEncoding('utf8');
-    child.stdout.on('data', (chunk: string) => parser.push(chunk).forEach(this.emit));
+    child.stdout.on('data', (chunk: string) => {
+      for (const event of parser.push(chunk)) {
+        if (this.interrupting.has(sessionId)) {
+          if (event.type === 'error') continue;
+          if (event.type === 'turn-end') this.interrupting.delete(sessionId);
+        }
+        this.emit(event);
+      }
+    });
 
     // On garde la fin de stderr pour expliquer un éventuel plantage.
     let stderrTail = '';
@@ -69,10 +79,20 @@ export class SessionManager {
     child.stdin.write(line + '\n');
   }
 
+  /** Arrête la réponse en cours ; la session reste ouverte et se souvient du début. */
+  interrupt(sessionId: string): void {
+    const child = this.sessions.get(sessionId);
+    if (!child) return;
+    this.interrupting.add(sessionId);
+    const line = JSON.stringify({ type: 'control_request', request_id: randomUUID(), request: { subtype: 'interrupt' } });
+    child.stdin.write(line + '\n');
+  }
+
   stop(sessionId: string): void {
     const child = this.sessions.get(sessionId);
     if (!child) return;
     this.sessions.delete(sessionId);
+    this.interrupting.delete(sessionId);
     killTree(child);
   }
 
