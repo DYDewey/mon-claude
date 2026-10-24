@@ -24,7 +24,7 @@ Vérif standard de chaque tâche : `npm test`, `npm run typecheck`, `npm run lin
 
 ## Phase 2 : première tranche
 
-- [ ] **T4 : reducer `state/sessions.ts`** (S)
+- [x] **T4 : reducer `state/sessions.ts`** (S)
   - Critères (tests) : `text-delta` s'ajoute au bon message de la bonne session ; `turn-end` termine le tour ; un événement sur une session non active la marque « non lue » ; `tool-use` ajoute une ligne d'outil.
   - Fichiers : `src/renderer/src/state/sessions.ts`, `tests/sessions.test.ts`
 
