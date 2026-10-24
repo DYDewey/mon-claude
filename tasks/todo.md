@@ -4,4 +4,4 @@
 - [x] P2 — Stockage + IPC `saveHandoff`
 - [x] P3 — Bouton « Passation » et rédaction dans la session en cours
 - [x] P4 — Fenêtre d'édition et session neuve
-- [ ] P5 — Checkpoint dans la vraie app
+- [x] P5 — Checkpoint dans la vraie app
