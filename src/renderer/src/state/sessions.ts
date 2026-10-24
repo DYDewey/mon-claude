@@ -63,6 +63,10 @@ export function sessionsReducer(state: ChatState, action: ChatAction): ChatState
       return update(state, action.sessionId, (s) => ({ items: [...s.items, { kind: 'stopped' }] }));
     case 'commands':
       return { ...state, commands: action.names };
+    case 'rate-limits':
+    case 'context':
+    case 'suggestion':
+      return state;
     case 'text-delta':
       return fromBridge(state, action.sessionId, (s) => {
         const last = s.items.at(-1);

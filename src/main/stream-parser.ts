@@ -1,4 +1,4 @@
-import type { BridgeEvent } from '../shared/events';
+import type { BridgeEvent, LimitWindow } from '../shared/events';
 
 export interface StreamParser {
   /** Reçoit un morceau de stdout, renvoie les événements des lignes complètes. */
@@ -8,18 +8,25 @@ export interface StreamParser {
 export function createStreamParser(sessionId: string): StreamParser {
   // stdout arrive par morceaux arbitraires : on garde la fin de ligne incomplète ici.
   let buffer = '';
+  // Dernier message assistant : sa taille = contexte actuel, envoyée au `result` (qui donne le max).
+  const last: LastMessage = {};
 
   return {
     push(chunk) {
       buffer += chunk;
       const lines = buffer.split('\n');
       buffer = lines.pop() ?? '';
-      return lines.flatMap((line) => parseLine(line.trim(), sessionId));
+      return lines.flatMap((line) => parseLine(line.trim(), sessionId, last));
     },
   };
 }
 
-function parseLine(line: string, sessionId: string): BridgeEvent[] {
+interface LastMessage {
+  model?: string;
+  tokens?: number;
+}
+
+function parseLine(line: string, sessionId: string, last: LastMessage): BridgeEvent[] {
   if (!line) return [];
   let msg: Record<string, unknown>;
   try {
@@ -39,7 +46,14 @@ function parseLine(line: string, sessionId: string): BridgeEvent[] {
 
   if (msg.type === 'assistant') {
     // Avec --include-partial-messages, chaque bloc terminé arrive dans son propre message assistant.
-    const content = (msg.message as { content?: unknown } | undefined)?.content;
+    const message = msg.message as { content?: unknown; model?: unknown; usage?: Record<string, unknown> } | undefined;
+    if (message?.usage) {
+      last.model = typeof message.model === 'string' ? message.model : undefined;
+      last.tokens = ['input_tokens', 'cache_read_input_tokens', 'cache_creation_input_tokens', 'output_tokens']
+        .map((key) => message.usage?.[key])
+        .reduce<number>((sum, n) => sum + (typeof n === 'number' ? n : 0), 0);
+    }
+    const content = message?.content;
     if (!Array.isArray(content)) return [];
     return content
       .filter((block) => block?.type === 'tool_use' && typeof block.name === 'string')
@@ -53,7 +67,18 @@ function parseLine(line: string, sessionId: string): BridgeEvent[] {
     if (msg.is_error) {
       return [{ type: 'error', sessionId, message: result ?? String(msg.subtype ?? 'erreur inconnue') }, end];
     }
+    const max = contextWindow(msg.modelUsage, last.model);
+    if (max && last.tokens) return [{ type: 'context', sessionId, used: last.tokens, max }, end];
     return [end];
+  }
+
+  if (msg.type === 'rate_limit_event') {
+    const windows = (msg.rate_limit_info as { unifiedWindows?: Record<string, unknown> } | undefined)?.unifiedWindows;
+    return [{ type: 'rate-limits', sessionId, fiveHour: limitWindow(windows?.five_hour), sevenDay: limitWindow(windows?.seven_day) }];
+  }
+
+  if (msg.type === 'prompt_suggestion' && typeof msg.suggestion === 'string' && msg.suggestion.trim()) {
+    return [{ type: 'suggestion', sessionId, text: msg.suggestion.trim() }];
   }
 
   if (msg.type === 'system' && msg.subtype === 'init' && Array.isArray(msg.slash_commands)) {
@@ -61,6 +86,21 @@ function parseLine(line: string, sessionId: string): BridgeEvent[] {
     return [{ type: 'commands', sessionId, names }];
   }
 
-  // Autres system/*, rate_limit_event… : pas utiles au renderer pour l'instant.
+  // Autres system/*… : pas utiles au renderer pour l'instant.
   return [];
+}
+
+function limitWindow(raw: unknown): LimitWindow | undefined {
+  const w = raw as { utilization?: unknown; resetsAt?: unknown } | undefined;
+  if (typeof w?.utilization !== 'number' || typeof w.resetsAt !== 'number') return undefined;
+  return { utilization: w.utilization, resetsAt: w.resetsAt };
+}
+
+/** contextWindow du modèle du dernier message ; à défaut, le plus grand (des sous-agents peuvent apparaître). */
+function contextWindow(modelUsage: unknown, model: string | undefined): number | undefined {
+  if (!modelUsage || typeof modelUsage !== 'object') return undefined;
+  const entries = modelUsage as Record<string, { contextWindow?: unknown }>;
+  const windowOf = (m: string) => (typeof entries[m]?.contextWindow === 'number' ? (entries[m].contextWindow as number) : 0);
+  const max = model && windowOf(model) ? windowOf(model) : Math.max(0, ...Object.keys(entries).map(windowOf));
+  return max || undefined;
 }

@@ -5,4 +5,17 @@ export type BridgeEvent =
   | { type: 'turn-end'; sessionId: string; result?: string; costUsd?: number }
   | { type: 'error'; sessionId: string; message: string }
   /** Commandes et skills disponibles (« / »), envoyés par claude au démarrage. */
-  | { type: 'commands'; sessionId: string; names: string[] };
+  | { type: 'commands'; sessionId: string; names: string[] }
+  /** Jauges de l'abonnement, les mêmes pour toutes les sessions. */
+  | { type: 'rate-limits'; sessionId: string; fiveHour?: LimitWindow; sevenDay?: LimitWindow }
+  /** Taille du contexte de la session : `used` tokens sur `max`. */
+  | { type: 'context'; sessionId: string; used: number; max: number }
+  /** Prochain message que l'utilisateur pourrait envoyer, proposé par claude après chaque tour. */
+  | { type: 'suggestion'; sessionId: string; text: string };
+
+export interface LimitWindow {
+  /** Part utilisée, de 0 à 1. */
+  utilization: number;
+  /** Remise à zéro, en secondes Unix. */
+  resetsAt: number;
+}

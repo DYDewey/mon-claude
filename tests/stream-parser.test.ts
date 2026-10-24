@@ -10,9 +10,32 @@ describe('createStreamParser', () => {
     const parser = createStreamParser('s1');
     const events = parser.push(fixture);
 
-    expect(events.map((e) => e.type)).toEqual(['commands', 'text-delta', 'turn-end']);
+    expect(events.map((e) => e.type)).toEqual(['commands', 'text-delta', 'rate-limits', 'context', 'turn-end']);
     expect(events[1]).toEqual({ type: 'text-delta', sessionId: 's1', text: 'bonjour' });
-    expect(events[2]).toMatchObject({ type: 'turn-end', sessionId: 's1', result: 'bonjour' });
+    expect(events[4]).toMatchObject({ type: 'turn-end', sessionId: 's1', result: 'bonjour' });
+  });
+
+  it('rate_limit_event donne les jauges 5 h et 7 jours', () => {
+    const limits = createStreamParser('s1').push(fixture).find((e) => e.type === 'rate-limits');
+    expect(limits).toEqual({
+      type: 'rate-limits',
+      sessionId: 's1',
+      fiveHour: { utilization: 0.04, resetsAt: 1792860000 },
+      sevenDay: { utilization: 0.5, resetsAt: 1793116800 },
+    });
+  });
+
+  it('result donne le contexte : tokens du dernier message / contextWindow du modèle', () => {
+    const context = createStreamParser('s1').push(fixture).find((e) => e.type === 'context');
+    // 2 + 14410 + 18203 + 5 tokens dans le dernier message assistant de la fixture.
+    expect(context).toEqual({ type: 'context', sessionId: 's1', used: 32620, max: 1000000 });
+  });
+
+  it('prompt_suggestion donne une suggestion de prochain message', () => {
+    const line = JSON.stringify({ type: 'prompt_suggestion', suggestion: 'écris le script maintenant', uuid: 'u', session_id: 'x' });
+    expect(createStreamParser('s1').push(line + '\n')).toEqual([
+      { type: 'suggestion', sessionId: 's1', text: 'écris le script maintenant' },
+    ]);
   });
 
   it('le message init donne la liste des commandes et skills', () => {
@@ -58,7 +81,7 @@ describe('createStreamParser', () => {
   it('gère les fins de ligne Windows', () => {
     const parser = createStreamParser('s1');
     const crlf = fixture.split('\n').join('\r\n');
-    expect(parser.push(crlf).map((e) => e.type)).toEqual(['commands', 'text-delta', 'turn-end']);
+    expect(parser.push(crlf).map((e) => e.type)).toEqual(['commands', 'text-delta', 'rate-limits', 'context', 'turn-end']);
   });
 
   it('émet une erreur puis turn-end quand le résultat est en échec', () => {
