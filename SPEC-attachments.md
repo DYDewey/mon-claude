@@ -1,6 +1,6 @@
 # Spec : module attachments
 
-Brouillon du 25/10/2026, à valider. Index : `SPEC.md`.
+Validée et terminée le 25/10/2026. Index : `SPEC.md`.
 
 ## Objectif
 Joindre n'importe quel fichier (photo, capture d'écran, PDF, code, texte…) à un message, pour que Claude le lise.

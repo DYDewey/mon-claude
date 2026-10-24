@@ -5,7 +5,7 @@
 - [x] A2 — Bouton 📎 : `withAttachments`, `files:pick`, étiquettes, envoi sans texte
 - [x] A3 — Glisser-déposer (`webUtils.getPathForFile`)
 - [x] A4 — Ctrl+V d'une capture → `attachments/` → étiquette
-- [ ] Checkpoint A — tests/typecheck/lint/build + vérif réelle (photo, PDF, capture)
+- [x] Checkpoint A — tests/typecheck/lint/build + vérif réelle (photo, PDF, capture)
 
 ## packaging
 - [ ] P1 — `scripts/make-icon.mjs` → `build/icon.png`

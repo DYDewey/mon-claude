@@ -16,7 +16,7 @@ Elle garde tout l'historique consultable ; après une passation, la nouvelle ses
 | `attachments` | joindre des fichiers (photos, PDF, code…) à un message : bouton, glisser-déposer, coller une capture | cli-bridge, chat |
 | `packaging` | vraie appli Windows : installeur, icône sur le bureau / menu Démarrer, lancement en un clic sans ligne de commande | tous |
 
-Ordre : `cli-bridge` ✅ → `chat` ✅ → `usage` ✅ → `history` ✅ → `handoff` ✅ → `model` ✅ → `attachments` → `packaging`. (`usage` et `packaging` ajoutés le 2026-10-24, `model` aussi.)
+Ordre : `cli-bridge` ✅ → `chat` ✅ → `usage` ✅ → `history` ✅ → `handoff` ✅ → `model` ✅ → `attachments` ✅ → `packaging`. (`usage` et `packaging` ajoutés le 2026-10-24, `model` aussi.)
 Chaque module a sa spec : `SPEC-<module>.md`. Ce fichier est l'index.
 
 ## Objectif
