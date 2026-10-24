@@ -161,6 +161,24 @@ describe('sessionsReducer', () => {
     expect(a.unread).toBe(false);
   });
 
+  it('une session ouverte retient le modèle choisi', () => {
+    const state = run([{ type: 'session-opened', sessionId: 'c', cwd: 'C:/x', model: 'haiku' }], twoSessions);
+    expect(state.sessions.find((s) => s.id === 'c')!.model).toBe('haiku');
+  });
+
+  it('changer de modèle met à jour le choix et oublie le modèle lu (il sera relu au prochain init)', () => {
+    const state = run(
+      [
+        { type: 'model', sessionId: 'a', model: 'claude-opus-5-5' },
+        { type: 'model-changed', sessionId: 'a', model: 'sonnet' },
+      ],
+      twoSessions,
+    );
+    const a = state.sessions.find((s) => s.id === 'a')!;
+    expect(a.model).toBe('sonnet');
+    expect(a.activeModel).toBeUndefined();
+  });
+
   it('envoyer un message efface la suggestion', () => {
     const state = run(
       [

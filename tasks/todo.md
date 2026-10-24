@@ -24,9 +24,9 @@
 - Fichiers : `src/main/session-manager.ts`, `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`, `tests/session-manager.test.ts`
 
 ## T4 : liste déroulante et dernier choix
-- [ ] `readLastModel(storage)` / `writeLastModel(storage, m)` : valeur inconnue ou illisible → Par défaut
-- [ ] `model-picker.tsx` dans l'en-tête : 4 choix, grisé pendant un tour ; un changement appelle `setModel` puis met à jour `model` dans l'état et le dernier choix
-- [ ] Nouvelle session → `startSession(cwd, { model: dernier choix })`
+- [x] `readLastModel(storage)` / `writeLastModel(storage, m)` : valeur inconnue ou illisible → Par défaut
+- [x] `model-picker.tsx` dans l'en-tête : 4 choix, grisé pendant un tour ; un changement appelle `setModel` puis met à jour `model` dans l'état et le dernier choix
+- [x] Nouvelle session → `startSession(cwd, { model: dernier choix })`
 - Vérif : `npm test` (lecture/écriture du dernier choix ; rendu du picker : 4 options, `disabled` pendant un tour), typecheck, lint
 - Fichiers : `src/renderer/src/model-choice.ts`, `src/renderer/src/components/model-picker.tsx`, `chat-view.tsx`, `state/sessions.ts`, `app.tsx`
 

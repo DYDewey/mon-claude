@@ -1,5 +1,6 @@
 import type { ChatItem } from '../../../shared/chat-item';
 import type { BridgeEvent, LimitWindow } from '../../../shared/events';
+import type { ModelChoice } from '../../../shared/model';
 
 export type { ChatItem };
 
@@ -15,6 +16,8 @@ export interface SessionState {
   unread: boolean;
   /** Taille du contexte après le dernier tour (inconnue avant la 1re réponse). */
   context?: { used: number; max: number };
+  /** Modèle choisi dans l'app (absent : « Par défaut »). */
+  model?: ModelChoice;
   /** Modèle réellement utilisé, lu au démarrage de claude (ex. claude-opus-5-5). */
   activeModel?: string;
   /** Prochain message proposé par claude, effacé dès qu'on envoie. */
@@ -39,7 +42,8 @@ export interface ChatState {
 
 export type ChatAction =
   | BridgeEvent
-  | { type: 'session-opened'; sessionId: string; cwd: string }
+  | { type: 'session-opened'; sessionId: string; cwd: string; model?: ModelChoice }
+  | { type: 'model-changed'; sessionId: string; model: ModelChoice | undefined }
   | { type: 'session-closed'; sessionId: string }
   | { type: 'select'; sessionId: string }
   | { type: 'user-sent'; sessionId: string; text: string }
@@ -53,7 +57,7 @@ export function sessionsReducer(state: ChatState, action: ChatAction): ChatState
   switch (action.type) {
     case 'session-opened': {
       const title = action.cwd.split(/[\\/]/).filter(Boolean).pop() ?? action.cwd;
-      const session: SessionState = { id: action.sessionId, cwd: action.cwd, title, items: [], status: 'idle', unread: false };
+      const session: SessionState = { id: action.sessionId, cwd: action.cwd, title, items: [], status: 'idle', unread: false, model: action.model };
       return { ...state, sessions: [...state.sessions, session], activeId: action.sessionId };
     }
     case 'session-closed': {
@@ -80,6 +84,8 @@ export function sessionsReducer(state: ChatState, action: ChatAction): ChatState
     // Pas fromBridge : ces infos ne sont pas une « réponse » à lire.
     case 'context':
       return update(state, action.sessionId, () => ({ context: { used: action.used, max: action.max } }));
+    case 'model-changed':
+      return update(state, action.sessionId, () => ({ model: action.model, activeModel: undefined }));
     case 'model':
       return update(state, action.sessionId, () => ({ activeModel: action.model }));
     case 'suggestion':

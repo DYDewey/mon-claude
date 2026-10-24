@@ -2,14 +2,17 @@ import { useEffect, useReducer, useState } from 'react';
 import type { ChatItem } from '../../shared/chat-item';
 import { buildHandoffPrompt } from '../../shared/handoff';
 import type { HistoryProject } from '../../shared/history';
+import type { ModelChoice } from '../../shared/model';
 import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
 import { HandoffButton } from './components/handoff-button';
 import { HandoffDialog } from './components/handoff-dialog';
 import { HistoryList } from './components/history-list';
 import { HistoryView } from './components/history-view';
+import { ModelPicker } from './components/model-picker';
 import { Sidebar } from './components/sidebar';
 import { ContextBadge } from './components/usage-gauges';
+import { readLastModel, writeLastModel } from './model-choice';
 import { handoffPhase, type HandoffPhase, type PendingHandoff } from './handoff-flow';
 import { initialState, sessionsReducer, type ChatState, type Limits } from './state/sessions';
 
@@ -53,6 +56,7 @@ export function App() {
   const [history, setHistory] = useState<{ projects: HistoryProject[]; at: number }>({ projects: [], at: 0 });
   const [handoff, setHandoff] = useState<PendingHandoff | null>(null);
   const [saving, setSaving] = useState<{ busy: boolean; error?: string }>({ busy: false });
+  const [lastModel, setLastModel] = useState(() => readLastModel(localStorage));
   const phase: HandoffPhase = active ? handoffPhase(handoff, active) : { phase: 'none' };
 
   function refreshHistory() {
@@ -92,9 +96,9 @@ export function App() {
   async function newSession() {
     const cwd = await window.claude.pickFolder();
     if (!cwd) return;
-    const sessionId = await window.claude.startSession(cwd);
+    const sessionId = await window.claude.startSession(cwd, { model: lastModel });
     setViewing(null);
-    dispatch({ type: 'session-opened', sessionId, cwd });
+    dispatch({ type: 'session-opened', sessionId, cwd, model: lastModel });
   }
 
   function openHistory(folder: string, id: string) {
@@ -114,6 +118,19 @@ export function App() {
   function close(sessionId: string) {
     window.claude.stopSession(sessionId);
     dispatch({ type: 'session-closed', sessionId });
+  }
+
+  async function changeModel(model: ModelChoice | undefined) {
+    if (!active) return;
+    const sessionId = active.id;
+    setLastModel(model);
+    writeLastModel(localStorage, model);
+    try {
+      await window.claude.setModel(sessionId, model);
+      dispatch({ type: 'model-changed', sessionId, model });
+    } catch (err) {
+      dispatch({ type: 'error', sessionId, message: `Changement de modèle impossible : ${err instanceof Error ? err.message : String(err)}` });
+    }
   }
 
   function send(text: string) {
@@ -187,7 +204,12 @@ export function App() {
             <span className="topbar-title">
               {active.title} · <span className="muted">{active.cwd}</span>
             </span>
-            {active.activeModel && <span className="topbar-ctx">{active.activeModel}</span>}
+            <ModelPicker
+              value={active.model}
+              activeModel={active.activeModel}
+              disabled={active.status === 'running'}
+              onChange={(model) => void changeModel(model)}
+            />
             {active.context && (
               <span className="topbar-ctx">
                 Contexte : <ContextBadge context={active.context} />

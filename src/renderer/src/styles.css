@@ -117,6 +117,7 @@ button:disabled { opacity: 0.4; cursor: default; }
 .topbar-title { flex: 1; }
 .topbar-ctx { font-size: 13px; color: var(--muted); white-space: nowrap; }
 .topbar-ctx .ctx { font-size: 13px; }
+.model-picker { display: flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; }
 .readonly { font-size: 13px; color: var(--muted); white-space: nowrap; }
 
 /* Passation */
