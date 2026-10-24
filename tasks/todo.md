@@ -52,7 +52,7 @@ Vérif standard de chaque tâche : `npm test`, `npm run typecheck`, `npm run lin
   - Icône + nom + cible principale (`file_path`, `command`, `pattern`…), dépliable pour voir `input`.
   - Fichiers : `components/tool-line.tsx`, `components/chat-view.tsx`
 
-- [ ] **T9 : Stop + erreurs** (S)
+- [x] **T9 : Stop + erreurs** (S)
   - Le bouton Envoyer devient Stop pendant une réponse → `interrupt` ; un événement `error` s'affiche dans la conversation.
   - Fichiers : `components/composer.tsx`, `components/chat-view.tsx`, `state/sessions.ts`
   - Vérif manuelle : Stop, puis nouveau message → Claude se souvient du début.

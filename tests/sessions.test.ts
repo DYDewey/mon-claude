@@ -104,6 +104,21 @@ describe('sessionsReducer', () => {
     expect(state.sessions[0].title).toHaveLength(40);
   });
 
+  it('Stop note l\'arrêt dans la conversation ; turn-end rend la main', () => {
+    const state = run(
+      [
+        { type: 'user-sent', sessionId: 'b', text: 'raconte' },
+        { type: 'text-delta', sessionId: 'b', text: 'Il était' },
+        { type: 'user-interrupted', sessionId: 'b' },
+        { type: 'turn-end', sessionId: 'b' },
+      ],
+      twoSessions,
+    );
+    const b = state.sessions.find((s) => s.id === 'b')!;
+    expect(b.items.at(-1)).toEqual({ kind: 'stopped' });
+    expect(b.status).toBe('idle');
+  });
+
   it('ignore les événements d\'une session inconnue', () => {
     expect(sessionsReducer(twoSessions, { type: 'text-delta', sessionId: 'zzz', text: 'x' })).toBe(twoSessions);
   });

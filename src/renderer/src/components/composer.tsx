@@ -3,9 +3,10 @@ import { useState, type KeyboardEvent } from 'react';
 interface Props {
   running: boolean;
   onSend: (text: string) => void;
+  onStop: () => void;
 }
 
-export function Composer({ running, onSend }: Props) {
+export function Composer({ running, onSend, onStop }: Props) {
   const [text, setText] = useState('');
 
   function submit() {
@@ -34,9 +35,13 @@ export function Composer({ running, onSend }: Props) {
         rows={3}
         autoFocus
       />
-      <button onClick={submit} disabled={running || !text.trim()}>
-        Envoyer
-      </button>
+      {running ? (
+        <button onClick={onStop}>Stop</button>
+      ) : (
+        <button onClick={submit} disabled={!text.trim()}>
+          Envoyer
+        </button>
+      )}
     </div>
   );
 }

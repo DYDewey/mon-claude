@@ -28,6 +28,8 @@ export function ChatView({ session }: { session: SessionState }) {
             );
           case 'tool':
             return <ToolLine key={i} name={item.name} input={item.input} />;
+          case 'stopped':
+            return <div key={i} className="msg muted">⏹ Réponse arrêtée</div>;
           case 'error':
             return <div key={i} className="msg msg-error">⚠️ {item.message}</div>;
         }

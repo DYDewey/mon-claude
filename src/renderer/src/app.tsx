@@ -29,6 +29,12 @@ export function App() {
     window.claude.sendMessage(active.id, text);
   }
 
+  function stop() {
+    if (!active) return;
+    dispatch({ type: 'user-interrupted', sessionId: active.id });
+    window.claude.interrupt(active.id);
+  }
+
   return (
     <div className="app">
       <Sidebar
@@ -46,7 +52,7 @@ export function App() {
             </span>
           </header>
           <ChatView session={active} />
-          <Composer running={active.status === 'running'} onSend={send} />
+          <Composer running={active.status === 'running'} onSend={send} onStop={stop} />
         </main>
       ) : (
         <main className="empty">Clique sur « + Nouvelle session » et choisis un dossier de travail.</main>

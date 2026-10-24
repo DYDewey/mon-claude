@@ -6,7 +6,8 @@ export type ChatItem =
   | { kind: 'user'; text: string }
   | { kind: 'assistant'; text: string }
   | { kind: 'tool'; name: string; input: Record<string, unknown> }
-  | { kind: 'error'; message: string };
+  | { kind: 'error'; message: string }
+  | { kind: 'stopped' };
 
 export interface SessionState {
   id: string;
@@ -28,7 +29,8 @@ export type ChatAction =
   | { type: 'session-opened'; sessionId: string; cwd: string }
   | { type: 'session-closed'; sessionId: string }
   | { type: 'select'; sessionId: string }
-  | { type: 'user-sent'; sessionId: string; text: string };
+  | { type: 'user-sent'; sessionId: string; text: string }
+  | { type: 'user-interrupted'; sessionId: string };
 
 export const initialState: ChatState = { sessions: [], activeId: null };
 
@@ -54,6 +56,9 @@ export function sessionsReducer(state: ChatState, action: ChatAction): ChatState
         items: [...s.items, { kind: 'user', text: action.text }],
         status: 'running',
       }));
+    case 'user-interrupted':
+      // Le statut reste « running » : c'est le turn-end envoyé par claude qui rend la main.
+      return update(state, action.sessionId, (s) => ({ items: [...s.items, { kind: 'stopped' }] }));
     case 'text-delta':
       return fromBridge(state, action.sessionId, (s) => {
         const last = s.items.at(-1);
