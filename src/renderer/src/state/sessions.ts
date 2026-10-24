@@ -1,4 +1,4 @@
-import type { BridgeEvent } from '../../../shared/events';
+import type { BridgeEvent, LimitWindow } from '../../../shared/events';
 
 // État de toutes les sessions ouvertes. Reducer pur : (état, action) → nouvel état, sans effet de bord.
 
@@ -17,6 +17,17 @@ export interface SessionState {
   status: 'idle' | 'running';
   /** Une réponse est arrivée pendant que la session n'était pas affichée. */
   unread: boolean;
+  /** Taille du contexte après le dernier tour (inconnue avant la 1re réponse). */
+  context?: { used: number; max: number };
+  /** Prochain message proposé par claude, effacé dès qu'on envoie. */
+  suggestion?: string;
+}
+
+export interface Limits {
+  fiveHour?: LimitWindow;
+  sevenDay?: LimitWindow;
+  /** Présent si les jauges viennent du cache (localStorage) : date de la sauvegarde, en ms. */
+  savedAt?: number;
 }
 
 export interface ChatState {
@@ -24,6 +35,8 @@ export interface ChatState {
   activeId: string | null;
   /** Commandes et skills proposés quand on tape « / » (les mêmes pour toutes les sessions). */
   commands: string[];
+  /** Jauges de l'abonnement (communes à toutes les sessions). */
+  limits?: Limits;
 }
 
 export type ChatAction =
@@ -57,6 +70,7 @@ export function sessionsReducer(state: ChatState, action: ChatAction): ChatState
         title: s.items.some((i) => i.kind === 'user') ? s.title : action.text.slice(0, TITLE_MAX),
         items: [...s.items, { kind: 'user', text: action.text }],
         status: 'running',
+        suggestion: undefined,
       }));
     case 'user-interrupted':
       // Le statut reste « running » : c'est le turn-end envoyé par claude qui rend la main.
@@ -64,9 +78,12 @@ export function sessionsReducer(state: ChatState, action: ChatAction): ChatState
     case 'commands':
       return { ...state, commands: action.names };
     case 'rate-limits':
+      return { ...state, limits: { fiveHour: action.fiveHour, sevenDay: action.sevenDay } };
+    // Pas fromBridge : ces infos ne sont pas une « réponse » à lire.
     case 'context':
+      return update(state, action.sessionId, () => ({ context: { used: action.used, max: action.max } }));
     case 'suggestion':
-      return state;
+      return update(state, action.sessionId, () => ({ suggestion: action.text }));
     case 'text-delta':
       return fromBridge(state, action.sessionId, (s) => {
         const last = s.items.at(-1);

@@ -128,4 +128,40 @@ describe('sessionsReducer', () => {
   it('ignore les événements d\'une session inconnue', () => {
     expect(sessionsReducer(twoSessions, { type: 'text-delta', sessionId: 'zzz', text: 'x' })).toBe(twoSessions);
   });
+
+  it('rate-limits remplace les jauges globales (et efface la marque « en cache »)', () => {
+    const cached = { ...twoSessions, limits: { fiveHour: { utilization: 0.1, resetsAt: 1 }, savedAt: 123 } };
+    const state = sessionsReducer(cached, {
+      type: 'rate-limits',
+      sessionId: 'a',
+      fiveHour: { utilization: 0.38, resetsAt: 2 },
+      sevenDay: { utilization: 0.53, resetsAt: 3 },
+    });
+    expect(state.limits).toEqual({ fiveHour: { utilization: 0.38, resetsAt: 2 }, sevenDay: { utilization: 0.53, resetsAt: 3 } });
+  });
+
+  it('context et suggestion vont dans la session, sans la marquer non lue', () => {
+    const state = run(
+      [
+        { type: 'context', sessionId: 'a', used: 32620, max: 1000000 },
+        { type: 'suggestion', sessionId: 'a', text: 'écris le script' },
+      ],
+      twoSessions, // b est active, a ne l'est pas
+    );
+    const a = state.sessions.find((s) => s.id === 'a')!;
+    expect(a.context).toEqual({ used: 32620, max: 1000000 });
+    expect(a.suggestion).toBe('écris le script');
+    expect(a.unread).toBe(false);
+  });
+
+  it('envoyer un message efface la suggestion', () => {
+    const state = run(
+      [
+        { type: 'suggestion', sessionId: 'b', text: 'écris le script' },
+        { type: 'user-sent', sessionId: 'b', text: 'autre chose' },
+      ],
+      twoSessions,
+    );
+    expect(state.sessions.find((s) => s.id === 'b')!.suggestion).toBeUndefined();
+  });
 });
