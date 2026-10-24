@@ -9,12 +9,12 @@ Elle garde tout l'historique consultable ; après une passation, la nouvelle ses
 |---|---|---|
 | `cli-bridge` | (main) lance `claude`, lit le flux JSON, envoie les événements au renderer | — |
 | `chat` | (renderer) fenêtre de chat, affichage en direct | cli-bridge |
-| `usage` | jauges abonnement (5 h / 7 jours) + % de contexte de chaque session | cli-bridge, chat |
+| `usage` | jauges abonnement (5 h / 7 jours) + % de contexte de chaque session + suggestion de réponse | cli-bridge, chat |
 | `history` | liste et relit les `.jsonl` de `~/.claude/projects/`, lecture seule | — |
 | `handoff` | Passation : résumé → relecture/édition → nouvelle session avec ce résumé seul | cli-bridge, chat |
 | `packaging` | vraie appli Windows : installeur, icône sur le bureau / menu Démarrer, lancement en un clic sans ligne de commande | tous |
 
-Ordre : `cli-bridge` ✅ → `chat` → `usage` → `history` → `handoff` → `packaging`. (`usage` et `packaging` ajoutés le 2026-10-24.)
+Ordre : `cli-bridge` ✅ → `chat` ✅ → `usage` → `history` → `handoff` → `packaging`. (`usage` et `packaging` ajoutés le 2026-10-24.)
 Chaque module a sa spec : `SPEC-<module>.md`. Ce fichier est l'index.
 
 ## Objectif
