@@ -5,3 +5,10 @@ build/
 *.log
 graphify-out/
 release/
+.claude/
+.env
+.env.*
+*.pem
+*.key
+*.db
+*.sqlite*
