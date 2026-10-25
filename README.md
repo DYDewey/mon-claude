@@ -49,3 +49,7 @@ Electron + React + TypeScript, construit avec electron-vite.
 - `src/shared/` : types et fonctions partagés.
 
 Les spécifications de chaque module sont dans `SPEC.md` et `SPEC-*.md`.
+
+## Licence
+
+[MIT](LICENSE)
