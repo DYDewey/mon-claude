@@ -44,7 +44,7 @@
 - Fichiers : `components/sidebar.tsx`, `components/usage-gauges.tsx`, `app.tsx`, `styles.css`, tests
 
 ## U7 : écran d'accueil
-- [ ] `welcome.tsx` : logo « C », « Bonjour, que fait-on ? », bouton « Nouvelle session » (même action que dans la barre)
+- [x] `welcome.tsx` : logo « C », « Bonjour, que fait-on ? », bouton « Nouvelle session » (même action que dans la barre)
 - Vérif : `npm test` (affiché sans session ouverte ; le bouton lance une session), typecheck, lint
 - Fichiers : `components/welcome.tsx`, `app.tsx`, tests
 

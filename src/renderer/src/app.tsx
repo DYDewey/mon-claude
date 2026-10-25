@@ -13,7 +13,8 @@ import { ModelPicker } from './components/model-picker';
 import { Sidebar } from './components/sidebar';
 import { ContextBadge } from './components/usage-gauges';
 import { readLastModel, writeLastModel } from './model-choice';
-import { folderLabel, isSidebarToggle, readCollapsed, writeCollapsed } from './ui-format';
+import { Welcome } from './components/welcome';
+import { folderLabel,isSidebarToggle, readCollapsed, writeCollapsed } from './ui-format';
 import { handoffPhase, type HandoffPhase, type PendingHandoff } from './handoff-flow';
 import { initialState, sessionsReducer, type ChatState, type Limits } from './state/sessions';
 
@@ -259,7 +260,7 @@ export function App() {
           )}
         </main>
       ) : (
-        <main className="empty">Clique sur « + Nouvelle session » et choisis un dossier de travail.</main>
+        <Welcome onNew={newSession} />
       )}
     </div>
   );
