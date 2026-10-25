@@ -51,4 +51,26 @@ describe('HistoryList', () => {
     expect(html).toContain('<details open');
     expect(html.match(/class="active"/g)).toHaveLength(1);
   });
+
+  it('a un champ de recherche', () => {
+    expect(render()).toMatch(/<input[^>]*type="search"[^>]*aria-label="Rechercher dans l&#x27;historique"/);
+  });
+
+  it('une recherche ne garde que les sessions qui correspondent, projets dépliés', () => {
+    const html = renderToStaticMarkup(
+      <HistoryList projects={projects} now={NOW} onOpen={noop} onRefresh={noop} initialQuery="USAGE" />,
+    );
+    expect(html).toContain('Module usage');
+    expect(html).not.toContain('Spec &lt;chat&gt;');
+    expect(html).not.toContain('Oral');
+    expect(html).toContain('<details open');
+  });
+
+  it('« Aucun résultat » quand rien ne correspond', () => {
+    const html = renderToStaticMarkup(
+      <HistoryList projects={projects} now={NOW} onOpen={noop} onRefresh={noop} initialQuery="zzz" />,
+    );
+    expect(html).toContain('Aucun résultat');
+    expect(html).not.toContain('<details');
+  });
 });

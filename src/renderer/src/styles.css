@@ -264,3 +264,9 @@ button:has(.lucide) { display: inline-flex; align-items: center; gap: 6px; }
 .model-menu li { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: var(--fs-sm); }
 .model-menu li.selected { background: var(--user); }
 .model-menu .model-active { cursor: default; font-size: var(--fs-xs); border-top: 1px solid var(--border); border-radius: 0; margin-top: 4px; }
+
+/* Recherche dans l'historique */
+.search { display: flex; align-items: center; gap: 6px; margin: 8px 0 4px; padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--muted); }
+.search:focus-within { border-color: var(--accent); }
+.search input { flex: 1; min-width: 0; border: 0; outline: none; background: none; color: var(--text); font: inherit; font-size: var(--fs-sm); }
+.no-result { margin: 8px 0; font-size: var(--fs-sm); }

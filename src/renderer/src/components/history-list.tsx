@@ -1,6 +1,7 @@
-import { RotateCw } from 'lucide-react';
+import { RotateCw, Search } from 'lucide-react';
+import { useState } from 'react';
 import type { HistoryProject } from '../../../shared/history';
-import { folderLabel } from '../ui-format';
+import { filterHistory, folderLabel } from '../ui-format';
 import { ago } from '../usage-format';
 
 interface Props {
@@ -10,6 +11,8 @@ interface Props {
   openKey?: string;
   onOpen: (folder: string, id: string) => void;
   onRefresh: () => void;
+  /** Pour les tests : recherche déjà saisie. */
+  initialQuery?: string;
 }
 
 /** Dernier dossier du vrai chemin (« mon-claude »), sinon le nom encodé du dossier. */
@@ -17,7 +20,10 @@ export function projectLabel(project: HistoryProject): string {
   return project.path ? folderLabel(project.path) : project.folder;
 }
 
-export function HistoryList({ projects, now, openKey, onOpen, onRefresh }: Props) {
+export function HistoryList({ projects, now, openKey, onOpen, onRefresh, initialQuery = '' }: Props) {
+  const [query, setQuery] = useState(initialQuery);
+  const searching = query.trim() !== '';
+  const shown = filterHistory(projects, query);
   return (
     <section className="history">
       <div className="history-head">
@@ -26,10 +32,21 @@ export function HistoryList({ projects, now, openKey, onOpen, onRefresh }: Props
           <RotateCw size={14} aria-hidden />
         </button>
       </div>
-      {projects.map((p) => {
-        const hasOpen = openKey?.startsWith(`${p.folder}/`);
+      <label className="search">
+        <Search size={14} aria-hidden />
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Rechercher"
+          aria-label="Rechercher dans l'historique"
+        />
+      </label>
+      {searching && shown.length === 0 && <p className="muted no-result">Aucun résultat</p>}
+      {shown.map((p) => {
+        const hasOpen = searching || openKey?.startsWith(`${p.folder}/`);
         return (
-          // <details> se replie tout seul ; on force l'ouverture seulement pour le projet de la session affichée.
+          // <details> se replie tout seul ; on force l'ouverture pour le projet de la session affichée et pendant une recherche.
           <details key={p.folder} open={hasOpen || undefined}>
             <summary title={p.path ?? p.folder}>
               {projectLabel(p)} <span className="muted">({p.sessions.length})</span>

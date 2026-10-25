@@ -31,8 +31,8 @@
 - Fichiers : `components/model-picker.tsx`, `components/composer.tsx`, `app.tsx`, `tests/model-picker.test.tsx`
 
 ## U5 : recherche dans l'historique
-- [ ] `filterHistory(projects, query)` : titre de session ou nom de projet, sans casse ni accents ; un projet qui correspond par son nom garde toutes ses sessions
-- [ ] Champ de recherche en haut de `history-list.tsx` ; projets filtrés ouverts ; « Aucun résultat »
+- [x] `filterHistory(projects, query)` : titre de session ou nom de projet, sans casse ni accents ; un projet qui correspond par son nom garde toutes ses sessions
+- [x] Champ de recherche en haut de `history-list.tsx` ; projets filtrés ouverts ; « Aucun résultat »
 - Vérif : `npm test` (« passa » ↔ « Passation », « éte » ↔ « ete », requête vide = tout, aucun résultat), typecheck, lint
 - Fichiers : `ui-format.ts`, `components/history-list.tsx`, tests
 
