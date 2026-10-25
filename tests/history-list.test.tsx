@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { HistoryList, projectLabel } from '../src/renderer/src/components/history-list';
 import type { HistoryProject } from '../src/shared/history';
-import { emptyOrganize, toggleFavorite } from '../src/shared/organize';
+import { emptyOrganize, renameSession, toggleFavorite } from '../src/shared/organize';
 
 const NOW = Date.parse('2026-10-24T12:00:00Z');
 const projects: HistoryProject[] = [
@@ -73,6 +73,25 @@ describe('HistoryList', () => {
     );
     expect(html).toContain('Aucun résultat');
     expect(html).not.toContain('<details');
+  });
+
+  it('affiche le nom personnalisé à la place du titre, et un crayon par session', () => {
+    const organize = renameSession(emptyOrganize(), 'D--Cours/x', 'Oral de maths');
+    const html = renderToStaticMarkup(
+      <HistoryList projects={projects} now={NOW} onOpen={noop} onRefresh={noop} organize={organize} />,
+    );
+    expect(html).toContain('Oral de maths');
+    expect(html).not.toContain('>Oral<');
+    expect(html.match(/aria-label="Renommer"/g)).toHaveLength(3);
+  });
+
+  it('la recherche trouve le nom personnalisé', () => {
+    const organize = renameSession(emptyOrganize(), 'D--Cours/x', 'Promesses JS');
+    const html = renderToStaticMarkup(
+      <HistoryList projects={projects} now={NOW} onOpen={noop} onRefresh={noop} organize={organize} initialQuery="promesses js" />,
+    );
+    expect(html).toContain('Promesses JS');
+    expect(html).not.toContain('Module usage');
   });
 
   it('chaque session a une étoile ; pleine (aria-pressed) seulement pour un favori', () => {

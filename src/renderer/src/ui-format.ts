@@ -1,4 +1,4 @@
-import type { HistoryProject } from '../../shared/history';
+import type { HistoryProject, HistorySession } from '../../shared/history';
 
 /** Dernier dossier d'un chemin Windows ou POSIX (« mon-claude »), séparateur final ignoré. */
 export function folderLabel(path: string): string {
@@ -12,14 +12,18 @@ function fold(text: string): string {
 
 /**
  * Historique filtré par une recherche : un projet dont le nom correspond garde toutes ses sessions,
- * sinon on ne garde que les sessions dont le titre correspond. Les projets vides disparaissent.
+ * sinon on ne garde que les sessions dont le titre affiché correspond. Les projets vides disparaissent.
  */
-export function filterHistory(projects: HistoryProject[], query: string): HistoryProject[] {
+export function filterHistory(
+  projects: HistoryProject[],
+  query: string,
+  titleOf: (folder: string, session: HistorySession) => string = (_folder, session) => session.title,
+): HistoryProject[] {
   const q = fold(query.trim());
   if (!q) return projects;
   return projects.flatMap((p) => {
     if (fold(p.path ? folderLabel(p.path) : p.folder).includes(q)) return [p];
-    const sessions = p.sessions.filter((s) => fold(s.title).includes(q));
+    const sessions = p.sessions.filter((s) => fold(titleOf(p.folder, s)).includes(q));
     return sessions.length ? [{ ...p, sessions }] : [];
   });
 }

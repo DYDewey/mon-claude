@@ -1,10 +1,11 @@
 import { RotateCw, Search } from 'lucide-react';
 import { useState } from 'react';
-import type { HistoryProject } from '../../../shared/history';
-import { emptyOrganize, sessionKey, type OrganizeData } from '../../../shared/organize';
+import type { HistoryProject, HistorySession } from '../../../shared/history';
+import { displayTitle, emptyOrganize, sessionKey, type OrganizeData } from '../../../shared/organize';
 import { filterHistory, folderLabel } from '../ui-format';
 import { ago } from '../usage-format';
 import { FavoriteButton } from './favorite-button';
+import { RenameButton, RenameField } from './rename-field';
 
 interface Props {
   projects: HistoryProject[];
@@ -16,6 +17,8 @@ interface Props {
   /** Favoris et noms personnalisés (vide par défaut). */
   organize?: OrganizeData;
   onToggleFavorite?: (key: string) => void;
+  /** Nom vide : retour au titre d'origine. */
+  onRename?: (key: string, title: string) => void;
   /** Pour les tests : recherche déjà saisie. */
   initialQuery?: string;
 }
@@ -35,11 +38,15 @@ export function HistoryList({
   onRefresh,
   organize = NO_ORGANIZE,
   onToggleFavorite = () => {},
+  onRename = () => {},
   initialQuery = '',
 }: Props) {
   const [query, setQuery] = useState(initialQuery);
+  /** Clé de la session en cours de renommage. */
+  const [editing, setEditing] = useState<string | null>(null);
+  const titleOf = (folder: string, s: HistorySession) => displayTitle(s, organize.sessions[sessionKey(folder, s.id)]);
   const searching = query.trim() !== '';
-  const shown = filterHistory(projects, query);
+  const shown = filterHistory(projects, query, titleOf);
   return (
     <section className="history">
       <div className="history-head">
@@ -70,16 +77,31 @@ export function HistoryList({
             <ul>
               {p.sessions.map((s) => {
                 const key = sessionKey(p.folder, s.id);
+                const title = titleOf(p.folder, s);
                 return (
                   <li
                     key={s.id}
                     className={openKey === key ? 'active' : undefined}
                     onClick={() => onOpen(p.folder, s.id)}
-                    title={s.title}
+                    title={title}
                   >
-                    <span className="sidebar-title">{s.title}</span>
-                    <span className="muted history-date">{ago(s.lastAt, now)}</span>
-                    <FavoriteButton on={!!organize.sessions[key]?.favorite} onToggle={() => onToggleFavorite(key)} />
+                    {editing === key ? (
+                      <RenameField
+                        initial={title}
+                        onSave={(name) => {
+                          setEditing(null);
+                          onRename(key, name);
+                        }}
+                        onCancel={() => setEditing(null)}
+                      />
+                    ) : (
+                      <>
+                        <span className="sidebar-title">{title}</span>
+                        <span className="muted history-date">{ago(s.lastAt, now)}</span>
+                        <RenameButton onClick={() => setEditing(key)} />
+                        <FavoriteButton on={!!organize.sessions[key]?.favorite} onToggle={() => onToggleFavorite(key)} />
+                      </>
+                    )}
                   </li>
                 );
               })}

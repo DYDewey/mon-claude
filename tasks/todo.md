@@ -21,8 +21,8 @@
 - Fichiers : `history-list.tsx`, `favorites-list.tsx`, `app.tsx`, `styles.css`, tests
 
 ## O4 : renommage + recherche
-- [ ] `renameKey(key)` pure ; crayon (`Pencil`) au survol → champ de saisie, Entrée valide, Échap annule, perte du focus valide
-- [ ] `displayTitle` utilisé dans l'historique et les favoris ; `filterHistory` cherche dans le titre affiché
+- [x] `renameKey(key)` pure ; crayon (`Pencil`) au survol → champ de saisie, Entrée valide, Échap annule, perte du focus valide
+- [x] `displayTitle` utilisé dans l'historique et les favoris ; `filterHistory` cherche dans le titre affiché
 - Vérif : `npm test` (`renameKey`, titre personnalisé affiché, « promesses js » trouve « Promesses JS »), typecheck, lint, `npm run build`, essai rapide en `npm run dev`
 - Fichiers : `history-list.tsx`, `favorites-list.tsx`, `ui-format.ts`, `app.tsx`, tests
 

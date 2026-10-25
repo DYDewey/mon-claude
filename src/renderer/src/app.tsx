@@ -3,7 +3,7 @@ import type { ChatItem } from '../../shared/chat-item';
 import { buildHandoffPrompt } from '../../shared/handoff';
 import type { HistoryProject } from '../../shared/history';
 import type { ModelChoice } from '../../shared/model';
-import { emptyOrganize, toggleFavorite, type OrganizeData } from '../../shared/organize';
+import { emptyOrganize, renameSession, toggleFavorite, type OrganizeData } from '../../shared/organize';
 import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
 import { HandoffButton } from './components/handoff-button';
@@ -237,6 +237,7 @@ export function App() {
           onRefresh={refreshHistory}
           organize={organize}
           onToggleFavorite={(key) => updateOrganize(toggleFavorite(organize, key))}
+          onRename={(key, title) => updateOrganize(renameSession(organize, key, title))}
         />
       </Sidebar>
       {viewing ? (

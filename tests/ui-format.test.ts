@@ -24,6 +24,13 @@ describe('filterHistory', () => {
     { folder: 'D--Cours-ete', path: 'D:\\Cours\\Été', sessions: [s('c', 'Oral'), s('d', 'Révisions')] },
   ];
 
+  it('cherche dans le titre affiché (nom personnalisé) quand il est fourni', () => {
+    const titleOf = (folder: string, session: { id: string; title: string }) =>
+      folder === 'D--Cours-ete' && session.id === 'c' ? 'Promesses JS' : session.title;
+    expect(filterHistory(projects, 'promesses js', titleOf)).toEqual([{ ...projects[1], sessions: [projects[1].sessions[0]] }]);
+    expect(filterHistory(projects, 'oral', titleOf)).toEqual([]);
+  });
+
   it('requête vide : tout est gardé', () => {
     expect(filterHistory(projects, '  ')).toEqual(projects);
   });
