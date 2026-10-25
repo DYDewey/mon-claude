@@ -8,10 +8,11 @@ import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
 import { HandoffButton } from './components/handoff-button';
 import { HandoffDialog } from './components/handoff-dialog';
-import { addProject, newProjectId, projectForCwd } from '../../shared/projects';
+import { addProject, newProjectId, projectForCwd, removeProject, updateProject } from '../../shared/projects';
 import { FavoritesList } from './components/favorites-list';
 import { HistoryList } from './components/history-list';
 import { HistoryView, TopbarFolder } from './components/history-view';
+import { ProjectView } from './components/project-view';
 import { ProjectsList } from './components/projects-list';
 import { ModelPicker } from './components/model-picker';
 import { Sidebar } from './components/sidebar';
@@ -67,7 +68,12 @@ export function App() {
   const [saving, setSaving] = useState<{ busy: boolean; error?: string }>({ busy: false });
   const [lastModel, setLastModel] = useState(() => readLastModel(localStorage));
   const [collapsed, setCollapsed] = useState(() => readCollapsed(localStorage));
+  // Fiche de projet affichée (à la place de la session et de la relecture).
+  const [projectId, setProjectId] = useState<string | null>(null);
+  // Dossiers et fichiers de projets qui n'existent plus.
+  const [missing, setMissing] = useState<ReadonlySet<string>>(new Set());
   const phase: HandoffPhase = active ? handoffPhase(handoff, active) : { phase: 'none' };
+  const shownProject = projectId ? organize.projects?.[projectId] : undefined;
 
   function toggleSidebar() {
     setCollapsed((c) => {
@@ -112,6 +118,22 @@ export function App() {
     );
   }, []);
 
+  // Revérifie l'existence des dossiers et fichiers à chaque changement des projets.
+  useEffect(() => {
+    const paths = Object.values(organize.projects ?? {}).flatMap((p) => [p.folder, ...(p.files ?? [])]);
+    if (paths.length === 0) return;
+    let stale = false;
+    window.claude.pathsExist(paths).then(
+      (exists) => {
+        if (!stale) setMissing(new Set(paths.filter((_, i) => !exists[i])));
+      },
+      (err) => console.error('vérification des chemins impossible', err),
+    );
+    return () => {
+      stale = true;
+    };
+  }, [organize.projects]);
+
   // Un seul abonnement pour toute l'app : chaque événement de claude devient une action du reducer.
   useEffect(() => window.claude.onEvent(dispatch), []);
 
@@ -142,13 +164,28 @@ export function App() {
 
   async function newProject() {
     const folder = await window.claude.pickFolder();
-    if (!folder || projectForCwd(organize, folder)) return;
-    updateOrganize(addProject(organize, newProjectId(), folder));
+    if (!folder || !organizeLoaded) return;
+    // Un dossier qui a déjà un projet : on ouvre sa fiche au lieu d'en créer un second.
+    const existing = projectForCwd(organize, folder);
+    const id = existing?.id ?? newProjectId();
+    if (!existing) updateOrganize(addProject(organize, id, folder));
+    openProject(id);
+  }
+
+  function openProject(id: string) {
+    setViewing(null);
+    setProjectId(id);
+  }
+
+  function deleteProject(id: string) {
+    updateOrganize(removeProject(organize, id));
+    setProjectId(null);
   }
 
   async function startIn(cwd: string) {
     const sessionId = await window.claude.startSession(cwd, { model: lastModel });
     setViewing(null);
+    setProjectId(null);
     dispatch({ type: 'session-opened', sessionId, cwd, model: lastModel });
   }
 
@@ -156,6 +193,7 @@ export function App() {
     const project = history.projects.find((p) => p.folder === folder);
     const title = project?.sessions.find((s) => s.id === id)?.title ?? id;
     const key = `${folder}/${id}`;
+    setProjectId(null);
     setViewing({ key, title, path: project?.path });
     // Si on a cliqué sur une autre session entre-temps, on ignore la réponse arrivée en retard.
     const done = (patch: Pick<Viewing, 'items' | 'error'>) =>
@@ -231,11 +269,12 @@ export function App() {
     <div className="app">
       <Sidebar
         sessions={state.sessions}
-        activeId={viewing ? null : state.activeId}
+        activeId={viewing || shownProject ? null : state.activeId}
         limits={state.limits}
         onNew={newSession}
         onSelect={(sessionId) => {
           setViewing(null);
+          setProjectId(null);
           dispatch({ type: 'select', sessionId });
         }}
         onClose={close}
@@ -246,7 +285,10 @@ export function App() {
           history={history.projects}
           organize={organize}
           openKey={viewing?.key}
+          openProjectId={shownProject ? projectId ?? undefined : undefined}
+          missing={missing}
           onOpen={openHistory}
+          onOpenProject={openProject}
           onToggleFavorite={(key) => updateOrganize(toggleFavorite(organize, key))}
           onNewProject={() => void newProject()}
           onNewSession={(folder) => void startIn(folder)}
@@ -269,7 +311,17 @@ export function App() {
           onRename={(key, title) => updateOrganize(renameSession(organize, key, title))}
         />
       </Sidebar>
-      {viewing ? (
+      {shownProject && projectId ? (
+        <ProjectView
+          key={projectId}
+          project={shownProject}
+          missing={missing}
+          onChange={(patch) => updateOrganize(updateProject(organize, projectId, patch))}
+          onPickFiles={() => window.claude.pickFiles()}
+          onNewSession={() => void startIn(shownProject.folder)}
+          onDelete={() => deleteProject(projectId)}
+        />
+      ) : viewing ? (
         <HistoryView
           title={displayTitle(viewing, organize.sessions[viewing.key])}
           path={viewing.path}

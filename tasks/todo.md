@@ -15,7 +15,7 @@
   - Vérif : tests `renderToStaticMarkup` (section cachée/visible, sessions listées) ; `npm run typecheck`, `npm run lint`.
   - Fichiers : `src/renderer/src/components/projects-list.tsx`, `src/renderer/src/app.tsx`, `src/renderer/src/styles.css`, `tests/projects-list.test.tsx`.
 
-- [ ] **P4** Fiche du projet
+- [x] **P4** Fiche du projet
   - Acceptation : vue avec nom, dossier, instructions (enregistrées à la sortie du champ, phrase « s'applique aux prochains lancements »), fichiers (📎 / ✕), « Nouvelle session », « Supprimer le projet » (ne touche ni sessions ni fichiers) ; canal `paths:exist` ; projet grisé et « Nouvelle session » désactivée si dossier absent ; fichier barré si absent.
   - Vérif : tests composants (grisé, barré, liste de fichiers) ; test du canal sur dossier temporaire ; build vert.
   - Fichiers : `src/renderer/src/components/project-view.tsx`, `src/renderer/src/app.tsx`, `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`.

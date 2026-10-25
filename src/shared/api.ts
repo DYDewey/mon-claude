@@ -31,6 +31,8 @@ export interface ClaudeApi {
   /** Favoris et noms personnalisés, lus dans %APPDATA%/mon-claude/organize.json. */
   getOrganize(): Promise<OrganizeData>;
   setOrganize(data: OrganizeData): Promise<void>;
+  /** Pour chaque chemin : existe-t-il encore ? (dossier ou fichiers d'un projet) */
+  pathsExist(paths: string[]): Promise<boolean[]>;
 }
 
 export const IPC = {
@@ -48,4 +50,5 @@ export const IPC = {
   handoffSave: 'handoff:save',
   organizeGet: 'organize:get',
   organizeSet: 'organize:set',
+  pathsExist: 'paths:exist',
 } as const;

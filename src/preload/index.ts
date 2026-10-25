@@ -23,6 +23,7 @@ const api: ClaudeApi = {
   saveHandoff: (text, sessionId) => ipcRenderer.invoke(IPC.handoffSave, text, sessionId),
   getOrganize: () => ipcRenderer.invoke(IPC.organizeGet),
   setOrganize: (data) => ipcRenderer.invoke(IPC.organizeSet, data),
+  pathsExist: (paths) => ipcRenderer.invoke(IPC.pathsExist, paths),
 };
 
 contextBridge.exposeInMainWorld('claude', api);

@@ -1,0 +1,51 @@
+import { renderToStaticMarkup } from 'react-dom/server';
+import { describe, expect, it } from 'vitest';
+import { ProjectView } from '../src/renderer/src/components/project-view';
+import type { Project } from '../src/shared/projects';
+
+const project: Project = {
+  name: 'Cours React',
+  folder: 'D:\\Cours\\react',
+  instructions: 'Explique simplement',
+  files: ['D:\\Cours\\react\\sujet.pdf', 'D:\\absent.pdf'],
+};
+const noop = () => {};
+const render = (missing: string[] = []) =>
+  renderToStaticMarkup(
+    <ProjectView
+      project={project}
+      missing={new Set(missing)}
+      onChange={noop}
+      onPickFiles={() => Promise.resolve([])}
+      onNewSession={noop}
+      onDelete={noop}
+    />,
+  );
+
+describe('ProjectView', () => {
+  it('affiche nom, dossier, instructions et fichiers', () => {
+    const html = render();
+    expect(html).toContain('value="Cours React"');
+    expect(html).toContain('D:\\Cours\\react');
+    expect(html).toContain('Explique simplement');
+    expect(html).toContain('sujet.pdf');
+    expect(html).toContain('aria-label="Retirer sujet.pdf"');
+    expect(html).toContain('prochains lancements');
+  });
+
+  it('fichier disparu : barré', () => {
+    const html = render(['D:\\absent.pdf']);
+    expect(html).toMatch(/<li class="missing"[^>]*>.*absent\.pdf/);
+    expect(html).not.toMatch(/<li class="missing"[^>]*>[^<]*<span[^>]*>[^<]*sujet\.pdf/);
+  });
+
+  it('dossier disparu : nouvelle session désactivée et message', () => {
+    const html = render(['D:\\Cours\\react']);
+    expect(html).toContain('Dossier introuvable');
+    expect(html).toMatch(/<button[^>]*disabled=""[^>]*>[^]*?Nouvelle session/);
+  });
+
+  it('dossier présent : nouvelle session active', () => {
+    expect(render()).not.toContain('disabled=""');
+  });
+});

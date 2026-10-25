@@ -17,12 +17,15 @@ const history: HistoryProject[] = [
   { folder: 'D--autre', path: 'D:\\autre', sessions: [{ id: 's3', title: 'Ailleurs', lastAt: 300, messageCount: 1 }] },
 ];
 const noop = () => {};
-const render = (organize: OrganizeData, openKey?: string) =>
+const render = (organize: OrganizeData, openKey?: string, extra: { openProjectId?: string; missing?: string[] } = {}) =>
   renderToStaticMarkup(
     <ProjectsList
       history={history}
       organize={organize}
       openKey={openKey}
+      openProjectId={extra.openProjectId}
+      missing={new Set(extra.missing)}
+      onOpenProject={noop}
       onOpen={noop}
       onToggleFavorite={noop}
       onNewProject={noop}
@@ -53,5 +56,17 @@ describe('ProjectsList', () => {
     expect(html.indexOf('Mon nom')).toBeLessThan(html.indexOf('Ancienne'));
     expect(html).not.toContain('Ailleurs');
     expect(html).toContain('aria-label="Retirer des favoris"');
+  });
+
+  it('fiche ouverte : ligne active et sessions dépliées', () => {
+    const html = render(withReact, undefined, { openProjectId: 'p_react001' });
+    expect(html).toContain('project-row active');
+    expect(html).toContain('Récente');
+  });
+
+  it('dossier disparu : ligne grisée et nouvelle session désactivée', () => {
+    const html = render(withReact, undefined, { missing: ['D:\\Cours\\react'] });
+    expect(html).toContain('project-row missing');
+    expect(html).toMatch(/<button[^>]*disabled=""[^>]*aria-label="Nouvelle session/);
   });
 });

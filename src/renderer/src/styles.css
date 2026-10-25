@@ -139,6 +139,26 @@ button.btn-icon:hover:not(:disabled) { background: var(--user); color: var(--tex
 .project-sessions { padding-left: 14px !important; }
 .sidebar .project-new { padding: 0 2px; visibility: hidden; }
 .project-row:hover .project-new, .sidebar .project-new:focus-visible { visibility: visible; }
+.project-row.active { background: var(--user); }
+.project-row.missing { opacity: 0.5; }
+.sidebar .project-toggle { padding: 0; }
+.project-view { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+.project-head { display: flex; align-items: center; gap: 12px; }
+.project-head button, .project-body button { display: inline-flex; align-items: center; gap: 6px; }
+.project-name { flex: 1; min-width: 0; font: inherit; font-weight: 600; color: var(--text); background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 4px 6px; }
+.project-name:hover, .project-name:focus { border-color: var(--border); outline: none; }
+.project-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; max-width: 760px; }
+.project-missing { color: var(--error); }
+.project-label { font-size: var(--fs-sm); font-weight: 600; margin-top: 8px; }
+.project-instructions { width: 100%; font: inherit; font-size: var(--fs-sm); color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px; resize: vertical; }
+.project-hint { font-size: var(--fs-xs); margin: 0; }
+.project-files { list-style: none; margin: 0; padding: 0; width: 100%; }
+.project-files li { display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 6px; font-size: var(--fs-sm); }
+.project-files li:hover { background: var(--user); }
+.project-files li.missing .sidebar-title { text-decoration: line-through; color: var(--muted); }
+.project-danger { margin-top: 24px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: var(--fs-sm); }
+button.btn-danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+button.btn-danger:hover:not(:disabled) { background: var(--user); }
 .favorites { border-top: 1px solid var(--border); padding-top: 8px; }
 .favorites ul { max-height: 30vh; }
 .favorite-project { font-size: var(--fs-xs); white-space: nowrap; max-width: 35%; overflow: hidden; text-overflow: ellipsis; }

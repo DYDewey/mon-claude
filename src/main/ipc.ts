@@ -10,6 +10,7 @@ import { savePastedImage } from './attachment-store';
 import { saveHandoff } from './handoff-store';
 import { createHistoryReader } from './history-reader';
 import { loadOrganize, saveOrganize } from './organize-store';
+import { pathsExist } from './paths-exist';
 import { SessionManager } from './session-manager';
 
 /** Copie de organize.json tenue par main : les instructions des projets y sont lues à chaque lancement de claude. */
@@ -105,4 +106,5 @@ export function registerOrganizeIpc(): void {
     organize = clean;
     return saveOrganize(dir, clean);
   });
+  ipcMain.handle(IPC.pathsExist, (_e, paths: unknown) => pathsExist(paths));
 }
