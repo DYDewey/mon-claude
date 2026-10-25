@@ -15,8 +15,9 @@ Elle garde tout l'historique consultable ; après une passation, la nouvelle ses
 | `model` | choisir le modèle (Opus, Sonnet…) d'une session et le changer à tout moment | cli-bridge, chat |
 | `attachments` | joindre des fichiers (photos, PDF, code…) à un message : bouton, glisser-déposer, coller une capture | cli-bridge, chat |
 | `packaging` | vraie appli Windows : installeur, icône sur le bureau / menu Démarrer, lancement en un clic sans ligne de commande | tous |
+| `ui` | refonte visuelle façon Claude Desktop : thèmes clair/sombre, typo, icônes SVG, barre latérale (recherche, repli), accueil | chat, history, handoff, model |
 
-Ordre : `cli-bridge` ✅ → `chat` ✅ → `usage` ✅ → `history` ✅ → `handoff` ✅ → `model` ✅ → `attachments` ✅ → `packaging` ✅. (`usage` et `packaging` ajoutés le 2026-10-24, `model` aussi.)
+Ordre : `cli-bridge` ✅ → `chat` ✅ → `usage` ✅ → `history` ✅ → `handoff` ✅ → `model` ✅ → `attachments` ✅ → `packaging` ✅ → `ui`. (`ui` ajouté le 2026-10-25 ; `usage` et `packaging` ajoutés le 2026-10-24, `model` aussi.)
 Chaque module a sa spec : `SPEC-<module>.md`. Ce fichier est l'index.
 
 ## Objectif
