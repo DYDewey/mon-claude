@@ -122,4 +122,45 @@ describe('SessionManager', () => {
     expect(text).not.toContain('--resume');
     manager.stopAll();
   });
+
+  describe('instructions de projet (promptFor)', () => {
+    const prompt = 'Instructions du projet « Été » :\nRéponds "court"\n\n- D:\\sujet.pdf';
+
+    async function argsOf(manager: SessionManager, events: BridgeEvent[], id: string): Promise<string[]> {
+      events.length = 0;
+      manager.send(id, 'args-json?');
+      await waitFor(events, 'turn-end');
+      const text = events.filter((e) => e.type === 'text-delta').map((e) => (e as { text: string }).text).join('');
+      return JSON.parse(text) as string[];
+    }
+
+    it('passe le texte intact, au lancement et après un changement de modèle', async () => {
+      const events: BridgeEvent[] = [];
+      const asked: string[] = [];
+      const manager = new SessionManager((e) => events.push(e), {
+        ...fakeClaude,
+        promptFor: (cwd) => (asked.push(cwd), prompt),
+      });
+
+      const id = manager.start(tmpdir());
+      let args = await argsOf(manager, events, id);
+      expect(args[args.indexOf('--append-system-prompt') + 1]).toBe(prompt);
+
+      manager.restart(id, 'sonnet');
+      args = await argsOf(manager, events, id);
+      await new Promise((r) => setTimeout(r, 300));
+      expect(args[args.indexOf('--append-system-prompt') + 1]).toBe(prompt);
+      expect(asked).toEqual([tmpdir(), tmpdir()]);
+      manager.stopAll();
+    });
+
+    it('rien à envoyer : pas d option', async () => {
+      const events: BridgeEvent[] = [];
+      const manager = new SessionManager((e) => events.push(e), { ...fakeClaude, promptFor: () => null });
+
+      const id = manager.start(tmpdir());
+      expect(await argsOf(manager, events, id)).not.toContain('--append-system-prompt');
+      manager.stopAll();
+    });
+  });
 });

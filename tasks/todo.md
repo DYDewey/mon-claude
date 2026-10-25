@@ -5,7 +5,7 @@
   - Vérif : `npm test` (nouveau `tests/projects.test.ts` + cas ajoutés à `tests/organize.test.ts`), `npm run typecheck`.
   - Fichiers : `src/shared/projects.ts`, `src/shared/organize.ts`, `tests/projects.test.ts`, `tests/organize.test.ts`.
 
-- [ ] **P2** Injection des instructions au lancement de claude
+- [x] **P2** Injection des instructions au lancement de claude
   - Acceptation : `buildClaudeArgs({ appendSystemPrompt })` ajoute `--append-system-prompt <texte>` ; `SessionManager` appelle `promptFor(cwd)` à chaque `launch` (start, reprise, restart) ; main tient une copie de l'organize (chargée au démarrage, remplacée après `organize:set`) et ne passe que les fichiers existants.
   - Vérif : tests `claude-args` et `session-manager` (le faux claude reçoit l'argument avec guillemets, retours à la ligne et accents intacts, au lancement et après changement de modèle ; rien si `promptFor` renvoie `null`).
   - Fichiers : `src/main/claude-args.ts`, `src/main/session-manager.ts`, `src/main/ipc.ts`, tests associés.

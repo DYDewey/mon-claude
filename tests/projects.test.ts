@@ -10,6 +10,7 @@ import {
   parseProjects,
   projectForCwd,
   projectSessions,
+  promptForCwd,
   removeProject,
   sameFolder,
   updateProject,
@@ -163,5 +164,13 @@ describe('parseProjects', () => {
   it('pas un objet : aucun projet', () => {
     expect(parseProjects(undefined)).toEqual({});
     expect(parseProjects([])).toEqual({});
+  });
+});
+
+describe('promptForCwd', () => {
+  it('texte du projet du dossier, null hors projet', () => {
+    const data = updateProject(withReact, 'p_react001', { instructions: 'Sois bref' });
+    expect(promptForCwd(data, 'D:\\Cours\\react\\', () => true)).toBe('Instructions du projet « react » :\nSois bref');
+    expect(promptForCwd(data, 'D:\\autre', () => true)).toBeNull();
   });
 });

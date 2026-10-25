@@ -4,17 +4,24 @@ import { join } from 'node:path';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import { IPC } from '../shared/api';
 import { isModelChoice } from '../shared/model';
-import { parseOrganize } from '../shared/organize';
+import { emptyOrganize, parseOrganize, type OrganizeData } from '../shared/organize';
+import { promptForCwd } from '../shared/projects';
 import { savePastedImage } from './attachment-store';
 import { saveHandoff } from './handoff-store';
 import { createHistoryReader } from './history-reader';
 import { loadOrganize, saveOrganize } from './organize-store';
 import { SessionManager } from './session-manager';
 
+/** Copie de organize.json tenue par main : les instructions des projets y sont lues à chaque lancement de claude. */
+let organize: OrganizeData = emptyOrganize();
+
 export function registerClaudeIpc(): SessionManager {
-  const manager = new SessionManager((event) => {
-    for (const win of BrowserWindow.getAllWindows()) win.webContents.send(IPC.event, event);
-  });
+  const manager = new SessionManager(
+    (event) => {
+      for (const win of BrowserWindow.getAllWindows()) win.webContents.send(IPC.event, event);
+    },
+    { promptFor: (cwd) => promptForCwd(organize, cwd, existsSync) },
+  );
 
   ipcMain.handle(IPC.start, (_e, cwd: unknown, resumeId: unknown, model: unknown) => {
     // Le renderer n'est pas digne de confiance : on vérifie ce qu'il envoie.
@@ -84,11 +91,18 @@ export function registerHandoffIpc(): void {
 
 export function registerOrganizeIpc(): void {
   const dir = app.getPath('userData');
+  let changed = false;
+  // Lecture au démarrage, sans écraser un enregistrement arrivé entre-temps.
+  void loadOrganize(dir).then((data) => {
+    if (!changed) organize = data;
+  });
   ipcMain.handle(IPC.organizeGet, () => loadOrganize(dir));
   ipcMain.handle(IPC.organizeSet, (_e, data: unknown) => {
     // Repassée par parseOrganize : seuls les champs connus et bien typés sont écrits.
     const clean = parseOrganize(JSON.stringify(data ?? null));
     if (!clean) throw new Error('Données de rangement invalides');
+    changed = true;
+    organize = clean;
     return saveOrganize(dir, clean);
   });
 }

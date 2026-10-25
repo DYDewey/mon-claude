@@ -10,6 +10,8 @@ export interface SessionManagerOptions {
   command?: string;
   /** Arguments placés avant ceux de claude (sert aux tests avec un faux claude). */
   prefixArgs?: string[];
+  /** Texte à ajouter au prompt système pour une session lancée dans `cwd` (instructions du projet), relu à chaque lancement. */
+  promptFor?: (cwd: string) => string | null;
 }
 
 export class SessionManager {
@@ -37,7 +39,11 @@ export class SessionManager {
   private launch(cwd: string, sessionId: string, model: ModelChoice | undefined): void {
     const command = this.options.command ?? 'claude';
     const resume = this.withConversation.has(sessionId);
-    const args = [...(this.options.prefixArgs ?? []), ...buildClaudeArgs({ sessionId, resume, model })];
+    const appendSystemPrompt = this.options.promptFor?.(cwd) ?? undefined;
+    const args = [
+      ...(this.options.prefixArgs ?? []),
+      ...buildClaudeArgs({ sessionId, resume, model, appendSystemPrompt }),
+    ];
 
     // Sans cette variable, claude -p ignore --prompt-suggestions (vérifié avec la v2.1.310).
     const env = { ...process.env, CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION: '1' };

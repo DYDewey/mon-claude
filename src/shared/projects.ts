@@ -93,6 +93,12 @@ export function buildProjectPrompt(project: Project, exists: (path: string) => b
   return parts.length > 0 ? parts.join('\n\n') : null;
 }
 
+/** Ce que main ajoute au prompt système d'une session lancée dans `cwd`. */
+export function promptForCwd(data: OrganizeData, cwd: string, exists: (path: string) => boolean): string | null {
+  const found = projectForCwd(data, cwd);
+  return found ? buildProjectPrompt(found.project, exists) : null;
+}
+
 /** Valide le champ `projects` d'organize.json : entrées invalides ignorées. */
 export function parseProjects(raw: unknown): Record<string, Project> {
   const projects: Record<string, Project> = {};

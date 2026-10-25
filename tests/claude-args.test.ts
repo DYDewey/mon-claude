@@ -32,4 +32,11 @@ describe('buildClaudeArgs', () => {
   it("n'utilise jamais --bare (les skills perso doivent se charger)", () => {
     expect(buildClaudeArgs({ sessionId: 'abc' })).not.toContain('--bare');
   });
+
+  it('ajoute les instructions du projet au prompt système', () => {
+    expect(buildClaudeArgs({ sessionId: 'abc', appendSystemPrompt: 'Sois bref' })).toEqual([
+      ...base, '--append-system-prompt', 'Sois bref', '--session-id', 'abc',
+    ]);
+    expect(buildClaudeArgs({ sessionId: 'abc' })).not.toContain('--append-system-prompt');
+  });
 });
