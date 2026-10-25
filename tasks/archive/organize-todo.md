@@ -32,6 +32,6 @@
 - Fichiers : `history-view.tsx`, `app.tsx`, test
 
 ## O6 : vérification dans la vraie app
-- [ ] `npm run dist` + installation ; via CDP : mettre en favori, renommer, rechercher, redémarrer, tout est encore là ; aucune erreur dans la console
-- [ ] Empreintes (taille + date) des `.jsonl` de `~/.claude/projects/` identiques avant et après
-- [ ] `SPEC.md` : `organize` ✅ ; archiver `tasks/plan.md` et `tasks/todo.md` en `tasks/archive/organize-*.md`
+- [x] `npm run dist` + installation ; via CDP : mettre en favori, renommer, rechercher, redémarrer, tout est encore là ; aucune erreur dans la console
+- [x] Empreintes (taille + date) des `.jsonl` de `~/.claude/projects/` identiques avant et après
+- [x] `SPEC.md` : `organize` ✅ ; archiver `tasks/plan.md` et `tasks/todo.md` en `tasks/archive/organize-*.md`
