@@ -54,7 +54,7 @@
 - Fichiers : `components/handoff-dialog.tsx`, `styles.css`, tests
 
 ## Checkpoint B (après U4-U8)
-- [ ] test (115 + nouveaux), typecheck, lint, build OK
+- [x] test (115 + nouveaux), typecheck, lint, build OK
 
 ## U9 : vérification dans la vraie app
 - [ ] `npm run dist`, réinstallation, lancement avec `--remote-debugging-port=9222`
