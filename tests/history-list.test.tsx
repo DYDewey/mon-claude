@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { HistoryList, projectLabel } from '../src/renderer/src/components/history-list';
 import type { HistoryProject } from '../src/shared/history';
+import { emptyOrganize, toggleFavorite } from '../src/shared/organize';
 
 const NOW = Date.parse('2026-10-24T12:00:00Z');
 const projects: HistoryProject[] = [
@@ -72,5 +73,15 @@ describe('HistoryList', () => {
     );
     expect(html).toContain('Aucun résultat');
     expect(html).not.toContain('<details');
+  });
+
+  it('chaque session a une étoile ; pleine (aria-pressed) seulement pour un favori', () => {
+    const organize = toggleFavorite(emptyOrganize(), 'D--Cours/x');
+    const html = renderToStaticMarkup(
+      <HistoryList projects={projects} now={NOW} onOpen={noop} onRefresh={noop} organize={organize} onToggleFavorite={noop} />,
+    );
+    expect(html.match(/aria-label="Ajouter aux favoris"/g)).toHaveLength(2);
+    expect(html.match(/aria-label="Retirer des favoris"/g)).toHaveLength(1);
+    expect(html).toContain('aria-pressed="true"');
   });
 });

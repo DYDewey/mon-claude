@@ -124,6 +124,14 @@ button.btn-icon:hover:not(:disabled) { background: var(--user); color: var(--tex
 .history summary { cursor: pointer; padding: 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: var(--fs-sm); }
 .history ul { overflow: visible; }
 .history-date { font-size: var(--fs-xs); white-space: nowrap; }
+/* Étoile : visible au survol de la ligne, toujours visible (orange, pleine) pour un favori. */
+.sidebar .star { padding: 0 2px; color: var(--muted); visibility: hidden; }
+.sidebar li:hover .star, .sidebar .star:focus-visible, .sidebar .star.on { visibility: visible; }
+.sidebar .star.on { color: var(--accent); }
+.sidebar .star.on svg { fill: currentColor; }
+.favorites { border-top: 1px solid var(--border); padding-top: 8px; }
+.favorites ul { max-height: 30vh; }
+.favorite-project { font-size: var(--fs-xs); white-space: nowrap; max-width: 35%; overflow: hidden; text-overflow: ellipsis; }
 .topbar { padding: 10px 16px; border-bottom: 1px solid var(--border); }
 .topbar-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 

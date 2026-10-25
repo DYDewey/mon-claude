@@ -3,10 +3,12 @@ import type { ChatItem } from '../../shared/chat-item';
 import { buildHandoffPrompt } from '../../shared/handoff';
 import type { HistoryProject } from '../../shared/history';
 import type { ModelChoice } from '../../shared/model';
+import { emptyOrganize, toggleFavorite, type OrganizeData } from '../../shared/organize';
 import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
 import { HandoffButton } from './components/handoff-button';
 import { HandoffDialog } from './components/handoff-dialog';
+import { FavoritesList } from './components/favorites-list';
 import { HistoryList } from './components/history-list';
 import { HistoryView, TopbarFolder } from './components/history-view';
 import { ModelPicker } from './components/model-picker';
@@ -56,6 +58,7 @@ export function App() {
   // `at` : heure de la lecture, sert de « maintenant » pour les dates relatives (pas de Date.now() au rendu).
   const [viewing, setViewing] = useState<Viewing | null>(null);
   const [history, setHistory] = useState<{ projects: HistoryProject[]; at: number }>({ projects: [], at: 0 });
+  const [organize, setOrganize] = useState<OrganizeData>(emptyOrganize);
   const [handoff, setHandoff] = useState<PendingHandoff | null>(null);
   const [saving, setSaving] = useState<{ busy: boolean; error?: string }>({ busy: false });
   const [lastModel, setLastModel] = useState(() => readLastModel(localStorage));
@@ -87,8 +90,15 @@ export function App() {
     );
   }
 
+  // Favoris et noms : l'état est la référence, le fichier suit sans bloquer l'interface.
+  function updateOrganize(next: OrganizeData) {
+    setOrganize(next);
+    window.claude.setOrganize(next).catch((err) => console.error('organize.json non enregistré', err));
+  }
+
   useEffect(() => {
     refreshHistory();
+    window.claude.getOrganize().then(setOrganize, (err) => console.error('organize.json illisible', err));
   }, []);
 
   // Un seul abonnement pour toute l'app : chaque événement de claude devient une action du reducer.
@@ -212,12 +222,21 @@ export function App() {
         collapsed={collapsed}
         onToggle={toggleSidebar}
       >
+        <FavoritesList
+          projects={history.projects}
+          organize={organize}
+          openKey={viewing?.key}
+          onOpen={openHistory}
+          onToggleFavorite={(key) => updateOrganize(toggleFavorite(organize, key))}
+        />
         <HistoryList
           projects={history.projects}
           now={history.at}
           openKey={viewing?.key}
           onOpen={openHistory}
           onRefresh={refreshHistory}
+          organize={organize}
+          onToggleFavorite={(key) => updateOrganize(toggleFavorite(organize, key))}
         />
       </Sidebar>
       {viewing ? (

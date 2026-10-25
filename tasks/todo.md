@@ -9,14 +9,14 @@
 ## O2 : stockage + IPC
 - [x] `src/main/organize-store.ts` : `loadOrganize(dir)` (absent → vide ; illisible → vide et note « à sauvegarder en .bak »), `saveOrganize(dir, data)` (`.bak` si besoin, `.tmp` puis `rename`)
 - [x] IPC `organize:get` / `organize:set` (donnée repassée dans `parseOrganize`), preload, `ClaudeApi.getOrganize/setOrganize`
-- [ ] `app.tsx` : état `organize` chargé au démarrage (fait avec O3, pour que chaque commit reste vert)
+- [x] `app.tsx` : état `organize` chargé au démarrage (fait avec O3, pour que chaque commit reste vert)
 - Vérif : `npm test` (nouveau `tests/organize-store.test.ts` sur un dossier temporaire : aller-retour, fichier corrompu → vide + `.bak`, pas de `.tmp` restant), typecheck, lint
 - Fichiers : `src/main/organize-store.ts`, `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`, `src/renderer/src/app.tsx`, test
 
 ## O3 : étoile + section Favoris
-- [ ] `history-list.tsx` : bouton étoile (`Star`, `aria-label` « Ajouter aux favoris » / « Retirer des favoris », `aria-pressed`), visible au survol, plein et orange si favori ; `stopPropagation`
-- [ ] Nouvelle `favorites-list.tsx` : section « Favoris » entre « En cours » et « Historique », nom du projet en petit, clic = ouvrir en lecture ; cachée si vide
-- [ ] `app.tsx` : `toggleFavorite` + `setOrganize`
+- [x] `history-list.tsx` : bouton étoile (`Star`, `aria-label` « Ajouter aux favoris » / « Retirer des favoris », `aria-pressed`), visible au survol, plein et orange si favori ; `stopPropagation`
+- [x] Nouvelle `favorites-list.tsx` : section « Favoris » entre « En cours » et « Historique », nom du projet en petit, clic = ouvrir en lecture ; cachée si vide
+- [x] `app.tsx` : `toggleFavorite` + `setOrganize`
 - Vérif : `npm test` (étoile pleine pour un favori, section cachée si vide, ordre), typecheck, lint
 - Fichiers : `history-list.tsx`, `favorites-list.tsx`, `app.tsx`, `styles.css`, tests
 

@@ -1,8 +1,10 @@
 import { RotateCw, Search } from 'lucide-react';
 import { useState } from 'react';
 import type { HistoryProject } from '../../../shared/history';
+import { emptyOrganize, sessionKey, type OrganizeData } from '../../../shared/organize';
 import { filterHistory, folderLabel } from '../ui-format';
 import { ago } from '../usage-format';
+import { FavoriteButton } from './favorite-button';
 
 interface Props {
   projects: HistoryProject[];
@@ -11,6 +13,9 @@ interface Props {
   openKey?: string;
   onOpen: (folder: string, id: string) => void;
   onRefresh: () => void;
+  /** Favoris et noms personnalisés (vide par défaut). */
+  organize?: OrganizeData;
+  onToggleFavorite?: (key: string) => void;
   /** Pour les tests : recherche déjà saisie. */
   initialQuery?: string;
 }
@@ -20,7 +25,18 @@ export function projectLabel(project: HistoryProject): string {
   return project.path ? folderLabel(project.path) : project.folder;
 }
 
-export function HistoryList({ projects, now, openKey, onOpen, onRefresh, initialQuery = '' }: Props) {
+const NO_ORGANIZE = emptyOrganize();
+
+export function HistoryList({
+  projects,
+  now,
+  openKey,
+  onOpen,
+  onRefresh,
+  organize = NO_ORGANIZE,
+  onToggleFavorite = () => {},
+  initialQuery = '',
+}: Props) {
   const [query, setQuery] = useState(initialQuery);
   const searching = query.trim() !== '';
   const shown = filterHistory(projects, query);
@@ -52,17 +68,21 @@ export function HistoryList({ projects, now, openKey, onOpen, onRefresh, initial
               {projectLabel(p)} <span className="muted">({p.sessions.length})</span>
             </summary>
             <ul>
-              {p.sessions.map((s) => (
-                <li
-                  key={s.id}
-                  className={openKey === `${p.folder}/${s.id}` ? 'active' : undefined}
-                  onClick={() => onOpen(p.folder, s.id)}
-                  title={s.title}
-                >
-                  <span className="sidebar-title">{s.title}</span>
-                  <span className="muted history-date">{ago(s.lastAt, now)}</span>
-                </li>
-              ))}
+              {p.sessions.map((s) => {
+                const key = sessionKey(p.folder, s.id);
+                return (
+                  <li
+                    key={s.id}
+                    className={openKey === key ? 'active' : undefined}
+                    onClick={() => onOpen(p.folder, s.id)}
+                    title={s.title}
+                  >
+                    <span className="sidebar-title">{s.title}</span>
+                    <span className="muted history-date">{ago(s.lastAt, now)}</span>
+                    <FavoriteButton on={!!organize.sessions[key]?.favorite} onToggle={() => onToggleFavorite(key)} />
+                  </li>
+                );
+              })}
             </ul>
           </details>
         );
