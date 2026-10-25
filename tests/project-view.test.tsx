@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { ProjectView, TopbarProject } from '../src/renderer/src/components/project-view';
+import { nameChange, ProjectView, TopbarProject } from '../src/renderer/src/components/project-view';
 import { emptyOrganize } from '../src/shared/organize';
 import { addProject, updateProject, type Project } from '../src/shared/projects';
 
@@ -48,6 +48,21 @@ describe('ProjectView', () => {
 
   it('dossier présent : nouvelle session active', () => {
     expect(render()).not.toContain('disabled=""');
+  });
+
+  it('instructions limitées à 10 000 caractères dans le champ', () => {
+    expect(render()).toContain('maxLength="10000"');
+  });
+});
+
+describe('nameChange', () => {
+  it('nouveau nom, sans les espaces autour', () => {
+    expect(nameChange('  Cours Vue ', 'Cours React')).toBe('Cours Vue');
+  });
+
+  it('nom vidé ou inchangé : rien à enregistrer (le champ revient au nom actuel)', () => {
+    expect(nameChange('   ', 'Cours React')).toBeNull();
+    expect(nameChange(' Cours React ', 'Cours React')).toBeNull();
   });
 });
 

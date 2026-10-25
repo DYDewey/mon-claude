@@ -1,7 +1,7 @@
 import { Paperclip, Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 import type { OrganizeData } from '../../../shared/organize';
-import { projectForCwd, type Project } from '../../../shared/projects';
+import { MAX_INSTRUCTIONS, projectForCwd, type Project } from '../../../shared/projects';
 
 interface Props {
   project: Project;
@@ -22,6 +22,12 @@ export function TopbarProject({ organize, cwd }: { organize: OrganizeData; cwd: 
       Projet : {project.name}
     </span>
   );
+}
+
+/** Nom à enregistrer à la sortie du champ ; null s'il est vide ou inchangé (le champ revient alors au nom actuel). */
+export function nameChange(value: string, current: string): string | null {
+  const name = value.trim();
+  return name && name !== current ? name : null;
 }
 
 function fileName(path: string): string {
@@ -47,7 +53,9 @@ export function ProjectView({ project, missing, onChange, onPickFiles, onNewSess
           aria-label="Nom du projet"
           defaultValue={project.name}
           onBlur={(e) => {
-            if (e.target.value.trim() !== project.name) onChange({ name: e.target.value });
+            const name = nameChange(e.target.value, project.name);
+            if (name) onChange({ name });
+            else e.target.value = project.name;
           }}
         />
         <button disabled={folderMissing} onClick={onNewSession}>
@@ -67,6 +75,7 @@ export function ProjectView({ project, missing, onChange, onPickFiles, onNewSess
           id="project-instructions"
           className="project-instructions"
           rows={8}
+          maxLength={MAX_INSTRUCTIONS}
           defaultValue={project.instructions ?? ''}
           placeholder="Ex. : Explique simplement, je débute."
           onBlur={(e) => {
