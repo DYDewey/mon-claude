@@ -285,3 +285,9 @@ button:has(.lucide) { display: inline-flex; align-items: center; gap: 6px; }
 .welcome { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; animation: fade-in var(--fade); }
 .welcome h1 { margin: 0; font-family: var(--font-reading); font-weight: 400; font-size: var(--fs-xl); }
 .logo { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 14px; background: var(--accent); color: var(--on-accent); font-family: var(--font-reading); font-size: 32px; font-weight: 700; }
+
+/* Dialogue de passation */
+.dialog-backdrop { backdrop-filter: blur(4px); }
+.dialog { padding: 20px; gap: 12px; border: 1px solid var(--border); border-radius: 14px; background: var(--raised); box-shadow: var(--shadow); }
+.dialog-text { font-family: var(--font-ui); font-size: var(--fs-md); line-height: 1.55; padding: 10px 12px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); }
+.dialog-text:focus { outline: none; border-color: var(--accent); }

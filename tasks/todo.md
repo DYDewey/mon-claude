@@ -49,7 +49,7 @@
 - Fichiers : `components/welcome.tsx`, `app.tsx`, tests
 
 ## U8 : dialogue de passation
-- [ ] Coins arrondis, ombre, fond flouté, textarea en police d'interface ; « Annuler » secondaire, « Ouvrir une session neuve » principal ; Échap annule
+- [x] Coins arrondis, ombre, fond flouté, textarea en police d'interface ; « Annuler » secondaire, « Ouvrir une session neuve » principal ; Échap annule
 - Vérif : `npm test` (`handoff-dialog.test.tsx` : Échap → `onCancel`), typecheck, lint
 - Fichiers : `components/handoff-dialog.tsx`, `styles.css`, tests
 

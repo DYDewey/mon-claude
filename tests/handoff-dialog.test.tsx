@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { HandoffDialog } from '../src/renderer/src/components/handoff-dialog';
+import { HandoffDialog, shouldCancel } from '../src/renderer/src/components/handoff-dialog';
 
 const noop = () => {};
 
@@ -22,5 +22,19 @@ describe('HandoffDialog', () => {
   it("affiche l'erreur d'enregistrement", () => {
     const html = renderToStaticMarkup(<HandoffDialog initialText="x" busy={false} error="disque plein" onCancel={noop} onConfirm={noop} />);
     expect(html).toContain('disque plein');
+  });
+});
+
+describe('shouldCancel', () => {
+  it('Échap annule, sauf pendant l\'enregistrement', () => {
+    expect(shouldCancel('Escape', false)).toBe(true);
+    expect(shouldCancel('Escape', true)).toBe(false);
+    expect(shouldCancel('Enter', false)).toBe(false);
+  });
+
+  it('boutons : Annuler secondaire, validation principale', () => {
+    const html = renderToStaticMarkup(<HandoffDialog initialText="x" busy={false} onCancel={() => {}} onConfirm={() => {}} />);
+    expect(html).toMatch(/<button class="btn-secondary"[^>]*>Annuler/);
+    expect(html).toContain('aria-modal="true"');
   });
 });
