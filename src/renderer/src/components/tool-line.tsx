@@ -1,15 +1,17 @@
-const ICONS: Record<string, string> = {
-  Read: '📖',
-  Write: '✏️',
-  Edit: '✏️',
-  Bash: '💻',
-  PowerShell: '💻',
-  Grep: '🔍',
-  Glob: '🔍',
-  WebFetch: '🌐',
-  WebSearch: '🌐',
-  Skill: '🧩',
-  Agent: '🤖',
+import { Bot, FilePen, FilePlus, FileText, Globe, Puzzle, Search, Terminal, Wrench, type LucideIcon } from 'lucide-react';
+
+const ICONS: Record<string, LucideIcon> = {
+  Read: FileText,
+  Write: FilePlus,
+  Edit: FilePen,
+  Bash: Terminal,
+  PowerShell: Terminal,
+  Grep: Search,
+  Glob: Search,
+  WebFetch: Globe,
+  WebSearch: Globe,
+  Skill: Puzzle,
+  Agent: Bot,
 };
 
 // Champs qui désignent « sur quoi » l'outil agit, par ordre de préférence.
@@ -22,10 +24,11 @@ export function toolTarget(input: Record<string, unknown>): string {
 }
 
 export function ToolLine({ name, input }: { name: string; input: Record<string, unknown> }) {
+  const Icon = ICONS[name] ?? Wrench;
   return (
     <details className="msg msg-tool">
       <summary>
-        {ICONS[name] ?? '🔧'} <strong>{name}</strong> <span className="tool-target">{toolTarget(input)}</span>
+        <Icon size={14} aria-hidden /> <strong>{name}</strong> <span className="tool-target">{toolTarget(input)}</span>
       </summary>
       <pre>{JSON.stringify(input, null, 2)}</pre>
     </details>

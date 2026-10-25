@@ -1,3 +1,4 @@
+import { RotateCw } from 'lucide-react';
 import type { HistoryProject } from '../../../shared/history';
 import { ago } from '../usage-format';
 
@@ -20,8 +21,8 @@ export function HistoryList({ projects, now, openKey, onOpen, onRefresh }: Props
     <section className="history">
       <div className="history-head">
         <span>Historique</span>
-        <button className="refresh" aria-label="Rafraîchir l'historique" onClick={onRefresh}>
-          ↻
+        <button className="btn-icon" aria-label="Rafraîchir l'historique" title="Rafraîchir l'historique" onClick={onRefresh}>
+          <RotateCw size={14} aria-hidden />
         </button>
       </div>
       {projects.map((p) => {

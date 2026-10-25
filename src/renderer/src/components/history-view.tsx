@@ -1,3 +1,4 @@
+import { BookOpen, TriangleAlert } from 'lucide-react';
 import type { ChatItem } from '../../../shared/chat-item';
 import { ChatView } from './chat-view';
 
@@ -18,11 +19,11 @@ export function HistoryView({ title, path, items, error }: Props) {
           {title}
           {path && <span className="muted"> · {path}</span>}
         </span>
-        <span className="readonly">📖 Lecture seule</span>
+        <span className="readonly"><BookOpen size={14} aria-hidden /> Lecture seule</span>
       </header>
       {error ? (
         <div className="chat">
-          <div className="msg msg-error">⚠️ {error}</div>
+          <div className="msg msg-error"><TriangleAlert size={14} aria-hidden /> {error}</div>
         </div>
       ) : items ? (
         <ChatView items={items} running={false} />

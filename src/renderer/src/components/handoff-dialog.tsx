@@ -1,3 +1,4 @@
+import { TriangleAlert } from 'lucide-react';
 import { useState } from 'react';
 
 /** Relecture de la passation avant d'ouvrir une session neuve qui ne recevra que ce texte. */
@@ -22,7 +23,7 @@ export function HandoffDialog({
         <h2>Relis la passation</h2>
         <p className="muted">La session neuve ne recevra que ce texte, comme premier message.</p>
         <textarea className="dialog-text" value={text} onChange={(e) => setText(e.target.value)} autoFocus />
-        {error && <div className="msg-error">⚠️ {error}</div>}
+        {error && <div className="msg-error"><TriangleAlert size={14} aria-hidden /> {error}</div>}
         <div className="dialog-actions">
           <button onClick={onCancel} disabled={busy}>Annuler</button>
           <button className="primary" onClick={() => onConfirm(text)} disabled={busy || !text.trim()}>

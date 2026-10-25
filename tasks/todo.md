@@ -9,8 +9,8 @@
 - Fichiers : `src/renderer/src/styles.css`, `src/renderer/src/main.tsx`, `tests/styles.test.ts`
 
 ## U2 : icônes lucide
-- [ ] `npm i lucide-react` ; remplacer 📎 📝 📖 ↻ × + ● ◌ et les icônes de `tool-line.tsx` (Read, Edit, Write, Bash, Grep, défaut)
-- [ ] Chaque bouton-icône a `aria-label` et `title`
+- [x] `npm i lucide-react` ; remplacer 📎 📝 📖 ↻ × + ● ◌ et les icônes de `tool-line.tsx` (Read, Edit, Write, Bash, Grep, défaut)
+- [x] Chaque bouton-icône a `aria-label` et `title`
 - Vérif : `npm test` (nouveau test : aucun emoji/symbole-icône dans `src/renderer/src/**/*.tsx` ; tests existants adaptés aux `aria-label`), typecheck, lint
 - Fichiers : `package.json`, `components/*.tsx`, tests concernés
 

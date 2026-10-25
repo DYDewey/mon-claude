@@ -1,3 +1,4 @@
+import { Plus, X } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { Limits, SessionState } from '../state/sessions';
 import { ContextBadge, UsageGauges } from './usage-gauges';
@@ -16,7 +17,9 @@ interface Props {
 export function Sidebar({ sessions, activeId, limits, onNew, onSelect, onClose, children }: Props) {
   return (
     <nav className="sidebar">
-      <button onClick={onNew}>+ Nouvelle session</button>
+      <button className="btn-secondary new-session" onClick={onNew}>
+        <Plus size={16} aria-hidden /> Nouvelle session
+      </button>
       <ul>
         {sessions.map((s) => (
           <li
@@ -25,19 +28,20 @@ export function Sidebar({ sessions, activeId, limits, onNew, onSelect, onClose, 
             onClick={() => onSelect(s.id)}
             title={s.cwd}
           >
-            {/* ● = Claude répond ; ◌ = réponse arrivée pendant que la session était cachée. */}
-            <span className="indicator">{s.status === 'running' ? '●' : s.unread ? '◌' : ''}</span>
+            {/* Point plein qui pulse = Claude répond ; anneau = réponse arrivée pendant que la session était cachée. */}
+            <span className={`indicator ${s.status === 'running' ? 'running' : s.unread ? 'unread' : ''}`} />
             <span className="sidebar-title">{s.title}</span>
             <ContextBadge context={s.context} />
             <button
-              className="close"
+              className="btn-icon close"
               aria-label="Fermer la session"
+              title="Fermer la session"
               onClick={(e) => {
                 e.stopPropagation(); // sinon le clic sélectionne aussi la session
                 onClose(s.id);
               }}
             >
-              ×
+              <X size={14} aria-hidden />
             </button>
           </li>
         ))}

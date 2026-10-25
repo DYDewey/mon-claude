@@ -1,3 +1,4 @@
+import { Paperclip, X } from 'lucide-react';
 import { useState, type ClipboardEvent, type DragEvent, type KeyboardEvent } from 'react';
 import { addAttachments, canSend, droppedPaths, fileName, imageExt, withAttachments } from '../../../shared/attachments';
 import { matchCommands, SlashMenu } from './slash-menu';
@@ -25,8 +26,8 @@ export function AttachmentChips({ files, onRemove }: { files: string[]; onRemove
       {files.map((path) => (
         <span key={path} className="attachment" title={path}>
           {fileName(path)}
-          <button onClick={() => onRemove(path)} aria-label={`Retirer ${fileName(path)}`}>
-            ✕
+          <button onClick={() => onRemove(path)} aria-label={`Retirer ${fileName(path)}`} title="Retirer">
+            <X size={12} aria-hidden />
           </button>
         </span>
       ))}
@@ -146,8 +147,8 @@ export function Composer({ running, onSend, onStop, onPickFiles, pathForFile, on
         rows={3}
         autoFocus
       />
-      <button onClick={pickFiles} disabled={running} title="Joindre des fichiers">
-        📎
+      <button className="btn-icon" onClick={pickFiles} disabled={running} title="Joindre des fichiers" aria-label="Joindre des fichiers">
+        <Paperclip size={18} aria-hidden />
       </button>
       {running ? (
         <button onClick={onStop}>Stop</button>

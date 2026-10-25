@@ -240,3 +240,13 @@ button.btn-icon:hover:not(:disabled) { background: var(--user); color: var(--tex
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Icônes lucide */
+.lucide { flex-shrink: 0; vertical-align: -2px; }
+button:has(.lucide) { display: inline-flex; align-items: center; gap: 6px; }
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.sidebar .indicator { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.sidebar .indicator.running { background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+.sidebar .indicator.unread { border: 1.5px solid var(--accent); }
+@keyframes pulse { 50% { opacity: 0.35; } }

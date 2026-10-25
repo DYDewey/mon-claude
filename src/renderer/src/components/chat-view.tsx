@@ -1,3 +1,4 @@
+import { CircleStop, TriangleAlert } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import type { ChatItem } from '../../../shared/chat-item';
 import { Markdown } from './message';
@@ -29,9 +30,9 @@ export function ChatView({ items, running }: { items: ChatItem[]; running: boole
           case 'tool':
             return <ToolLine key={i} name={item.name} input={item.input} />;
           case 'stopped':
-            return <div key={i} className="msg muted">⏹ Réponse arrêtée</div>;
+            return <div key={i} className="msg muted"><CircleStop size={14} aria-hidden /> Réponse arrêtée</div>;
           case 'error':
-            return <div key={i} className="msg msg-error">⚠️ {item.message}</div>;
+            return <div key={i} className="msg msg-error"><TriangleAlert size={14} aria-hidden /> {item.message}</div>;
         }
       })}
       {waiting && <div className="msg msg-claude muted">Claude démarre…</div>}
