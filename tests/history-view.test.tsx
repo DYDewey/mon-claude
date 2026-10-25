@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { HistoryView } from '../src/renderer/src/components/history-view';
 
-const base = { title: 'Module usage', path: 'C:\\proj' };
+const base = { title: 'Module usage', path: 'C:\\dev\\proj' };
 
 describe('HistoryView', () => {
   it('affiche les messages avec un bandeau Lecture seule, sans zone de saisie', () => {
@@ -10,7 +10,8 @@ describe('HistoryView', () => {
       <HistoryView {...base} items={[{ kind: 'user', text: 'bonjour' }, { kind: 'assistant', text: '**salut**' }]} />,
     );
     expect(html).toContain('Module usage');
-    expect(html).toContain('C:\\proj');
+    // Seul le nom du dossier s'affiche ; le chemin complet est en infobulle.
+    expect(html).toMatch(/title="C:\\dev\\proj"[^>]*>proj</);
     expect(html).toContain('Lecture seule');
     expect(html).toContain('bonjour');
     expect(html).toContain('<strong>salut</strong>');

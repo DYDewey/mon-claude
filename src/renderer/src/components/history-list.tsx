@@ -1,5 +1,6 @@
 import { RotateCw } from 'lucide-react';
 import type { HistoryProject } from '../../../shared/history';
+import { folderLabel } from '../ui-format';
 import { ago } from '../usage-format';
 
 interface Props {
@@ -13,7 +14,7 @@ interface Props {
 
 /** Dernier dossier du vrai chemin (« mon-claude »), sinon le nom encodé du dossier. */
 export function projectLabel(project: HistoryProject): string {
-  return project.path?.split(/[\\/]/).filter(Boolean).at(-1) ?? project.folder;
+  return project.path ? folderLabel(project.path) : project.folder;
 }
 
 export function HistoryList({ projects, now, openKey, onOpen, onRefresh }: Props) {

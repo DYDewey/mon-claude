@@ -1,5 +1,6 @@
 import { BookOpen, TriangleAlert } from 'lucide-react';
 import type { ChatItem } from '../../../shared/chat-item';
+import { folderLabel } from '../ui-format';
 import { ChatView } from './chat-view';
 
 interface Props {
@@ -17,7 +18,11 @@ export function HistoryView({ title, path, items, error }: Props) {
       <header className="topbar">
         <span className="topbar-title">
           {title}
-          {path && <span className="muted"> · {path}</span>}
+          {path && (
+            <span className="topbar-folder" title={path}>
+              {folderLabel(path)}
+            </span>
+          )}
         </span>
         <span className="readonly"><BookOpen size={14} aria-hidden /> Lecture seule</span>
       </header>

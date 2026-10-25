@@ -16,7 +16,7 @@ export function HandoffButton({
     <span className="handoff">
       {phase === 'failed' && <span className="handoff-failed"><TriangleAlert size={14} aria-hidden /> Passation impossible</span>}
       <button
-        className="handoff-btn"
+        className="btn-secondary handoff-btn"
         disabled={disabled}
         onClick={onClick}
         title="Claude résume la session ; tu relis, puis une session neuve repart de ce résumé"

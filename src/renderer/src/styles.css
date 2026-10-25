@@ -250,3 +250,9 @@ button:has(.lucide) { display: inline-flex; align-items: center; gap: 6px; }
 .sidebar .indicator.running { background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
 .sidebar .indicator.unread { border: 1.5px solid var(--accent); }
 @keyframes pulse { 50% { opacity: 0.35; } }
+
+/* En-têtes */
+.topbar { min-height: 52px; }
+.topbar-title { font-size: var(--fs-md); font-weight: 600; }
+.topbar-folder { margin-left: 10px; font-weight: 400; font-size: var(--fs-sm); color: var(--muted); }
+.readonly { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border: 1px solid var(--border); border-radius: 999px; font-size: var(--fs-xs); }

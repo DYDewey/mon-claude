@@ -13,6 +13,7 @@ import { ModelPicker } from './components/model-picker';
 import { Sidebar } from './components/sidebar';
 import { ContextBadge } from './components/usage-gauges';
 import { readLastModel, writeLastModel } from './model-choice';
+import { folderLabel } from './ui-format';
 import { handoffPhase, type HandoffPhase, type PendingHandoff } from './handoff-flow';
 import { initialState, sessionsReducer, type ChatState, type Limits } from './state/sessions';
 
@@ -203,7 +204,10 @@ export function App() {
         <main className="session">
           <header className="topbar">
             <span className="topbar-title">
-              {active.title} · <span className="muted">{active.cwd}</span>
+              {active.title}
+              <span className="topbar-folder" title={active.cwd}>
+                {folderLabel(active.cwd)}
+              </span>
             </span>
             <ModelPicker
               value={active.model}

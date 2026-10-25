@@ -15,13 +15,13 @@
 - Fichiers : `package.json`, `components/*.tsx`, tests concernés
 
 ## U3 : en-têtes
-- [ ] `ui-format.ts` : `folderLabel(path)` (dernier dossier ; gère `\`, `/` et le séparateur final)
-- [ ] En-têtes chat (`app.tsx`) et historique (`history-view.tsx`) : titre, dossier (chemin complet en `title`), %, badge « Lecture seule », bouton Passation secondaire
+- [x] `ui-format.ts` : `folderLabel(path)` (dernier dossier ; gère `\`, `/` et le séparateur final)
+- [x] En-têtes chat (`app.tsx`) et historique (`history-view.tsx`) : titre, dossier (chemin complet en `title`), %, badge « Lecture seule », bouton Passation secondaire
 - Vérif : `npm test` (`folderLabel` : chemin Windows, slash final, racine ; rendu de l'en-tête), typecheck, lint
 - Fichiers : `src/renderer/src/ui-format.ts`, `app.tsx`, `components/history-view.tsx`, `components/handoff-button.tsx`, tests
 
 ## Checkpoint A (après U1-U3)
-- [ ] test, typecheck, lint, build OK ; coup d'œil `npm run dev` en clair et en sombre
+- [x] test, typecheck, lint, build OK ; coup d'œil `npm run dev` en clair et en sombre
 
 ## U4 : menu du modèle dans la barre de saisie
 - [ ] `model-picker.tsx` : bouton (libellé du choix) + liste `role="listbox"` ; modèle réellement utilisé affiché dans le menu ; grisé pendant un tour
