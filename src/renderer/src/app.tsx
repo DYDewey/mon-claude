@@ -8,9 +8,11 @@ import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
 import { HandoffButton } from './components/handoff-button';
 import { HandoffDialog } from './components/handoff-dialog';
+import { addProject, newProjectId, projectForCwd } from '../../shared/projects';
 import { FavoritesList } from './components/favorites-list';
 import { HistoryList } from './components/history-list';
 import { HistoryView, TopbarFolder } from './components/history-view';
+import { ProjectsList } from './components/projects-list';
 import { ModelPicker } from './components/model-picker';
 import { Sidebar } from './components/sidebar';
 import { ContextBadge } from './components/usage-gauges';
@@ -135,7 +137,16 @@ export function App() {
 
   async function newSession() {
     const cwd = await window.claude.pickFolder();
-    if (!cwd) return;
+    if (cwd) await startIn(cwd);
+  }
+
+  async function newProject() {
+    const folder = await window.claude.pickFolder();
+    if (!folder || projectForCwd(organize, folder)) return;
+    updateOrganize(addProject(organize, newProjectId(), folder));
+  }
+
+  async function startIn(cwd: string) {
     const sessionId = await window.claude.startSession(cwd, { model: lastModel });
     setViewing(null);
     dispatch({ type: 'session-opened', sessionId, cwd, model: lastModel });
@@ -231,6 +242,15 @@ export function App() {
         collapsed={collapsed}
         onToggle={toggleSidebar}
       >
+        <ProjectsList
+          history={history.projects}
+          organize={organize}
+          openKey={viewing?.key}
+          onOpen={openHistory}
+          onToggleFavorite={(key) => updateOrganize(toggleFavorite(organize, key))}
+          onNewProject={() => void newProject()}
+          onNewSession={(folder) => void startIn(folder)}
+        />
         <FavoritesList
           projects={history.projects}
           organize={organize}

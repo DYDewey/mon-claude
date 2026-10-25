@@ -10,7 +10,7 @@
   - Vérif : tests `claude-args` et `session-manager` (le faux claude reçoit l'argument avec guillemets, retours à la ligne et accents intacts, au lancement et après changement de modèle ; rien si `promptFor` renvoie `null`).
   - Fichiers : `src/main/claude-args.ts`, `src/main/session-manager.ts`, `src/main/ipc.ts`, tests associés.
 
-- [ ] **P3** Section « Projets » et création
+- [x] **P3** Section « Projets » et création
   - Acceptation : section au-dessus de « Favoris », cachée sans projet mais « + Projet » visible ; « + Projet » → `pickFolder` → projet créé (nom = nom du dossier) ou fiche existante si le dossier a déjà un projet ; un clic déplie les sessions du projet (étoiles et noms d'`organize`) ; `+` au survol lance une session dans le dossier.
   - Vérif : tests `renderToStaticMarkup` (section cachée/visible, sessions listées) ; `npm run typecheck`, `npm run lint`.
   - Fichiers : `src/renderer/src/components/projects-list.tsx`, `src/renderer/src/app.tsx`, `src/renderer/src/styles.css`, `tests/projects-list.test.tsx`.

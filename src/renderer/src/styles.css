@@ -130,6 +130,15 @@ button.btn-icon:hover:not(:disabled) { background: var(--user); color: var(--tex
 .rename-field { flex: 1; min-width: 0; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--accent); border-radius: 4px; padding: 2px 6px; }
 .star.on { color: var(--accent); }
 .star.on svg { fill: currentColor; }
+.projects { border-top: 1px solid var(--border); padding-top: 8px; }
+.projects > ul { max-height: 30vh; }
+.sidebar li.project-item { display: block; padding: 0; cursor: default; }
+.sidebar li.project-item:hover { background: none; }
+.project-row { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+.project-row:hover { background: var(--user); }
+.project-sessions { padding-left: 14px !important; }
+.sidebar .project-new { padding: 0 2px; visibility: hidden; }
+.project-row:hover .project-new, .sidebar .project-new:focus-visible { visibility: visible; }
 .favorites { border-top: 1px solid var(--border); padding-top: 8px; }
 .favorites ul { max-height: 30vh; }
 .favorite-project { font-size: var(--fs-xs); white-space: nowrap; max-width: 35%; overflow: hidden; text-overflow: ellipsis; }
