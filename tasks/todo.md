@@ -24,9 +24,9 @@
 - [x] test, typecheck, lint, build OK ; coup d'œil `npm run dev` en clair et en sombre
 
 ## U4 : menu du modèle dans la barre de saisie
-- [ ] `model-picker.tsx` : bouton (libellé du choix) + liste `role="listbox"` ; modèle réellement utilisé affiché dans le menu ; grisé pendant un tour
-- [ ] Clavier : flèches, Entrée, Échap ; un clic en dehors ferme
-- [ ] Retiré de l'en-tête, placé dans `composer.tsx` à côté du trombone
+- [x] `model-picker.tsx` : bouton (libellé du choix) + liste `role="listbox"` ; modèle réellement utilisé affiché dans le menu ; grisé pendant un tour
+- [x] Clavier : flèches, Entrée, Échap ; un clic en dehors ferme
+- [x] Retiré de l'en-tête, placé dans `composer.tsx` à côté du trombone
 - Vérif : `npm test` (ouverture, choix → `onChange`, Échap ferme sans changer, flèches + Entrée), typecheck, lint
 - Fichiers : `components/model-picker.tsx`, `components/composer.tsx`, `app.tsx`, `tests/model-picker.test.tsx`
 

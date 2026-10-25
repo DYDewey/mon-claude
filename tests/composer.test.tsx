@@ -37,4 +37,12 @@ describe('Composer', () => {
     expect(render(false)).toMatch(/<button[^>]*title="Joindre des fichiers"[^>]*>/);
     expect(render(true)).toMatch(/<button[^>]*disabled=""[^>]*title="Joindre des fichiers"/);
   });
+
+  it('affiche les outils (menu du modèle) juste après le trombone', () => {
+    const html = renderToStaticMarkup(
+      <Composer running={false} onSend={noop} onStop={noop} onPickFiles={pickFiles} pathForFile={() => ''} onSavePasted={async () => ''} commands={[]}
+        tools={<span id="outil-modele" />} />,
+    );
+    expect(html).toMatch(/title="Joindre des fichiers"[^]*?<\/button><span id="outil-modele">/);
+  });
 });

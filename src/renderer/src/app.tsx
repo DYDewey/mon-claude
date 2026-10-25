@@ -209,12 +209,6 @@ export function App() {
                 {folderLabel(active.cwd)}
               </span>
             </span>
-            <ModelPicker
-              value={active.model}
-              activeModel={active.activeModel}
-              disabled={active.status === 'running'}
-              onChange={(model) => void changeModel(model)}
-            />
             {active.context && (
               <span className="topbar-ctx">
                 Contexte : <ContextBadge context={active.context} />
@@ -224,7 +218,15 @@ export function App() {
           </header>
           <ChatView items={active.items} running={active.status === 'running'} />
           <Composer running={active.status === 'running'} onSend={send} onStop={stop} onPickFiles={() => window.claude.pickFiles()} pathForFile={(f) => window.claude.pathForFile(f)}
-            onSavePasted={(bytes, ext) => window.claude.savePastedImage(bytes, ext)} commands={state.commands} suggestion={active.suggestion} />
+            onSavePasted={(bytes, ext) => window.claude.savePastedImage(bytes, ext)} commands={state.commands} suggestion={active.suggestion}
+            tools={
+              <ModelPicker
+                value={active.model}
+                activeModel={active.activeModel}
+                disabled={active.status === 'running'}
+                onChange={(model) => void changeModel(model)}
+              />
+            } />
           {phase.phase === 'review' && (
             <HandoffDialog
               initialText={phase.text}

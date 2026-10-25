@@ -1,5 +1,5 @@
 import { Paperclip, X } from 'lucide-react';
-import { useState, type ClipboardEvent, type DragEvent, type KeyboardEvent } from 'react';
+import { useState, type ClipboardEvent, type DragEvent, type KeyboardEvent, type ReactNode } from 'react';
 import { addAttachments, canSend, droppedPaths, fileName, imageExt, withAttachments } from '../../../shared/attachments';
 import { matchCommands, SlashMenu } from './slash-menu';
 
@@ -15,6 +15,8 @@ interface Props {
   onSavePasted: (bytes: Uint8Array, ext: string) => Promise<string>;
   /** Noms des commandes et skills proposés après « / ». */
   commands: string[];
+  /** Contrôles affichés à côté du trombone (menu du modèle). */
+  tools?: ReactNode;
   /** Prochain message proposé par claude : affiché en gris, Tab le recopie. */
   suggestion?: string;
 }
@@ -35,7 +37,7 @@ export function AttachmentChips({ files, onRemove }: { files: string[]; onRemove
   );
 }
 
-export function Composer({ running, onSend, onStop, onPickFiles, pathForFile, onSavePasted, commands, suggestion }: Props) {
+export function Composer({ running, onSend, onStop, onPickFiles, pathForFile, onSavePasted, commands, suggestion, tools }: Props) {
   const [text, setText] = useState('');
   const [files, setFiles] = useState<string[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -150,6 +152,7 @@ export function Composer({ running, onSend, onStop, onPickFiles, pathForFile, on
       <button className="btn-icon" onClick={pickFiles} disabled={running} title="Joindre des fichiers" aria-label="Joindre des fichiers">
         <Paperclip size={18} aria-hidden />
       </button>
+      {tools}
       {running ? (
         <button onClick={onStop}>Stop</button>
       ) : (
