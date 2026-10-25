@@ -1,8 +1,8 @@
 # Todo : module organize
 
 ## O1 : fonctions pures
-- [ ] `src/shared/organize.ts` : `OrganizeData { version: 1; sessions: Record<string, SessionMeta> }`, `SessionMeta { favorite?: true; title?: string }`, `sessionKey(folder, id)`, `emptyOrganize()`
-- [ ] `toggleFavorite`, `renameSession` (nom vide ou espaces = champ retiré ; entrée vide = clé retirée), `displayTitle(session, meta)`, `favoriteSessions(projects, data)` (liste plate, plus récente d'abord, favoris dont le `.jsonl` a disparu ignorés), `parseOrganize(text)` (JSON invalide, version inconnue, champs en trop → nettoyé ou vide)
+- [x] `src/shared/organize.ts` : `OrganizeData { version: 1; sessions: Record<string, SessionMeta> }`, `SessionMeta { favorite?: true; title?: string }`, `sessionKey(folder, id)`, `emptyOrganize()`
+- [x] `toggleFavorite`, `renameSession` (nom vide ou espaces = champ retiré ; entrée vide = clé retirée), `displayTitle(session, meta)`, `favoriteSessions(projects, data)` (liste plate, plus récente d'abord, favoris dont le `.jsonl` a disparu ignorés), `parseOrganize(text)` (JSON invalide, version inconnue, champs en trop → nettoyé ou vide)
 - Vérif : `npm test` (nouveau `tests/organize.test.ts`), typecheck, lint
 - Fichiers : `src/shared/organize.ts`, `tests/organize.test.ts`
 
