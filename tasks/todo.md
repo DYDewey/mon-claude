@@ -57,8 +57,8 @@
 - [x] test (115 + nouveaux), typecheck, lint, build OK
 
 ## U9 : vérification dans la vraie app
-- [ ] `npm run dist`, réinstallation, lancement avec `--remote-debugging-port=9222`
-- [ ] Captures avant/après en sombre et en clair (CDP `Emulation.setEmulatedMedia`), contraste lisible
-- [ ] Parcours : envoyer un message, changer de modèle depuis la saisie, rechercher « passa », Ctrl+B puis redémarrage, passation + Échap, accueil
-- [ ] Console sans erreur
+- [x] `npm run dist`, réinstallation, lancement avec `--remote-debugging-port=9222`
+- [x] Captures avant/après en sombre et en clair (CDP `Emulation.setEmulatedMedia`), contraste lisible
+- [x] Parcours : envoyer un message, changer de modèle depuis la saisie, rechercher « passa », Ctrl+B puis redémarrage, passation + Échap, accueil
+- [x] Console sans erreur
 - Ensuite : `gardien-push`, puis `bash .claude/publier.sh …`
