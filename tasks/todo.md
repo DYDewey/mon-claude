@@ -27,7 +27,7 @@
 - Fichiers : `history-list.tsx`, `favorites-list.tsx`, `ui-format.ts`, `app.tsx`, tests
 
 ## O5 : en-tête de la relecture
-- [ ] `history-view.tsx` : étoile et crayon dans l'en-tête, titre affiché = nom personnalisé
+- [x] `history-view.tsx` : étoile et crayon dans l'en-tête, titre affiché = nom personnalisé
 - Vérif : `npm test` (rendu de l'en-tête avec favori et nom personnalisé), typecheck, lint
 - Fichiers : `history-view.tsx`, `app.tsx`, test
 

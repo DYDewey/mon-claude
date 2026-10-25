@@ -3,7 +3,7 @@ import type { ChatItem } from '../../shared/chat-item';
 import { buildHandoffPrompt } from '../../shared/handoff';
 import type { HistoryProject } from '../../shared/history';
 import type { ModelChoice } from '../../shared/model';
-import { emptyOrganize, renameSession, toggleFavorite, type OrganizeData } from '../../shared/organize';
+import { displayTitle, emptyOrganize, renameSession, toggleFavorite, type OrganizeData } from '../../shared/organize';
 import { ChatView } from './components/chat-view';
 import { Composer } from './components/composer';
 import { HandoffButton } from './components/handoff-button';
@@ -241,7 +241,15 @@ export function App() {
         />
       </Sidebar>
       {viewing ? (
-        <HistoryView title={viewing.title} path={viewing.path} items={viewing.items} error={viewing.error} />
+        <HistoryView
+          title={displayTitle(viewing, organize.sessions[viewing.key])}
+          path={viewing.path}
+          items={viewing.items}
+          error={viewing.error}
+          favorite={!!organize.sessions[viewing.key]?.favorite}
+          onToggleFavorite={() => updateOrganize(toggleFavorite(organize, viewing.key))}
+          onRename={(title) => updateOrganize(renameSession(organize, viewing.key, title))}
+        />
       ) : active ? (
         <main className="session">
           <header className="topbar">

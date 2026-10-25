@@ -1,7 +1,10 @@
 import { BookOpen, TriangleAlert } from 'lucide-react';
+import { useState } from 'react';
 import type { ChatItem } from '../../../shared/chat-item';
 import { folderLabel } from '../ui-format';
 import { ChatView } from './chat-view';
+import { FavoriteButton } from './favorite-button';
+import { RenameButton, RenameField } from './rename-field';
 
 interface Props {
   title: string;
@@ -9,6 +12,10 @@ interface Props {
   /** Absent tant que la session est en cours de lecture. */
   items?: ChatItem[];
   error?: string;
+  favorite?: boolean;
+  /** Absents : pas d'étoile ni de crayon dans l'en-tête. */
+  onToggleFavorite?: () => void;
+  onRename?: (title: string) => void;
 }
 
 /** Nom du dossier à côté du titre (chemin complet en infobulle), sauf s'il répète le titre. */
@@ -23,14 +30,28 @@ export function TopbarFolder({ title, path }: { title: string; path: string }) {
 }
 
 // Ancienne session relue depuis ~/.claude/projects/ : même affichage que le chat, sans zone de saisie.
-export function HistoryView({ title, path, items, error }: Props) {
+export function HistoryView({ title, path, items, error, favorite = false, onToggleFavorite, onRename }: Props) {
+  const [editing, setEditing] = useState(false);
   return (
     <main className="session">
       <header className="topbar">
-        <span className="topbar-title">
-          {title}
-          {path && <TopbarFolder title={title} path={path} />}
-        </span>
+        {editing && onRename ? (
+          <RenameField
+            initial={title}
+            onSave={(name) => {
+              setEditing(false);
+              onRename(name);
+            }}
+            onCancel={() => setEditing(false)}
+          />
+        ) : (
+          <span className="topbar-title">
+            {title}
+            {path && <TopbarFolder title={title} path={path} />}
+          </span>
+        )}
+        {onRename && !editing && <RenameButton onClick={() => setEditing(true)} />}
+        {onToggleFavorite && <FavoriteButton on={favorite} onToggle={onToggleFavorite} />}
         <span className="readonly"><BookOpen size={14} aria-hidden /> Lecture seule</span>
       </header>
       {error ? (

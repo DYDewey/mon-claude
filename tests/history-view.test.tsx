@@ -23,6 +23,22 @@ describe('HistoryView', () => {
     expect(html).not.toContain('topbar-folder');
   });
 
+  it('étoile et crayon dans l’en-tête quand le rangement est branché', () => {
+    const noop = () => {};
+    const html = renderToStaticMarkup(
+      <HistoryView {...base} items={[]} favorite onToggleFavorite={noop} onRename={noop} />,
+    );
+    expect(html).toContain('aria-label="Retirer des favoris"');
+    expect(html).toContain('aria-pressed="true"');
+    expect(html).toContain('aria-label="Renommer"');
+  });
+
+  it('sans rangement branché : ni étoile ni crayon', () => {
+    const html = renderToStaticMarkup(<HistoryView {...base} items={[]} />);
+    expect(html).not.toContain('favoris');
+    expect(html).not.toContain('Renommer');
+  });
+
   it('pendant le chargement, puis en cas d\'erreur', () => {
     expect(renderToStaticMarkup(<HistoryView {...base} />)).toContain('Chargement…');
     expect(renderToStaticMarkup(<HistoryView {...base} error="fichier introuvable" />)).toContain('fichier introuvable');

@@ -128,8 +128,8 @@ button.btn-icon:hover:not(:disabled) { background: var(--user); color: var(--tex
 .sidebar .star, .sidebar .rename { padding: 0 2px; color: var(--muted); visibility: hidden; }
 .sidebar li:hover .star, .sidebar li:hover .rename, .sidebar .star:focus-visible, .sidebar .rename:focus-visible, .sidebar .star.on { visibility: visible; }
 .rename-field { flex: 1; min-width: 0; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--accent); border-radius: 4px; padding: 2px 6px; }
-.sidebar .star.on { color: var(--accent); }
-.sidebar .star.on svg { fill: currentColor; }
+.star.on { color: var(--accent); }
+.star.on svg { fill: currentColor; }
 .favorites { border-top: 1px solid var(--border); padding-top: 8px; }
 .favorites ul { max-height: 30vh; }
 .favorite-project { font-size: var(--fs-xs); white-space: nowrap; max-width: 35%; overflow: hidden; text-overflow: ellipsis; }
