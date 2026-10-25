@@ -1,6 +1,6 @@
 # Todo : module projects
 
-- [ ] **P1** Fonctions pures et format
+- [x] **P1** Fonctions pures et format
   - Acceptation : `src/shared/projects.ts` exporte `Project`, `addProject`, `updateProject`, `removeProject`, `sameFolder`, `projectForCwd`, `projectSessions`, `buildProjectPrompt` ; `OrganizeData.projects?` ; `parseOrganize` garde les projets valides, ignore les invalides, rejette `__proto__`, coupe les instructions à 10 000 caractères et les fichiers à 50 ; un ancien fichier sans `projects` reste valide.
   - Vérif : `npm test` (nouveau `tests/projects.test.ts` + cas ajoutés à `tests/organize.test.ts`), `npm run typecheck`.
   - Fichiers : `src/shared/projects.ts`, `src/shared/organize.ts`, `tests/projects.test.ts`, `tests/organize.test.ts`.

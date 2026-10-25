@@ -86,6 +86,12 @@ describe('parseOrganize', () => {
     expect(parseOrganize(JSON.stringify(data))).toEqual(data);
   });
 
+  it('relit les projets ; un ancien fichier sans projets reste valide', () => {
+    const projects = { p_react001: { name: 'React', folder: 'D:\\react', instructions: 'Sois bref' } };
+    expect(parseOrganize(JSON.stringify({ version: 1, sessions: {}, projects }))?.projects).toEqual(projects);
+    expect(parseOrganize('{"version":1,"sessions":{}}')).toEqual(emptyOrganize());
+  });
+
   it('JSON invalide ou version inconnue → null', () => {
     expect(parseOrganize('{pas du json')).toBeNull();
     expect(parseOrganize('{"version":2,"sessions":{}}')).toBeNull();

@@ -1,4 +1,5 @@
 import type { HistoryProject, HistorySession } from './history';
+import { parseProjects, type Project } from './projects';
 
 // Favoris et noms personnalisés, rangés par l'app dans organize.json (jamais dans les .jsonl de Claude Code).
 
@@ -11,6 +12,8 @@ export interface OrganizeData {
   version: 1;
   /** Clé : `sessionKey(dossier, id)`. Une entrée vide est retirée. */
   sessions: Record<string, SessionMeta>;
+  /** Clé : identifiant `p_…` (cf. projects.ts). Absent dans les fichiers d'avant les projets. */
+  projects?: Record<string, Project>;
 }
 
 export function sessionKey(folder: string, id: string): string {
@@ -79,6 +82,8 @@ export function parseOrganize(text: string): OrganizeData | null {
     if (typeof value.title === 'string' && value.title.trim()) meta.title = value.title.trim();
     if (meta.favorite || meta.title) data.sessions[key] = meta;
   }
+  const projects = parseProjects(raw.projects);
+  if (Object.keys(projects).length > 0) data.projects = projects;
   return data;
 }
 
