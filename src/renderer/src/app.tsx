@@ -59,6 +59,8 @@ export function App() {
   const [viewing, setViewing] = useState<Viewing | null>(null);
   const [history, setHistory] = useState<{ projects: HistoryProject[]; at: number }>({ projects: [], at: 0 });
   const [organize, setOrganize] = useState<OrganizeData>(emptyOrganize);
+  // Tant que organize.json n'est pas lu, un clic enregistrerait un fichier presque vide à la place des vrais favoris.
+  const [organizeLoaded, setOrganizeLoaded] = useState(false);
   const [handoff, setHandoff] = useState<PendingHandoff | null>(null);
   const [saving, setSaving] = useState<{ busy: boolean; error?: string }>({ busy: false });
   const [lastModel, setLastModel] = useState(() => readLastModel(localStorage));
@@ -92,13 +94,20 @@ export function App() {
 
   // Favoris et noms : l'état est la référence, le fichier suit sans bloquer l'interface.
   function updateOrganize(next: OrganizeData) {
+    if (!organizeLoaded) return;
     setOrganize(next);
     window.claude.setOrganize(next).catch((err) => console.error('organize.json non enregistré', err));
   }
 
   useEffect(() => {
     refreshHistory();
-    window.claude.getOrganize().then(setOrganize, (err) => console.error('organize.json illisible', err));
+    window.claude.getOrganize().then(
+      (data) => {
+        setOrganize(data);
+        setOrganizeLoaded(true);
+      },
+      (err) => console.error('organize.json illisible', err),
+    );
   }, []);
 
   // Un seul abonnement pour toute l'app : chaque événement de claude devient une action du reducer.

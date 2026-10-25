@@ -100,4 +100,11 @@ describe('parseOrganize', () => {
     });
     expect(parseOrganize(text)).toEqual({ version: 1, sessions: { 'a/s1': { favorite: true, title: 'P' } } });
   });
+
+  it('ignore une clé sans « dossier/id », dont __proto__', () => {
+    const text = '{"version":1,"sessions":{"__proto__":{"favorite":true},"seul":{"favorite":true},"a/s1":{"favorite":true}}}';
+    const data = parseOrganize(text);
+    expect(data).toEqual({ version: 1, sessions: { 'a/s1': { favorite: true } } });
+    expect(data?.sessions['a/autre']).toBeUndefined();
+  });
 });

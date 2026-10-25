@@ -43,6 +43,14 @@ describe('organize-store', () => {
     expect(readFileSync(join(dir, 'organize.json.bak'), 'utf8')).toBe('{cassé');
   });
 
+  it('écritures lancées en même temps → faites l’une après l’autre, la dernière gagne', async () => {
+    const dir = tempDir();
+    const datas = ['a/s1', 'a/s2', 'a/s3'].map((key) => toggleFavorite(emptyOrganize(), key));
+    await Promise.all(datas.map((data) => saveOrganize(dir, data)));
+    expect(await loadOrganize(dir)).toEqual(datas[2]);
+    expect(readdirSync(dir)).toEqual(['organize.json']);
+  });
+
   it('fichier valide → pas de .bak', async () => {
     const dir = tempDir();
     await saveOrganize(dir, emptyOrganize());

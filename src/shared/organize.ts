@@ -72,7 +72,8 @@ export function parseOrganize(text: string): OrganizeData | null {
   if (!isObject(raw) || raw.version !== 1 || !isObject(raw.sessions)) return null;
   const data = emptyOrganize();
   for (const [key, value] of Object.entries(raw.sessions)) {
-    if (!isObject(value)) continue;
+    // Une vraie clé est `dossier/id` : écarte aussi « __proto__ », qui changerait le prototype de `sessions`.
+    if (!key.includes('/') || !isObject(value)) continue;
     const meta: SessionMeta = {};
     if (value.favorite === true) meta.favorite = true;
     if (typeof value.title === 'string' && value.title.trim()) meta.title = value.title.trim();

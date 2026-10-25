@@ -19,7 +19,16 @@ export async function loadOrganize(dir: string): Promise<OrganizeData> {
   return (text !== null && parseOrganize(text)) || emptyOrganize();
 }
 
-export async function saveOrganize(dir: string, data: OrganizeData): Promise<void> {
+// Une écriture à la fois : deux clics rapprochés ne doivent pas se partager le même .tmp.
+let queue: Promise<void> = Promise.resolve();
+
+export function saveOrganize(dir: string, data: OrganizeData): Promise<void> {
+  const next = queue.then(() => write(dir, data));
+  queue = next.catch(() => {}); // une écriture ratée ne bloque pas les suivantes
+  return next;
+}
+
+async function write(dir: string, data: OrganizeData): Promise<void> {
   await mkdir(dir, { recursive: true });
   const path = join(dir, FILE);
   const current = await readText(dir);
