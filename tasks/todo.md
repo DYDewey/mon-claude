@@ -1,10 +1,10 @@
 # Todo : module ui
 
 ## U1 : thèmes, typographie, finitions
-- [ ] `styles.css` : variables (`--bg --panel --text --muted --accent --accent-text --border --user …`) en sombre dans `:root`, clair crème sous `prefers-color-scheme: light` ; plus aucune couleur en dur
-- [ ] Polices (Segoe UI ; réponses en Cambria/Georgia, interligne 1,65 ; code en Cascadia Code/Consolas) et échelle 12/13/15/17/24 px
-- [ ] Boutons `.btn-primary`, `.btn-secondary`, `.btn-icon` ; focus orange ; barres de défilement fines ; fondus 150 ms coupés par `prefers-reduced-motion`
-- [ ] highlight.js clair/sombre (import retiré de `main.tsx`)
+- [x] `styles.css` : variables (`--bg --panel --text --muted --accent --accent-text --border --user …`) en sombre dans `:root`, clair crème sous `prefers-color-scheme: light` ; plus aucune couleur en dur
+- [x] Polices (Segoe UI ; réponses en Cambria/Georgia, interligne 1,65 ; code en Cascadia Code/Consolas) et échelle 12/13/15/17/24 px
+- [x] Boutons `.btn-primary`, `.btn-secondary`, `.btn-icon` ; focus orange ; barres de défilement fines ; fondus 150 ms coupés par `prefers-reduced-motion`
+- [x] highlight.js clair/sombre (import retiré de `main.tsx`)
 - Vérif : `npm test` (nouveau `tests/styles.test.ts` : aucune couleur hors blocs de variables), typecheck, lint, `npm run build` (media query hljs présente dans le CSS produit)
 - Fichiers : `src/renderer/src/styles.css`, `src/renderer/src/main.tsx`, `tests/styles.test.ts`
 
