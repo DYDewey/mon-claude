@@ -22,7 +22,7 @@
 
 - [ ] **Point de contrôle** : tests, typecheck, lint, build verts + essai `npm run dev`.
 
-- [ ] **P5** Indicateur « Projet : X »
+- [x] **P5** Indicateur « Projet : X »
   - Acceptation : la barre du haut affiche le nom du projet quand le `cwd` de la session active correspond à un projet avec instructions ou fichiers.
   - Vérif : test composant ; `npm test`.
   - Fichiers : `src/renderer/src/app.tsx` (ou composant de la barre du haut), test.

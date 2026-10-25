@@ -1,6 +1,7 @@
 import { Paperclip, Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
-import type { Project } from '../../../shared/projects';
+import type { OrganizeData } from '../../../shared/organize';
+import { projectForCwd, type Project } from '../../../shared/projects';
 
 interface Props {
   project: Project;
@@ -10,6 +11,17 @@ interface Props {
   onPickFiles: () => Promise<string[]>;
   onNewSession: () => void;
   onDelete: () => void;
+}
+
+/** Barre du haut d'une session : rappelle que les instructions du projet sont envoyées. */
+export function TopbarProject({ organize, cwd }: { organize: OrganizeData; cwd: string }) {
+  const project = projectForCwd(organize, cwd)?.project;
+  if (!project || (!project.instructions && !project.files?.length)) return null;
+  return (
+    <span className="topbar-project muted" title="Instructions et fichiers du projet envoyés à cette session">
+      Projet : {project.name}
+    </span>
+  );
 }
 
 function fileName(path: string): string {

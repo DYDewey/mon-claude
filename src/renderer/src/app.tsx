@@ -12,7 +12,7 @@ import { addProject, newProjectId, projectForCwd, removeProject, updateProject }
 import { FavoritesList } from './components/favorites-list';
 import { HistoryList } from './components/history-list';
 import { HistoryView, TopbarFolder } from './components/history-view';
-import { ProjectView } from './components/project-view';
+import { ProjectView, TopbarProject } from './components/project-view';
 import { ProjectsList } from './components/projects-list';
 import { ModelPicker } from './components/model-picker';
 import { Sidebar } from './components/sidebar';
@@ -338,6 +338,7 @@ export function App() {
               {active.title}
               <TopbarFolder title={active.title} path={active.cwd} />
             </span>
+            <TopbarProject organize={organize} cwd={active.cwd} />
             {active.context && (
               <span className="topbar-ctx">
                 Contexte : <ContextBadge context={active.context} />

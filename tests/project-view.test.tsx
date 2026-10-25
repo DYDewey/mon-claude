@@ -1,7 +1,8 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { ProjectView } from '../src/renderer/src/components/project-view';
-import type { Project } from '../src/shared/projects';
+import { ProjectView, TopbarProject } from '../src/renderer/src/components/project-view';
+import { emptyOrganize } from '../src/shared/organize';
+import { addProject, updateProject, type Project } from '../src/shared/projects';
 
 const project: Project = {
   name: 'Cours React',
@@ -47,5 +48,19 @@ describe('ProjectView', () => {
 
   it('dossier présent : nouvelle session active', () => {
     expect(render()).not.toContain('disabled=""');
+  });
+});
+
+describe('TopbarProject', () => {
+  const empty = addProject(emptyOrganize(), 'p_react001', 'D:\\Cours\\react');
+  const withText = updateProject(empty, 'p_react001', { name: 'Cours React', instructions: 'Sois bref' });
+
+  it('nom du projet quand ses instructions sont envoyées', () => {
+    expect(renderToStaticMarkup(<TopbarProject organize={withText} cwd="d:\cours\react\" />)).toContain('Projet : Cours React');
+  });
+
+  it('rien hors projet, ni pour un projet sans instructions ni fichiers', () => {
+    expect(renderToStaticMarkup(<TopbarProject organize={withText} cwd="D:\autre" />)).toBe('');
+    expect(renderToStaticMarkup(<TopbarProject organize={empty} cwd="D:\Cours\react" />)).toBe('');
   });
 });

@@ -251,6 +251,7 @@ button.btn-danger:hover:not(:disabled) { background: var(--user); }
 .topbar { display: flex; align-items: center; gap: 12px; }
 .topbar-title { flex: 1; }
 .topbar-ctx { font-size: var(--fs-sm); color: var(--muted); white-space: nowrap; }
+.topbar-project { font-size: var(--fs-sm); white-space: nowrap; }
 .topbar-ctx .ctx { font-size: var(--fs-sm); }
 .model-picker { display: flex; align-items: center; gap: 6px; font-size: var(--fs-sm); white-space: nowrap; }
 .readonly { font-size: var(--fs-sm); color: var(--muted); white-space: nowrap; }
