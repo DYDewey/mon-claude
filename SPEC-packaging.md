@@ -1,6 +1,6 @@
 # Spec : module packaging
 
-Brouillon du 25/10/2026, à valider. Index : `SPEC.md`.
+Validée et terminée le 25/10/2026. Index : `SPEC.md`.
 
 ## Objectif
 Transformer l'app en vraie appli Windows : un installeur `Setup.exe`, une icône sur le Bureau et dans le menu Démarrer, un lancement en un clic sans `npm` ni terminal.

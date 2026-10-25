@@ -10,5 +10,5 @@
 ## packaging
 - [x] P1 — `scripts/make-icon.mjs` → `resources/icon.png`
 - [x] P2 — electron-builder, `npm run dist` → `release/Mon-Claude-Setup-0.1.0.exe`
-- [ ] P3 — Installation et vérification guidée
-- [ ] Checkpoint B — specs terminées, passation
+- [x] P3 — Installation et vérification guidée (25/10 : raccourcis + icône, flux, skill perso, 📎, glisser-déposer, Ctrl+V image, historique, passation, désinstallation sans toucher à ~/.claude/projects)
+- [x] Checkpoint B — specs terminées, passation
