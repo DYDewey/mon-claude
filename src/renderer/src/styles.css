@@ -259,7 +259,7 @@ button:has(.lucide) { display: inline-flex; align-items: center; gap: 6px; }
 /* Menu du modèle, dans la barre de saisie */
 .model-picker { position: relative; align-self: flex-end; }
 .model-btn { padding: 5px 10px; font-size: var(--fs-xs); }
-.model-menu { position: absolute; bottom: calc(100% + 6px); left: 0; min-width: 200px; margin: 0; padding: 4px; list-style: none; background: var(--raised); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); z-index: 5; animation: fade-in var(--fade); }
+.model-menu { position: absolute; bottom: calc(100% + 6px); right: 0; min-width: 200px; margin: 0; padding: 4px; list-style: none; background: var(--raised); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); z-index: 5; animation: fade-in var(--fade); }
 .model-menu li { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: var(--fs-sm); }
 .model-menu li.selected { background: var(--user); }
 .model-menu .model-active { cursor: default; font-size: var(--fs-xs); border-top: 1px solid var(--border); border-radius: 0; margin-top: 4px; }

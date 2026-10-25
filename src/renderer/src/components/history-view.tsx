@@ -11,6 +11,17 @@ interface Props {
   error?: string;
 }
 
+/** Nom du dossier à côté du titre (chemin complet en infobulle), sauf s'il répète le titre. */
+export function TopbarFolder({ title, path }: { title: string; path: string }) {
+  const label = folderLabel(path);
+  if (label === title) return null;
+  return (
+    <span className="topbar-folder" title={path}>
+      {label}
+    </span>
+  );
+}
+
 // Ancienne session relue depuis ~/.claude/projects/ : même affichage que le chat, sans zone de saisie.
 export function HistoryView({ title, path, items, error }: Props) {
   return (
@@ -18,11 +29,7 @@ export function HistoryView({ title, path, items, error }: Props) {
       <header className="topbar">
         <span className="topbar-title">
           {title}
-          {path && (
-            <span className="topbar-folder" title={path}>
-              {folderLabel(path)}
-            </span>
-          )}
+          {path && <TopbarFolder title={title} path={path} />}
         </span>
         <span className="readonly"><BookOpen size={14} aria-hidden /> Lecture seule</span>
       </header>

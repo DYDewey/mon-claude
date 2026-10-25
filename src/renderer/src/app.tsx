@@ -8,13 +8,13 @@ import { Composer } from './components/composer';
 import { HandoffButton } from './components/handoff-button';
 import { HandoffDialog } from './components/handoff-dialog';
 import { HistoryList } from './components/history-list';
-import { HistoryView } from './components/history-view';
+import { HistoryView, TopbarFolder } from './components/history-view';
 import { ModelPicker } from './components/model-picker';
 import { Sidebar } from './components/sidebar';
 import { ContextBadge } from './components/usage-gauges';
 import { readLastModel, writeLastModel } from './model-choice';
 import { Welcome } from './components/welcome';
-import { folderLabel,isSidebarToggle, readCollapsed, writeCollapsed } from './ui-format';
+import { isSidebarToggle, readCollapsed, writeCollapsed } from './ui-format';
 import { handoffPhase, type HandoffPhase, type PendingHandoff } from './handoff-flow';
 import { initialState, sessionsReducer, type ChatState, type Limits } from './state/sessions';
 
@@ -227,9 +227,7 @@ export function App() {
           <header className="topbar">
             <span className="topbar-title">
               {active.title}
-              <span className="topbar-folder" title={active.cwd}>
-                {folderLabel(active.cwd)}
-              </span>
+              <TopbarFolder title={active.title} path={active.cwd} />
             </span>
             {active.context && (
               <span className="topbar-ctx">

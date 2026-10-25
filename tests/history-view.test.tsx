@@ -18,6 +18,11 @@ describe('HistoryView', () => {
     expect(html).not.toContain('<textarea');
   });
 
+  it("n'affiche pas le dossier s'il répète le titre", () => {
+    const html = renderToStaticMarkup(<HistoryView title="proj" path="C:\\dev\\proj" items={[]} />);
+    expect(html).not.toContain('topbar-folder');
+  });
+
   it('pendant le chargement, puis en cas d\'erreur', () => {
     expect(renderToStaticMarkup(<HistoryView {...base} />)).toContain('Chargement…');
     expect(renderToStaticMarkup(<HistoryView {...base} error="fichier introuvable" />)).toContain('fichier introuvable');
