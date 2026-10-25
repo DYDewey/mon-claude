@@ -1,6 +1,6 @@
 # Spec : module projects
 
-Validée le 25/10/2026 (questions 1-3 : propositions retenues). Index : `SPEC.md`. Dépend de `organize` et `chat`.
+Validée le 25/10/2026 (questions 1-3 : propositions retenues), terminée le 26/10/2026. Index : `SPEC.md`. Dépend de `organize` et `chat`.
 
 ## Objectif
 Un **projet** = un dossier de travail + un nom + des **instructions** + des **fichiers de référence**. Les sessions lancées dans ce dossier sont regroupées sous le projet, et chaque nouvelle session reçoit automatiquement les instructions et la liste des fichiers. Exemple : projet « Cours React » sur `D:\Cours\react`, instructions « Explique simplement, je débute », fichier `D:\Cours\react\sujet.pdf`.

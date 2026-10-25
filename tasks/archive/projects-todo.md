@@ -20,14 +20,14 @@
   - Vérif : tests composants (grisé, barré, liste de fichiers) ; test du canal sur dossier temporaire ; build vert.
   - Fichiers : `src/renderer/src/components/project-view.tsx`, `src/renderer/src/app.tsx`, `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`.
 
-- [ ] **Point de contrôle** : tests, typecheck, lint, build verts + essai `npm run dev`.
+- [x] **Point de contrôle** : tests, typecheck, lint, build verts + essai `npm run dev`.
 
 - [x] **P5** Indicateur « Projet : X »
   - Acceptation : la barre du haut affiche le nom du projet quand le `cwd` de la session active correspond à un projet avec instructions ou fichiers.
   - Vérif : test composant ; `npm test`.
   - Fichiers : `src/renderer/src/app.tsx` (ou composant de la barre du haut), test.
 
-- [ ] **P6** Vérification dans la vraie app
+- [x] **P6** Vérification dans la vraie app
   - Acceptation : projet avec « Termine chaque réponse par 🦊 » → session du projet finit par 🦊, session hors projet non ; après redémarrage le projet est là ; suppression du projet sans effet sur les sessions ; empreinte des `.jsonl` identique avant/après.
   - Vérif : script CDP (barre latérale à déplier d'abord), `npm run dist` puis installation.
   - Fichiers : `tasks/` archivés, `SPEC.md` (`projects` ✅).
