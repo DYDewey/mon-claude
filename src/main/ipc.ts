@@ -4,9 +4,11 @@ import { join } from 'node:path';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import { IPC } from '../shared/api';
 import { isModelChoice } from '../shared/model';
+import { parseOrganize } from '../shared/organize';
 import { savePastedImage } from './attachment-store';
 import { saveHandoff } from './handoff-store';
 import { createHistoryReader } from './history-reader';
+import { loadOrganize, saveOrganize } from './organize-store';
 import { SessionManager } from './session-manager';
 
 export function registerClaudeIpc(): SessionManager {
@@ -77,5 +79,16 @@ export function registerHandoffIpc(): void {
   ipcMain.handle(IPC.handoffSave, (_e, text: unknown, sessionId: unknown) => {
     if (typeof text !== 'string' || typeof sessionId !== 'string') throw new Error('Passation invalide');
     return saveHandoff(join(app.getPath('userData'), 'handoffs'), text, sessionId, new Date());
+  });
+}
+
+export function registerOrganizeIpc(): void {
+  const dir = app.getPath('userData');
+  ipcMain.handle(IPC.organizeGet, () => loadOrganize(dir));
+  ipcMain.handle(IPC.organizeSet, (_e, data: unknown) => {
+    // Repassée par parseOrganize : seuls les champs connus et bien typés sont écrits.
+    const clean = parseOrganize(JSON.stringify(data ?? null));
+    if (!clean) throw new Error('Données de rangement invalides');
+    return saveOrganize(dir, clean);
   });
 }

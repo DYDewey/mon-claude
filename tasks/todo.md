@@ -7,9 +7,9 @@
 - Fichiers : `src/shared/organize.ts`, `tests/organize.test.ts`
 
 ## O2 : stockage + IPC
-- [ ] `src/main/organize-store.ts` : `loadOrganize(dir)` (absent → vide ; illisible → vide et note « à sauvegarder en .bak »), `saveOrganize(dir, data)` (`.bak` si besoin, `.tmp` puis `rename`)
-- [ ] IPC `organize:get` / `organize:set` (donnée repassée dans `parseOrganize`), preload, `ClaudeApi.getOrganize/setOrganize`
-- [ ] `app.tsx` : état `organize` chargé au démarrage
+- [x] `src/main/organize-store.ts` : `loadOrganize(dir)` (absent → vide ; illisible → vide et note « à sauvegarder en .bak »), `saveOrganize(dir, data)` (`.bak` si besoin, `.tmp` puis `rename`)
+- [x] IPC `organize:get` / `organize:set` (donnée repassée dans `parseOrganize`), preload, `ClaudeApi.getOrganize/setOrganize`
+- [ ] `app.tsx` : état `organize` chargé au démarrage (fait avec O3, pour que chaque commit reste vert)
 - Vérif : `npm test` (nouveau `tests/organize-store.test.ts` sur un dossier temporaire : aller-retour, fichier corrompu → vide + `.bak`, pas de `.tmp` restant), typecheck, lint
 - Fichiers : `src/main/organize-store.ts`, `src/main/ipc.ts`, `src/preload/index.ts`, `src/shared/api.ts`, `src/renderer/src/app.tsx`, test
 

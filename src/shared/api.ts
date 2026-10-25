@@ -2,6 +2,7 @@ import type { ChatItem } from './chat-item';
 import type { BridgeEvent } from './events';
 import type { HistoryProject } from './history';
 import type { ModelChoice } from './model';
+import type { OrganizeData } from './organize';
 
 // API exposée au renderer sous `window.claude` par le preload.
 export interface ClaudeApi {
@@ -27,6 +28,9 @@ export interface ClaudeApi {
   readHistory(folder: string, id: string): Promise<ChatItem[]>;
   /** Enregistre la passation relue dans %APPDATA%/mon-claude/handoffs/ ; renvoie le chemin du fichier. */
   saveHandoff(text: string, sessionId: string): Promise<string>;
+  /** Favoris et noms personnalisés, lus dans %APPDATA%/mon-claude/organize.json. */
+  getOrganize(): Promise<OrganizeData>;
+  setOrganize(data: OrganizeData): Promise<void>;
 }
 
 export const IPC = {
@@ -42,4 +46,6 @@ export const IPC = {
   historyList: 'history:list',
   historyRead: 'history:read',
   handoffSave: 'handoff:save',
+  organizeGet: 'organize:get',
+  organizeSet: 'organize:set',
 } as const;
