@@ -13,13 +13,13 @@ interface MenuState {
   index: number;
 }
 
-/** Effet d'une touche sur le menu ; `choose` = valider l'option `index`. */
-export function menuKey(state: MenuState, key: string, count: number): MenuState & { choose?: true } {
+/** Effet d'une touche sur le menu ; `choose` = valider l'option `index` ; null = touche laissée au navigateur. */
+export function menuKey(state: MenuState, key: string, count: number): (MenuState & { choose?: true }) | null {
   if (key === 'ArrowDown') return { open: true, index: state.open ? (state.index + 1) % count : state.index };
   if (key === 'ArrowUp') return { open: true, index: state.open ? (state.index - 1 + count) % count : state.index };
   if (key === 'Enter' && state.open) return { open: false, index: state.index, choose: true };
-  if (key === 'Escape') return { open: false, index: state.index };
-  return state;
+  if (key === 'Escape' && state.open) return { open: false, index: state.index };
+  return null;
 }
 
 export function ModelPicker({
@@ -58,7 +58,7 @@ export function ModelPicker({
 
   function onKeyDown(e: KeyboardEvent) {
     const next = menuKey(menu.open ? menu : { open: false, index: current }, e.key, MODEL_OPTIONS.length);
-    if (next === menu) return;
+    if (!next) return;
     e.preventDefault();
     if (next.choose) choose(next.index);
     else setMenu({ open: next.open, index: next.index });

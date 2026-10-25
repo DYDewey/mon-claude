@@ -53,7 +53,14 @@ describe('menuKey', () => {
     expect(menuKey({ open: true, index: 2 }, 'Escape', n)).toEqual({ open: false, index: 2 });
   });
 
-  it('les autres touches ne changent rien', () => {
-    expect(menuKey({ open: true, index: 1 }, 'a', n)).toEqual({ open: true, index: 1 });
+  it('les autres touches sont laissées au navigateur (null)', () => {
+    expect(menuKey({ open: true, index: 1 }, 'a', n)).toBeNull();
+  });
+
+  // Menu fermé : Tab doit quitter le bouton, Entrée/Espace doivent l'ouvrir par un clic normal.
+  it('menu fermé : Tab, Entrée, Espace et Échap sont laissés au navigateur', () => {
+    for (const key of ['Tab', 'Enter', ' ', 'Escape']) {
+      expect(menuKey({ open: false, index: 0 }, key, n)).toBeNull();
+    }
   });
 });
