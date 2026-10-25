@@ -37,9 +37,9 @@
 - Fichiers : `ui-format.ts`, `components/history-list.tsx`, tests
 
 ## U6 : barre latérale
-- [ ] 260 px, sections « En cours » / « Historique », bouton « Nouvelle session » secondaire avec icône +
-- [ ] Repli : bouton + Ctrl+B, état dans `localStorage`
-- [ ] Point orange qui pulse pour une session en réponse ; jauges compactes
+- [x] 260 px, sections « En cours » / « Historique », bouton « Nouvelle session » secondaire avec icône +
+- [x] Repli : bouton + Ctrl+B, état dans `localStorage`
+- [x] Point orange qui pulse pour une session en réponse ; jauges compactes
 - Vérif : `npm test` (Ctrl+B replie/déplie, état relu au montage, sections présentes), typecheck, lint
 - Fichiers : `components/sidebar.tsx`, `components/usage-gauges.tsx`, `app.tsx`, `styles.css`, tests
 

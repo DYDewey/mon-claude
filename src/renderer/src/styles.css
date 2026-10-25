@@ -270,3 +270,14 @@ button:has(.lucide) { display: inline-flex; align-items: center; gap: 6px; }
 .search:focus-within { border-color: var(--accent); }
 .search input { flex: 1; min-width: 0; border: 0; outline: none; background: none; color: var(--text); font: inherit; font-size: var(--fs-sm); }
 .no-result { margin: 8px 0; font-size: var(--fs-sm); }
+
+/* Barre latérale : sections, repli, jauges compactes */
+.sidebar-top { display: flex; align-items: center; gap: 6px; }
+.sidebar-top .new-session { flex: 1; justify-content: flex-start; }
+.sidebar-section { color: var(--muted); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.04em; padding: 0 2px; }
+.sidebar ul { flex-shrink: 0; max-height: 35vh; }
+.sidebar li.sidebar-none { cursor: default; font-size: var(--fs-xs); }
+.sidebar li.sidebar-none:hover { background: none; }
+.sidebar.collapsed { width: 52px; padding: 12px 8px; align-items: center; }
+.gauges { gap: 6px; padding-top: 8px; border-top: 1px solid var(--border); }
+.gauge-bar { height: 4px; }

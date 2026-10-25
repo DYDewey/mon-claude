@@ -13,7 +13,7 @@ import { ModelPicker } from './components/model-picker';
 import { Sidebar } from './components/sidebar';
 import { ContextBadge } from './components/usage-gauges';
 import { readLastModel, writeLastModel } from './model-choice';
-import { folderLabel } from './ui-format';
+import { folderLabel, isSidebarToggle, readCollapsed, writeCollapsed } from './ui-format';
 import { handoffPhase, type HandoffPhase, type PendingHandoff } from './handoff-flow';
 import { initialState, sessionsReducer, type ChatState, type Limits } from './state/sessions';
 
@@ -58,7 +58,26 @@ export function App() {
   const [handoff, setHandoff] = useState<PendingHandoff | null>(null);
   const [saving, setSaving] = useState<{ busy: boolean; error?: string }>({ busy: false });
   const [lastModel, setLastModel] = useState(() => readLastModel(localStorage));
+  const [collapsed, setCollapsed] = useState(() => readCollapsed(localStorage));
   const phase: HandoffPhase = active ? handoffPhase(handoff, active) : { phase: 'none' };
+
+  function toggleSidebar() {
+    setCollapsed((c) => {
+      writeCollapsed(localStorage, !c);
+      return !c;
+    });
+  }
+
+  // Ctrl+B, écouté en phase de capture pour passer avant la zone de saisie.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!isSidebarToggle(e)) return;
+      e.preventDefault();
+      toggleSidebar();
+    };
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
+  }, []);
 
   function refreshHistory() {
     window.claude.listHistory().then(
@@ -189,6 +208,8 @@ export function App() {
           dispatch({ type: 'select', sessionId });
         }}
         onClose={close}
+        collapsed={collapsed}
+        onToggle={toggleSidebar}
       >
         <HistoryList
           projects={history.projects}
