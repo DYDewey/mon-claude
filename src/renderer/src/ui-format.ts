@@ -1,14 +1,11 @@
 import type { HistoryProject, HistorySession } from '../../shared/history';
+import { fold } from '../../shared/search';
 
 /** Dernier dossier d'un chemin Windows ou POSIX (« mon-claude »), séparateur final ignoré. */
 export function folderLabel(path: string): string {
   return path.split(/[\\/]/).filter(Boolean).at(-1) ?? path;
 }
 
-/** Minuscules et sans accents : « Été » → « ete ». */
-function fold(text: string): string {
-  return text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
-}
 
 /**
  * Historique filtré par une recherche : un projet dont le nom correspond garde toutes ses sessions,
