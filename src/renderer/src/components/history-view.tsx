@@ -16,6 +16,8 @@ interface Props {
   /** Absents : pas d'étoile ni de crayon dans l'en-tête. */
   onToggleFavorite?: () => void;
   onRename?: (title: string) => void;
+  /** Message trouvé par la recherche : on y défile et on le surligne. */
+  focusIndex?: number;
 }
 
 /** Nom du dossier à côté du titre (chemin complet en infobulle), sauf s'il répète le titre. */
@@ -30,7 +32,7 @@ export function TopbarFolder({ title, path }: { title: string; path: string }) {
 }
 
 // Ancienne session relue depuis ~/.claude/projects/ : même affichage que le chat, sans zone de saisie.
-export function HistoryView({ title, path, items, error, favorite = false, onToggleFavorite, onRename }: Props) {
+export function HistoryView({ title, path, items, error, favorite = false, onToggleFavorite, onRename, focusIndex }: Props) {
   const [editing, setEditing] = useState(false);
   return (
     <main className="session">
@@ -59,7 +61,7 @@ export function HistoryView({ title, path, items, error, favorite = false, onTog
           <div className="msg msg-error"><TriangleAlert size={14} aria-hidden /> {error}</div>
         </div>
       ) : items ? (
-        <ChatView items={items} running={false} />
+        <ChatView items={items} running={false} focusIndex={focusIndex} />
       ) : (
         <div className="chat">
           <div className="msg muted">Chargement…</div>

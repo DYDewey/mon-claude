@@ -49,6 +49,8 @@ interface Viewing {
   path?: string;
   items?: ChatItem[];
   error?: string;
+  /** Message trouvé par la recherche dans le contenu. */
+  focusIndex?: number;
 }
 
 function isSavedLimits(value: unknown): value is Limits {
@@ -189,12 +191,12 @@ export function App() {
     dispatch({ type: 'session-opened', sessionId, cwd, model: lastModel });
   }
 
-  function openHistory(folder: string, id: string) {
+  function openHistory(folder: string, id: string, focusIndex?: number) {
     const project = history.projects.find((p) => p.folder === folder);
     const title = project?.sessions.find((s) => s.id === id)?.title ?? id;
     const key = `${folder}/${id}`;
     setProjectId(null);
-    setViewing({ key, title, path: project?.path });
+    setViewing({ key, title, path: project?.path, focusIndex });
     // Si on a cliqué sur une autre session entre-temps, on ignore la réponse arrivée en retard.
     const done = (patch: Pick<Viewing, 'items' | 'error'>) =>
       setViewing((v) => (v?.key === key ? { ...v, ...patch } : v));
@@ -327,6 +329,7 @@ export function App() {
           path={viewing.path}
           items={viewing.items}
           error={viewing.error}
+          focusIndex={viewing.focusIndex}
           favorite={!!organize.sessions[viewing.key]?.favorite}
           onToggleFavorite={() => updateOrganize(toggleFavorite(organize, viewing.key))}
           onRename={(title) => updateOrganize(renameSession(organize, viewing.key, title))}

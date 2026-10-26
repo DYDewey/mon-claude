@@ -4,26 +4,39 @@ import type { ChatItem } from '../../../shared/chat-item';
 import { Markdown } from './message';
 import { ToolLine } from './tool-line';
 
-export function ChatView({ items, running }: { items: ChatItem[]; running: boolean }) {
+interface Props {
+  items: ChatItem[];
+  running: boolean;
+  /** Message à montrer et surligner (résultat de recherche) ; sinon on descend en bas. */
+  focusIndex?: number;
+}
+
+export function ChatView({ items, running, focusIndex }: Props) {
   const bottom = useRef<HTMLDivElement>(null);
+  const found = useRef<HTMLDivElement>(null);
   // Claude n'a encore rien écrit depuis le dernier message : on le dit, le démarrage prend ~35 s.
   const waiting = running && items.at(-1)?.kind === 'user';
+  const mark = (i: number) => (i === focusIndex ? ' msg-found' : '');
 
   // Accolades obligatoires : scrollIntoView renvoie une Promise dans Electron 45, et React
   // prendrait toute valeur renvoyée pour une fonction de nettoyage (plantage « destroy_ is not a function »).
   useEffect(() => {
-    bottom.current?.scrollIntoView({ block: 'end' });
-  }, [items]);
+    if (found.current) {
+      found.current.scrollIntoView({ block: 'center' });
+    } else {
+      bottom.current?.scrollIntoView({ block: 'end' });
+    }
+  }, [items, focusIndex]);
 
   return (
     <div className="chat">
       {items.map((item, i) => {
         switch (item.kind) {
           case 'user':
-            return <div key={i} className="msg msg-user">{item.text}</div>;
+            return <div key={i} ref={i === focusIndex ? found : undefined} className={`msg msg-user${mark(i)}`}>{item.text}</div>;
           case 'assistant':
             return (
-              <div key={i} className="msg msg-claude">
+              <div key={i} ref={i === focusIndex ? found : undefined} className={`msg msg-claude${mark(i)}`}>
                 <Markdown text={item.text} />
               </div>
             );

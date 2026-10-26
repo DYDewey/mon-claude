@@ -44,3 +44,19 @@ describe('HistoryView', () => {
     expect(renderToStaticMarkup(<HistoryView {...base} error="fichier introuvable" />)).toContain('fichier introuvable');
   });
 });
+
+describe('HistoryView focusIndex', () => {
+  const items = [
+    { kind: 'user' as const, text: 'question' },
+    { kind: 'tool' as const, name: 'Bash', input: {} },
+    { kind: 'assistant' as const, text: 'réponse trouvée' },
+  ];
+  it('surligne le message trouvé, et lui seul', () => {
+    const html = renderToStaticMarkup(<HistoryView {...base} items={items} focusIndex={2} />);
+    expect(html.match(/msg-found/g)).toHaveLength(1);
+    expect(html).toMatch(/msg-claude msg-found"><p>réponse trouvée/);
+  });
+  it('aucun surlignage sans focusIndex', () => {
+    expect(renderToStaticMarkup(<HistoryView {...base} items={items} />)).not.toContain('msg-found');
+  });
+});
