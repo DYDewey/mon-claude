@@ -9,7 +9,7 @@ Chercher dans le contenu des anciennes conversations depuis le champ de recherch
 - **Textes cherchés = `parseSession(lines).items`** (messages `user` et `assistant`) au lieu d'un nouvel extracteur : mêmes règles que la relecture (pas d'outils, pas de méta, pas de sous-agents), et l'index du message trouvé est exactement l'index de l'élément affiché par `ChatView`. Écart avec la spec : `extractTexts(lines)` devient `searchableTexts(items)`.
 - `fold` sort de `ui-format.ts` vers `src/shared/search.ts` (exporté), `filterHistory` l'importe : une seule définition.
 - Le champ de recherche vit dans `HistoryList` (état `query`) : la section résultats et l'attente de 300 ms y sont branchées, pas dans `app.tsx`. `onOpen(folder, id, focusIndex?)` remonte jusqu'à `openHistory`.
-- Réponses en retard : un compteur de requêtes côté renderer ; seule la dernière est affichée.
+- Réponses en retard : chaque frappe annule l'attente et marque la requête précédente comme abandonnée (drapeau dans le nettoyage du `useEffect`).
 - Index de recherche séparé du lecteur d'historique (cache différent : `size + mtimeMs`), mêmes règles de chemin (`readdir` sous la racine, `SAFE_NAME`).
 
 ## Tâches
