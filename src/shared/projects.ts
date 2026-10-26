@@ -11,6 +11,7 @@ export interface Project {
 }
 
 /** La ligne de commande Windows est limitée à 32 767 caractères : on garde de la marge. */
+// shortcut: pas de plafond sur la longueur totale ; 10 000 « " » (doublés à l'échappement) + 50 longs chemins dépasseraient la limite et claude ne se lancerait pas.
 export const MAX_INSTRUCTIONS = 10_000;
 export const MAX_FILES = 50;
 
