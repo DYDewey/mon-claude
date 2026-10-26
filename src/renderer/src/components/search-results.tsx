@@ -34,8 +34,9 @@ export function useContentSearch(query: string, search: Search): SearchHit[] | '
     };
   }, [query, active, search]);
   if (!active) return null;
-  // Pendant qu'on tape, on garde les résultats précédents plutôt que de faire clignoter « Recherche… ».
-  return result ? result.hits : 'loading';
+  // Pendant qu'on tape, on garde les résultats précédents plutôt que de faire clignoter « Recherche… »,
+  // sauf un « Rien trouvé » qui concernait une autre requête.
+  return result && (result.query === query || result.hits.length > 0) ? result.hits : 'loading';
 }
 
 interface Props {

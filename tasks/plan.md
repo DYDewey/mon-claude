@@ -13,14 +13,14 @@ Chercher dans le contenu des anciennes conversations depuis le champ de recherch
 - Index de recherche séparé du lecteur d'historique (cache différent : `size + mtimeMs`), mêmes règles de chemin (`readdir` sous la racine, `SAFE_NAME`).
 
 ## Tâches
-- [ ] S1 : fonctions pures `src/shared/search.ts` (+ tests)
-- [ ] S2 : index main `src/main/search-index.ts` (+ tests dossier temporaire)
-- [ ] S3 : IPC `searchHistory` (main, preload, api)
+- [x] S1 : fonctions pures `src/shared/search.ts` (+ tests)
+- [x] S2 : index main `src/main/search-index.ts` (+ tests dossier temporaire)
+- [x] S3 : IPC `searchHistory` (main, preload, api)
 - Checkpoint A : tests, typecheck, lint verts
-- [ ] S4 : section « Dans les conversations » dans la barre latérale
-- [ ] S5 : clic → ouverture et défilement jusqu'au message surligné
+- [x] S4 : section « Dans les conversations » dans la barre latérale
+- [x] S5 : clic → ouverture et défilement jusqu'au message surligné
 - Checkpoint B : tests verts, build OK
-- [ ] S6 : vérification dans la vraie app (CDP), mesures, `.jsonl` inchangés
+- [x] S6 : vérification dans la vraie app (CDP), mesures, `.jsonl` inchangés
 
 Détails dans `tasks/todo.md`.
 
