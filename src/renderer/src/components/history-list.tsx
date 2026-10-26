@@ -1,10 +1,12 @@
 import { RotateCw, Search } from 'lucide-react';
 import { useState } from 'react';
 import type { HistoryProject, HistorySession } from '../../../shared/history';
+import type { SearchHit } from '../../../shared/search';
 import { displayTitle, emptyOrganize, sessionKey, type OrganizeData } from '../../../shared/organize';
 import { filterHistory, folderLabel } from '../ui-format';
 import { ago } from '../usage-format';
 import { FavoriteButton } from './favorite-button';
+import { SearchResults, useContentSearch } from './search-results';
 import { RenameButton, RenameField } from './rename-field';
 
 interface Props {
@@ -12,13 +14,16 @@ interface Props {
   now: number;
   /** `folder/id` de la session affichée, s'il y en a une. */
   openKey?: string;
-  onOpen: (folder: string, id: string) => void;
+  /** `focusIndex` : message à montrer (résultat de recherche dans le contenu). */
+  onOpen: (folder: string, id: string, focusIndex?: number) => void;
   onRefresh: () => void;
   /** Favoris et noms personnalisés (vide par défaut). */
   organize?: OrganizeData;
   onToggleFavorite?: (key: string) => void;
   /** Nom vide : retour au titre d'origine. */
   onRename?: (key: string, title: string) => void;
+  /** Recherche dans le contenu (par défaut : main, via window.claude). */
+  search?: (query: string) => Promise<SearchHit[]>;
   /** Pour les tests : recherche déjà saisie. */
   initialQuery?: string;
 }
@@ -29,6 +34,8 @@ export function projectLabel(project: HistoryProject): string {
 }
 
 const NO_ORGANIZE = emptyOrganize();
+// Hors du composant : une fonction stable, sinon l'attente de 300 ms repartirait à chaque rendu.
+const searchInMain = (query: string) => window.claude.searchHistory(query);
 
 export function HistoryList({
   projects,
@@ -40,6 +47,7 @@ export function HistoryList({
   onToggleFavorite = () => {},
   onRename = () => {},
   initialQuery = '',
+  search = searchInMain,
 }: Props) {
   const [query, setQuery] = useState(initialQuery);
   /** Clé de la session en cours de renommage. */
@@ -47,6 +55,7 @@ export function HistoryList({
   const titleOf = (folder: string, s: HistorySession) => displayTitle(s, organize.sessions[sessionKey(folder, s.id)]);
   const searching = query.trim() !== '';
   const shown = filterHistory(projects, query, titleOf);
+  const contentResults = useContentSearch(query, search);
   return (
     <section className="history">
       <div className="history-head">
@@ -109,6 +118,7 @@ export function HistoryList({
           </details>
         );
       })}
+      <SearchResults results={contentResults} organize={organize} onOpen={onOpen} />
     </section>
   );
 }
