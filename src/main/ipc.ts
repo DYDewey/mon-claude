@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import { IPC } from '../shared/api';
 import { isModelChoice } from '../shared/model';
+import { validQuery } from '../shared/search';
 import { emptyOrganize, parseOrganize, type OrganizeData } from '../shared/organize';
 import { promptForCwd } from '../shared/projects';
 import { savePastedImage } from './attachment-store';
@@ -11,6 +12,7 @@ import { saveHandoff } from './handoff-store';
 import { createHistoryReader } from './history-reader';
 import { loadOrganize, saveOrganize } from './organize-store';
 import { pathsExist } from './paths-exist';
+import { createSearchIndex } from './search-index';
 import { SessionManager } from './session-manager';
 
 /** Copie de organize.json tenue par main : les instructions des projets y sont lues à chaque lancement de claude. */
@@ -73,13 +75,20 @@ export function registerClaudeIpc(): SessionManager {
 }
 
 export function registerHistoryIpc(): void {
-  const reader = createHistoryReader(join(homedir(), '.claude', 'projects'));
+  const root = join(homedir(), '.claude', 'projects');
+  const reader = createHistoryReader(root);
+  const index = createSearchIndex(root);
 
   ipcMain.handle(IPC.historyList, () => reader.listProjects());
 
   ipcMain.handle(IPC.historyRead, (_e, folder: unknown, id: unknown) => {
     if (typeof folder !== 'string' || typeof id !== 'string') throw new Error('Session invalide');
     return reader.readSession(folder, id); // vérifie aussi que le chemin reste dans le dossier
+  });
+
+  ipcMain.handle(IPC.historySearch, (_e, query: unknown) => {
+    if (!validQuery(query)) throw new Error('Recherche invalide');
+    return index.search(query);
   });
 }
 

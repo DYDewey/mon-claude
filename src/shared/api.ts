@@ -3,6 +3,7 @@ import type { BridgeEvent } from './events';
 import type { HistoryProject } from './history';
 import type { ModelChoice } from './model';
 import type { OrganizeData } from './organize';
+import type { SearchHit } from './search';
 
 // API exposée au renderer sous `window.claude` par le preload.
 export interface ClaudeApi {
@@ -26,6 +27,8 @@ export interface ClaudeApi {
   /** Anciennes sessions de ~/.claude/projects/, en lecture seule. */
   listHistory(): Promise<HistoryProject[]>;
   readHistory(folder: string, id: string): Promise<ChatItem[]>;
+  /** Sessions dont le contenu contient tous les mots (au plus 50, plus récentes d'abord). */
+  searchHistory(query: string): Promise<SearchHit[]>;
   /** Enregistre la passation relue dans %APPDATA%/mon-claude/handoffs/ ; renvoie le chemin du fichier. */
   saveHandoff(text: string, sessionId: string): Promise<string>;
   /** Favoris et noms personnalisés, lus dans %APPDATA%/mon-claude/organize.json. */
@@ -47,6 +50,7 @@ export const IPC = {
   event: 'claude:event',
   historyList: 'history:list',
   historyRead: 'history:read',
+  historySearch: 'history:search',
   handoffSave: 'handoff:save',
   organizeGet: 'organize:get',
   organizeSet: 'organize:set',

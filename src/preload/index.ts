@@ -20,6 +20,7 @@ const api: ClaudeApi = {
   },
   listHistory: () => ipcRenderer.invoke(IPC.historyList),
   readHistory: (folder, id) => ipcRenderer.invoke(IPC.historyRead, folder, id),
+  searchHistory: (query) => ipcRenderer.invoke(IPC.historySearch, query),
   saveHandoff: (text, sessionId) => ipcRenderer.invoke(IPC.handoffSave, text, sessionId),
   getOrganize: () => ipcRenderer.invoke(IPC.organizeGet),
   setOrganize: (data) => ipcRenderer.invoke(IPC.organizeSet, data),
