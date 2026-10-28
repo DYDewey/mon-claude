@@ -19,13 +19,15 @@ Elle garde tout l'historique consultable ; après une passation, la nouvelle ses
 | `organize` | favoris (étoile) et renommage des sessions, rangés dans `organize.json` de l'app | history, ui |
 | `projects` | projets : dossier de travail qui regroupe ses sessions + instructions et fichiers envoyés à chaque nouvelle session | organize, chat |
 | `search` | recherche plein texte dans le contenu des anciennes conversations | history, organize |
+| `continue` | reprendre une ancienne conversation dans une copie (`--fork-session`), l'ancien .jsonl reste intact | history, chat |
+| `permissions` | demandes de permission du CLI affichées dans le chat (Autoriser / Toujours / Refuser) | chat |
 | `shortcuts` | raccourcis clavier (Ctrl+N, Ctrl+K, Ctrl+Tab) + notification Windows quand une réponse finit | chat, ui |
 | `prompts` | panneau des skills/commandes + modèles de messages réutilisables, insérés dans la saisie | chat |
 | `auto-handoff` | passation proposée automatiquement au-delà d'un seuil de contexte | usage, handoff |
 | `files` | fichiers modifiés par Claude à chaque réponse, avec aperçu des changements | chat |
 | `export` | exporter une conversation en Markdown ou PDF | history |
 
-Ordre : `cli-bridge` ✅ → `chat` ✅ → `usage` ✅ → `history` ✅ → `handoff` ✅ → `model` ✅ → `attachments` ✅ → `packaging` ✅ → `ui` ✅ → `organize` ✅ → `projects` ✅ → `search` ✅ → `shortcuts` → `prompts` → `auto-handoff` → `files` → `export`. (8 derniers ajoutés le 2026-10-25 ; `ui` ajouté le 2026-10-25 ; `usage` et `packaging` ajoutés le 2026-10-24, `model` aussi.)
+Ordre : `cli-bridge` ✅ → `chat` ✅ → `usage` ✅ → `history` ✅ → `handoff` ✅ → `model` ✅ → `attachments` ✅ → `packaging` ✅ → `ui` ✅ → `organize` ✅ → `projects` ✅ → `search` ✅ → `continue` → `permissions` → `shortcuts` → `prompts` → `auto-handoff` → `files` → `export`. (8 derniers ajoutés le 2026-10-25 ; `ui` ajouté le 2026-10-25 ; `usage` et `packaging` ajoutés le 2026-10-24, `model` aussi.)
 Chaque module a sa spec : `SPEC-<module>.md`. Ce fichier est l'index.
 
 ## Objectif
